@@ -152,7 +152,7 @@ if ($resultado_perfil->num_rows > 0) {
                 <h3 class="block-title">Ingreso al sistema</h3>
             </div>
             <div class="block-content">
-                <form class="form-horizontal push-5-t" action="/" method="post" >
+                <form class="form-horizontal push-5-t" action="login.php" method="post" >
                     <div class="form-group">
                         <label class="col-xs-12" for="usuario">Usuario</label>
                         <div class="col-xs-12">
