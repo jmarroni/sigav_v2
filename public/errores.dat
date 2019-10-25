@@ -1,0 +1,7 @@
+Exception: (11002) El punto de venta no se encuentra habilitado a usar en el presente WS. Ver metodo FEParamGetPtosVenta in C:\xampp\htdocs\sigav\vendor\afipsdk\afip.php\src\Class\ElectronicBilling.php:363
+Stack trace:
+#0 C:\xampp\htdocs\sigav\vendor\afipsdk\afip.php\src\Class\ElectronicBilling.php(307): ElectronicBilling->_CheckErrors('FECompUltimoAut...', Object(stdClass))
+#1 C:\xampp\htdocs\sigav\vendor\afipsdk\afip.php\src\Class\ElectronicBilling.php(41): ElectronicBilling->ExecuteRequest('FECompUltimoAut...', Array)
+#2 C:\xampp\htdocs\sigav\vendor\afipsdk\afip.php\src\Class\ElectronicBilling.php(122): ElectronicBilling->GetLastVoucher('123', 11)
+#3 C:\xampp\htdocs\sigav\facturar.php(149): ElectronicBilling->CreateNextVoucher(Array)
+#4 {main}
