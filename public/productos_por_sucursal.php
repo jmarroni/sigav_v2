@@ -386,6 +386,7 @@ require ('header.php'); ?>
                 $("#precio_unidad").val(jsonData.precio_unidad);
                 $("#codigo_de_barras").val(jsonData.codigo_barras);
                 $("#proveedor").val(jsonData.proveedores_id);
+                //
                 $("#stock").val(jsonData.stock);
                 $("#stock_sucursal").val($("#stock_de_sucursal"+identificador)[0].innerHTML);
                 $("#stock_minimo").val(jsonData.stock_minimo);

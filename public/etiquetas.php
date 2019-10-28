@@ -21,27 +21,30 @@ if (isset($_GET["etiquetas"]) && intval($_GET["etiquetas"]) != ""){?>
         $sql = "SELECT * FROM cajas WHERE id = '".$etiqueta[0]."'";
         $resultado = $conn->query($sql);
         $i = 0;
-        if ($resultado->num_rows > 0) { 
-            while($row = $resultado->fetch_assoc()) { ?>
-                <table>
-                    <?php 
-                    echo "<tr>";
-                    for ($i=0; $i < $cantidad; $i++) { 
-                        if (($i % 3) == 0)echo "</tr><tr>";
-                        ?>
-                        <td style="border: 1px solid #CCC;width:320px;">
-                            <div style="margin-top:5px;">
-                                <img alt="testing" src="/librarys/barcode.php?codetype=Code39&text=<?php echo $row["codigo_barras"];  ?>&print=true&size=40" />
-                            </div>
-                        </td>
-                    <?php } ?>
-                    </tr>
-            </table>
+        if ( $resultado ) {
+            if ($resultado->num_rows > 0) { 
+                while($row = $resultado->fetch_assoc()) { ?>
+                    <table>
+                        <?php 
+                        echo "<tr>";
+                        for ($i=0; $i < $cantidad; $i++) { 
+                            if (($i % 3) == 0)echo "</tr><tr>";
+                            ?>
+                            <td style="border: 1px solid #CCC;width:320px;">
+                                <div style="margin-top:5px;">
+                                    <img alt="testing" src="/librarys/barcode.php?codetype=Code39&text=<?php echo $row["codigo_barras"];  ?>&print=true&size=40" />
+                                </div>
+                            </td>
+                        <?php } ?>
+                        </tr>
+                </table>
 
-        <?php 
+            <?php 
+                } 
             } 
-        } 
-    }?>
+        } else {?>
+            <h1 style="text-align: center;">No hay etiquetas para este producto</h1>
+        <?php } }?>
     
 <?php }else{?>
     <h1 style="text-align: center;">Por favor seleccione un producto</h1>
