@@ -254,13 +254,25 @@ if($voucher_info === NULL){
 					'$documento',
 					'$tipoDocumento',
 					'$iva');";
+
 	if ($conn->query($sql_insert) === TRUE) {
 		$factura_id = $conn->insert_id;
+
 		foreach ($datos_productos as $key => $value) {
-			$sql_update = "UPDATE ventas SET estado = 2, factura_id = $factura_id  WHERE id = ".$value["id"];
+			$sql_update = "UPDATE ventas SET estado = 2, factura_id = '{$factura_id}'  WHERE id = ".$value["id"];
 			$conn->query($sql_update);
 		}
-		
+
+		// Agarro los productos y modifico stock de las sucursales
+		$productos_venta = $_REQUEST["productos_venta"];
+
+		foreach($productos_venta AS $producto_venta) {
+			$sql_descontar_stock = "UPDATE stock SET stock = (stock - {$producto_venta["cantidad"]}) WHERE productos_id = ".$producto_venta["id"]." AND sucursal_id = ".getSucursal($_COOKIE["sucursal"]);
+
+			if ($conn->query($sql_descontar_stock) === FALSE) {
+				echo "Error en UPDATE: " . $sql_descontar_stock . "<br>" . $conn->error;
+			}
+		}
 	}else{
 		echo "error en la facturacion, por favor comuniquese con el administrador eh indiquele el codigo 502";
 		echo $sql_insert;
@@ -323,10 +335,12 @@ if($voucher_info === NULL){
 							<td style='border-bottom: 1px solid #000;'>Total</td>
 							<td style='border-bottom: 1px solid #000;'>".number_format($total,2,",",".")."</td>
 						</tr></table>");
+
 	if ($res["CAE"] != ""){
 		$html .= utf8_encode("<p style='text-align:right'><b>CAE Nro.:</b> ".$res["CAE"]."<br />
 						<b>Fecha de Vto. CAE: </b>".$res["CAEFchVto"]."<br /></p>");
 	}
+
 	//	echo $html;exit();
 	$html2pdf = new HTML2PDF('P', 'A4', 'pt', true, 'UTF-8');
 	$html2pdf->setDefaultFont('Arial');

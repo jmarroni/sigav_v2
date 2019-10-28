@@ -79,14 +79,21 @@ $sql = "INSERT INTO ventas VALUES (NULL, '{$_POST["id"]}',
                                     NULL,1612,
                                     {$lista_precio})";
 
+// Agarro la cantidad
+$datos["cantidad"] = $_POST["cantidad"];
+
 if ($conn->query($sql) === TRUE) {
-    $sql_update = "UPDATE stock SET stock = (stock - {$_POST["cantidad"]}) WHERE productos_id = ".$_POST["id"]." AND sucursal_id = ".getSucursal($_COOKIE["sucursal"]);
+    // QUITAR
+    //$sql_update = "UPDATE stock SET stock = (stock - {$_POST["cantidad"]}) WHERE productos_id = ".$_POST["id"]." AND sucursal_id = ".getSucursal($_COOKIE["sucursal"]);
+    // HASTA ACA
+
     $datos["ventas_id"] = $conn->insert_id;
-    if ($conn->query($sql_update) === TRUE) {
-        echo json_encode($datos);
-    } else {
-        echo "Error en UPDATE: " . $sql . "<br>" . $conn->error;
-    }
+    
+    //if ($conn->query($sql_update) === TRUE) {
+    echo json_encode($datos);
+    //} else {
+    //   echo "Error en UPDATE: " . $sql . "<br>" . $conn->error;
+    //}
 } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
 }

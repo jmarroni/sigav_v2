@@ -1,4 +1,7 @@
-var precio = 0;
+    // Productos
+    var productos_venta = [];
+
+    var precio = 0;
     var devolucion = '';
     var total_ventas = 0;
     jQuery("document").ready(function(){
@@ -33,6 +36,7 @@ var precio = 0;
                         '&iva=' + iva +
                         '&clientes_id=' + $("#clientes_id").val() + 
                         "&direccion=" + $("#direccion-cliente").val(),
+                data: { productos_venta: productos_venta },
                 datatype: 'json'
             })
                 .done(function (msg) {
@@ -98,9 +102,11 @@ var precio = 0;
                         '&iva=' + iva +
                         '&clientes_id=' + $("#clientes_id").val() +
                         "&direccion=" + $("#direccion-cliente").val(),
+                data: { productos_venta: productos_venta },
                 datatype: 'json'
             })
                 .done(function (msg) {
+                    console.log(msg);
                     if (msg.factura){
                         $("#factura_iframe").show();
                         $("#iframe").attr("src",msg.factura);
@@ -108,7 +114,6 @@ var precio = 0;
                             $("#tablaProductos").html("");
                             $("#total_ventas").html(0);
                         },1000);
-                        
                     }  
                 });
         });
@@ -135,11 +140,14 @@ var precio = 0;
                             $("#cantidad").val('1');
                             $("#codigo-barras").focus();
 
+                            // Agarro los productos y los guardo 
+                            productos_venta.push(msg);
                         });
                 } else {
                     alert('Verifica la cantidad ingresada es incorrecta');
                 }
         });
+
         jQuery("#cantidad").keyup(function(){
             if ($(this).val() > 0 && precio > 0)
                 $("#precio").html($(this).val() * precio);
@@ -262,7 +270,7 @@ var precio = 0;
     }
 
     function eliminar(ventas,cantidad,producto_id){
-        if (confirm("Seguro de eliminar el producto ? Preguntate porque no lo vendiste primero ;)")) {
+        if (confirm("Seguro de eliminar el producto? Preguntate porque no lo vendiste primero ;)")) {
                     $.ajax({
                         method: "POST",
                         url: "eliminar_venta.php",
@@ -270,7 +278,17 @@ var precio = 0;
                     })
                     .done(function (msg) {
                         $("#" + ventas).hide("slow");
-                    }).fail(function(){$("#" + ventas).hide("slow");});
+                    }).fail(function() { 
+                        $("#" + ventas).hide("slow");
+
+
+                       // Recorro los productos de la venta
+                       productos_venta.forEach( function(producto, index) {
+                          if (producto.id == producto_id) {
+                              productos_venta.splice(index, 1);
+                          }
+                       });
+                    });
         }
     }
 
