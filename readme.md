@@ -49,3 +49,44 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
+
+## Laravel Passport
+
+Instalación: 'composer require laravel/passport'
+
+Agregar la siguiente línea a config/app.php: 'Laravel\Passport\PassportServiceProvider::class,'.
+
+Las migraciones de Passport crearán las tablas que su aplicación necesita para almacenar clientes y acceder a tokens: 'php artisan migrate'.
+
+Si el anterior paso no funciona hacer: php artisan migrate --path=vendor/laravel/passport/database/migrations
+
+Agregar "Laravel\Passport\HasApiTokens" y "use Notifiable, HasApiTokens;" a su modelo "App\User".
+
+Agregar "use Laravel\Passport\Passport;" a AuthServiceProvider.php y "Passport::routes();" a la funcion boot.
+
+Agregar a config/auth.php: 'driver' => 'passport'
+
+Crear claves de cifrado necesarias para generar tokens de acceso seguro: 'php artisan passport:install'.
+
+Agregar a routes/api.php:
+Route::group([
+    'prefix' => 'auth' 
+], function () { 
+    Route::post('login', 'AuthController@login');
+    Route::post('signup', 'AuthController@signup');
+
+    Route::group([
+      'middleware' => 'auth: api'
+    ], function() {
+        Route::get('logout', 'AuthController@logout');
+        Route::get('user', 'AuthController@user');
+    });
+});
+
+Crear carpeta 'api' en controllers y generar controlador 'php artisan make:Controlller AuthController' y poner sus datos.
+
+Despliegue, generar llaves: php artisan passport:keys
+
+Si no funcionan las rutas usar: 'composer update'.
+
+Si sigue sin funcionar usar: php artisan install:passport

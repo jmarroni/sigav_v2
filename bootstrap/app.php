@@ -41,6 +41,9 @@ $app->singleton(
     App\Exceptions\Handler::class
 );
 
+// Passport
+$app->register(App\Providers\AuthServiceProvider::class);
+
 /*
 |--------------------------------------------------------------------------
 | Return The Application

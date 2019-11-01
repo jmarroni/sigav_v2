@@ -14,3 +14,11 @@
 Route::get('/', function () {
     return redirect ("/login.php");
 });
+
+Route::get('/login', function(){
+	return view('login/login');
+});
+
+Route::get('/loginejemplo', function(){
+	return view('login/login');
+});
