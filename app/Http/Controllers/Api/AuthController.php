@@ -84,7 +84,7 @@ class AuthController extends Controller
         $token = $tokenResult->token;
 
         // if ($request->remember_me)
-            $token->expires_at = Carbon::now()->addWeeks(1);
+            $token->expires_at = Carbon::now()->addDays(1);
 
         $token->save();
 
@@ -104,17 +104,6 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        /*$credentials = request(['email', 'password']);
-
-        if(!Auth::attempt($credentials))
-            return response()->json([
-                'mensaje' => 'Usuario o password incorrectas'
-            ], 401);
-
-        $tokens = DB::table('oauth_access_tokens')->
-                        where('user_id', $request->user()->id)->
-                        update(['revoked' => 1]);*/
-
         $request->user()->token()->revoke();
 
         return response()->json([
@@ -129,22 +118,8 @@ class AuthController extends Controller
      */
     public function user(Request $request)
     {
-        $credentials = request(['email', 'password']);
-
-        if(!Auth::attempt($credentials))
-            return response()->json([
-                'mensaje' => 'Usuario o password incorrectas'
-            ], 401);
-
         $user = $request->user();
 
         return response()->json(['user' => $user]);
-
-        // return response()->json(['user' => auth()->user()]);
-    }
-
-    // SACAARRRRR
-    public function loginejemplo() {
-        return view('login/login');
     }
 }
