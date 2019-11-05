@@ -44,9 +44,7 @@ class AuthController extends Controller
 
         $user->save();
 
-        return response()->json([
-            'usuario' => $user
-        ], 201);
+        return redirect("/usuarios_api.php?mensaje=".base64_encode("Se agrego el usuario ok"));
     }
   
     /**

@@ -453,7 +453,14 @@ function getMes($numero){
                             <i class="fa fa-address-card-o push-5-r"></i>Obsequios
                         </a>
                     </li>      
-                    <?php } ?>           
+                    <?php } ?>
+                    <?php if (getRol() > 4) { ?>
+                    <li>
+                        <a href="/usuarios_api.php">
+                            Api
+                        </a>
+                    </li>     
+                    <?php } ?>
                     <!--
                     <li>
                         <a href="bd_sales.html">

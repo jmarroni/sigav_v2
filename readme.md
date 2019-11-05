@@ -21,20 +21,22 @@ Opcional:
 Route::group([
     'prefix' => 'auth' 
 ], function () { 
-    Route::post('login', 'AuthController@login');
-    Route::post('signup', 'AuthController@signup');
+    Route::post('login', 'Api\AuthController@login');
+    Route::post('signup', 'Api\AuthController@signup');
 
     Route::group([
       'middleware' => 'auth: api'
     ], function() {
-        Route::get('logout', 'AuthController@logout');
-        Route::get('user', 'AuthController@user');
+        Route::get('logout', 'Api\AuthController@logout');
+        Route::get('user', 'Api\AuthController@user');
     });
 });
 
-9) Crear carpeta 'api' en controllers y generar controlador 'php artisan make:Controlller AuthController' y poner los datos que se encuentran en el archivo de esta aplicación.
+9) En Http/Kernel, en la parte web: \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
 
-10) Despliegue, generar llaves: php artisan passport:keys
+10) Crear carpeta 'api' en controllers y generar controlador 'php artisan make:Controlller AuthController' y poner los datos que se encuentran en el archivo de esta aplicación.
+
+11) Despliegue, generar llaves: php artisan passport:keys
 
 ## Api SIGAV
 
@@ -50,6 +52,8 @@ Obtención de token:
 	Su token será el "access_token" por ello copielo, por otro lado tiene el tipo de token y la fecha de expiración del mismo.
 
 Obtención de productos:
+	0002 - Token de acceso:
+
 	Para obtenerlo deberá ingresar a la URL:
 		http://mercado-artesanal.com/api/auth/productos?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImUzNjhiN2U0MzM5OTU3YjNhYTNkZTQ5MDUxMjJjM2
 	En su aplicación deberá enviar el siguiente header (Ejemplo realizado con jquery AJAX):
