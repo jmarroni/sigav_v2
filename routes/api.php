@@ -6,7 +6,6 @@ Route::group([
     'prefix' => 'auth'
 ], function() {
     Route::get('login', ['uses' => 'Api\AuthController@login']); 
-    Route::post('signup', 'Api\AuthController@signup');
 
     Route::group([ 
       'middleware' => 'auth:api' 

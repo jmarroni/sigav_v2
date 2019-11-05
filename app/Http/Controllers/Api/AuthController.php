@@ -22,9 +22,9 @@ class AuthController extends Controller
     public function signup(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|string',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'required|string'
+        'name' => 'required|string',
+        'email' => 'required|string|email|unique:users',
+        'password' => 'required|string'
         ], [
              'name.required' => 'Ingrese un nombre de usuario',
              'name.string' => 'El nombre debe ser de caracteres',
@@ -36,13 +36,25 @@ class AuthController extends Controller
              'password.string' => 'La contraseña debe ser de caracteres'
         ]);
 
-        $user = new User([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
-        ]);
+        if ($request->id != "") {
+            $user = User::find($request->id);
+            $user->name = $request->name;
+            $user->email = $request->email;
+            
+            if($request->password !== "") {
+                $user->password = $request->password;
+            }
+            
+            $user->save();
+        } else {
+            $user = new User([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password)
+            ]);
 
-        $user->save();
+            $user->save();
+        }
 
         return redirect("/usuarios_api.php?mensaje=".base64_encode("Se agrego el usuario ok"));
     }

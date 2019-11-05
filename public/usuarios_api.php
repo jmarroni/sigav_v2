@@ -60,7 +60,7 @@
 
     <div class="block block-rounded">
         <div class="block-content">
-            <form id="formulario" class="form-horizontal" action="/api/auth/signup" method="post">
+            <form id="formulario" class="form-horizontal" action="signup" method="get">
                 <div class="form-group">
                     <input class="hidden" value="" id="id" name="id">
                     <div class="col-xs-4">
@@ -109,8 +109,8 @@
                     while($row = $resultado->fetch_assoc()) { ?>
                     <tr>
                         <td>
-                            <h4><?php echo $row["name"] ?> (<a href="javascript:void();" onclick="eliminarUsuario('<?php echo $row["id"]; ?>')">Eliminar</a> <!-- , 
-                                <a href="#" onclick="modificarUsuario('<?php echo $row["id"]; ?>')">Modificar</a> --> )
+                            <h4><?php echo $row["name"] ?> (<a href="javascript:void();" onclick="eliminarUsuario('<?php echo $row["id"]; ?>')">Eliminar</a> , 
+                                <a href="#" onclick="modificarUsuario('<?php echo $row["id"]; ?>')">Modificar</a> )
                         </td>
                         <td style="width: 100px;">
                             <p>Mail: <span class="text-gray-dark"><?php echo $row["email"]; ?></span></p>
@@ -228,16 +228,16 @@
         }
     }
 
-    /*function modificarUsuario(identificador) {
+    function modificarUsuario(identificador) {
         $.get("get_usuario_api.php", { id_usuario: identificador }, function(data, status) {
             if (status === 'success') {
                 data = JSON.parse(data);
                 $("#id").val(data.id);
-                $("#nombre").val(data.name);
+                $("#name").val(data.name);
                 $("#email").val(data.email);
             }
         });
-    }*/
+    }
 </script>
 
 <?php require ("footer.php"); ?>

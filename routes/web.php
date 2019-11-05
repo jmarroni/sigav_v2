@@ -18,3 +18,5 @@ Route::get('/', function () {
 Route::get('/loginejemplo', function(){
 	return view('login/login');
 });
+
+Route::get('signup', 'Api\AuthController@signup');
