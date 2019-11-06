@@ -22,9 +22,9 @@ class AuthController extends Controller
     public function signup(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|string',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'required|string'
+        'name' => 'required|string',
+        'email' => 'required|string|email|unique:users',
+        'password' => 'required|string'
         ], [
              'name.required' => 'Ingrese un nombre de usuario',
              'name.string' => 'El nombre debe ser de caracteres',
@@ -36,17 +36,27 @@ class AuthController extends Controller
              'password.string' => 'La contraseña debe ser de caracteres'
         ]);
 
-        $user = new User([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
-        ]);
+        if ($request->id != "") {
+            $user = User::find($request->id);
+            $user->name = $request->name;
+            $user->email = $request->email;
+            
+            if($request->password !== "") {
+                $user->password = $request->password;
+            }
+            
+            $user->save();
+        } else {
+            $user = new User([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password)
+            ]);
 
-        $user->save();
+            $user->save();
+        }
 
-        return response()->json([
-            'usuario' => $user
-        ], 201);
+        return redirect("/usuarios_api.php?mensaje=".base64_encode("Se agrego el usuario ok"));
     }
   
     /**
@@ -84,7 +94,7 @@ class AuthController extends Controller
         $token = $tokenResult->token;
 
         // if ($request->remember_me)
-            $token->expires_at = Carbon::now()->addWeeks(1);
+            $token->expires_at = Carbon::now()->addDays(1);
 
         $token->save();
 
@@ -104,6 +114,7 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
+<<<<<<< HEAD
         /*$credentials = request(['email', 'password']);
 
         if(!Auth::attempt($credentials))
@@ -116,6 +127,9 @@ class AuthController extends Controller
                         update(['revoked' => 1]);*/
         echo "ssss";exit();
         auth('api')->user()->token()->revoke();
+=======
+        $request->user()->token()->revoke();
+>>>>>>> cbe5c9a8694a979f6e2abd6675b5c0d2ac458b7c
 
         return response()->json([
             'message' => 'Sesion cerrada con exito!'
@@ -129,22 +143,8 @@ class AuthController extends Controller
      */
     public function user(Request $request)
     {
-        $credentials = request(['email', 'password']);
-
-        if(!Auth::attempt($credentials))
-            return response()->json([
-                'mensaje' => 'Usuario o password incorrectas'
-            ], 401);
-
         $user = $request->user();
 
         return response()->json(['user' => $user]);
-
-        // return response()->json(['user' => auth()->user()]);
-    }
-
-    // SACAARRRRR
-    public function loginejemplo() {
-        return view('login/login');
     }
 }
