@@ -22,3 +22,5 @@ Route::get('/login', function(){
 Route::get('/loginejemplo', function(){
 	return view('login/login');
 });
+
+Route::get('/test_passsport', "TestPassportController@login_logout");

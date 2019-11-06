@@ -114,8 +114,8 @@ class AuthController extends Controller
         $tokens = DB::table('oauth_access_tokens')->
                         where('user_id', $request->user()->id)->
                         update(['revoked' => 1]);*/
-
-        $request->user()->token()->revoke();
+        echo "ssss";exit();
+        auth('api')->user()->token()->revoke();
 
         return response()->json([
             'message' => 'Sesion cerrada con exito!'

@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 Route::group([ 
     'prefix' => 'auth'
 ], function() {
-    Route::get('login', ['uses' => 'Api\AuthController@login']); 
+    Route::get('login', ['uses' => 'Api\AuthController@login'])->name('login'); 
     Route::get('signup', 'Api\AuthController@signup');
 
     Route::group([ 
