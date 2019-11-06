@@ -114,22 +114,8 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-<<<<<<< HEAD
-        /*$credentials = request(['email', 'password']);
 
-        if(!Auth::attempt($credentials))
-            return response()->json([
-                'mensaje' => 'Usuario o password incorrectas'
-            ], 401);
-
-        $tokens = DB::table('oauth_access_tokens')->
-                        where('user_id', $request->user()->id)->
-                        update(['revoked' => 1]);*/
-        echo "ssss";exit();
-        auth('api')->user()->token()->revoke();
-=======
         $request->user()->token()->revoke();
->>>>>>> cbe5c9a8694a979f6e2abd6675b5c0d2ac458b7c
 
         return response()->json([
             'message' => 'Sesion cerrada con exito!'
