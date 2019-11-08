@@ -5,14 +5,14 @@ use Illuminate\Http\Request;
 Route::group([ 
     'prefix' => 'auth'
 ], function() {
-    Route::get('login', ['uses' => 'Api\AuthController@login']); 
+    Route::post('login', ['uses' => 'Api\AuthController@login']); 
 
     Route::group([ 
       'middleware' => 'auth:api' 
     ], function() {
-        Route::get('user', ['uses' =>'Api\AuthController@user']);
-        Route::get('productos', ['uses' => 'Api\ProductoController@productos']);
-        Route::get('sucursales', ['uses' => 'Api\SucursalesController@sucursales']);
-        Route::get('productosPorSucursal', ['uses' => 'Api\SucursalesController@productosPorSucursal']);
+        Route::post('user', ['uses' =>'Api\AuthController@user']);
+        Route::post('productos', ['uses' => 'Api\ProductoController@productos']);
+        Route::post('sucursales', ['uses' => 'Api\SucursalesController@sucursales']);
+        Route::post('productosPorSucursal', ['uses' => 'Api\SucursalesController@productosPorSucursal']);
     });
 });
