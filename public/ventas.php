@@ -63,7 +63,7 @@ if ($resultado->num_rows > 0) {
 }
 
 // Elimino cualquier resto de venta que no se realizo para que no se vuelva a facturar, todas quedan en estado 5.
-$sql_update = "UPDATE ventas SET estado = 5 WHERE estado = 1 OR estado = 3";
+$sql_update = "DELETE FROM productos_en_carrito WHERE estado = 0 AND sucursal_id = ".getSucursal($_COOKIE["sucursal"])." AND usuario = '".$_COOKIE["kiosco"]."'";
 $conn->query($sql_update);
 ?>
     <style>

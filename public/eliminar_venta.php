@@ -5,14 +5,11 @@ if (!isset($_COOKIE["kiosco"])) {
 header('Content-Type: application/json');
 require_once ("conection.php");
 
-$sql = "DELETE FROM ventas WHERE id =".intval($_POST["id"]);
-if ($conn->query($sql) === TRUE) {
-    //$sql_update = "UPDATE productos SET stock = (stock + {$_POST["cantidad"]}) WHERE id = ".$_POST["producto_id"];
-    //if ($conn->query($sql_update) === TRUE) {
-        echo "{'respuesta': 'OK'}";
-    //} else {
-      //  echo "Error en UPDATE: " . $sql . "<br>" . $conn->error;
-    //}
+// Elimino rows que tengan como venta_id la venta a eliminar
+$sql_eliminar = "DELETE FROM productos_en_carrito WHERE venta_id = ".intval($_POST["id"])." AND producto_id = ".intval($_POST["producto_id"]);
+
+if ($conn->query($sql_eliminar) === TRUE) {
+    echo "{'respuesta': 'OK'}";
 } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
 }

@@ -1,12 +1,17 @@
 <?php
+
 if (!isset($_COOKIE["kiosco"])) {
     exit();
 }
+
 header('Content-Type: application/json');
+
 require_once ("conection.php");
 require 'vendor/autoload.php';
 use Spipu\Html2Pdf\Html2Pdf;
+
 $arrSucursal = array();
+
 if (isset($_COOKIE["sucursal"])){
 	$datos_sucursal = "SELECT * FROM sucursales where id = '".getSucursal($_COOKIE["sucursal"])."'";
 	// echo $datos_sucursal;exit();
@@ -14,7 +19,7 @@ if (isset($_COOKIE["sucursal"])){
 	if ($resultado_perfil->num_rows > 0) {
 		$arrSucursal = $resultado_perfil->fetch_assoc();
 	}else{exit();}
-}else exit();
+} else exit();
 
 
 // DATOS PARA EL COMPROBANTE
@@ -92,12 +97,66 @@ if ($resultado_perfil->num_rows > 0) {
 	$logo = "http://".$_SERVER['HTTP_HOST']."/assets/img/photos/no-image-featured-image.png";
     $nombre_fantasia = "SIGAV";
 }
-if (intval($_GET["presupuesto"]) == 0){
-	// Busco las ventas a facturar
-	$sql = "SELECT v.*,p.nombre as nombre_producto FROM ventas v inner join productos p on p.id = v.productos_id WHERE v.estado = 1 AND v.sucursal_id = ".getSucursal($_COOKIE["sucursal"])." AND v.usuario = '".$_COOKIE["kiosco"]."'";
-}else{
-	$sql = "SELECT v.*,p.nombre as nombre_producto FROM ventas v inner join productos p on p.id = v.productos_id WHERE v.estado = 3 AND v.fecha > '".date("Y-m-d 00:00:00")."' AND v.sucursal_id = ".getSucursal($_COOKIE["sucursal"])." AND v.usuario = '".$_COOKIE["kiosco"]."'";
+
+// Agarro el numero de lista para la venta
+if (isset($_COOKIE["lista_precio"])) $lista_precio = $_COOKIE["lista_precio"];
+else $lista_precio = 1;
+
+// Agarro el estado para la venta
+$emitir = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/emitir");
+if (intval($emitir) === 1 ) {
+    $estado = 1;
+} else {
+    $estado = 3;
 }
+
+// Agarro los productos del carrito para esta venta
+$sql_productos_en_carrito = "SELECT * FROM productos_en_carrito WHERE venta_id = '{$_GET['venta_id']}'";
+$resultados_productos_en_carrito = $conn->query($sql_productos_en_carrito);
+
+// Ids ventas insertadas
+$array_ids_ventas = [];
+
+if ($resultados_productos_en_carrito->num_rows > 0) {
+	while ($producto_en_carrito  = $resultados_productos_en_carrito->fetch_assoc()) {
+		$sql_descontar_stock = "UPDATE stock SET stock = (stock - {$producto_en_carrito["cantidad"]}) WHERE productos_id = ".$producto_en_carrito["producto_id"]." AND sucursal_id = ".getSucursal($_COOKIE["sucursal"]);
+
+		if ($conn->query($sql_descontar_stock) === FALSE) {
+			echo "Error en UPDATE: " . $sql_descontar_stock . "<br>" . $conn->error;
+		}
+
+		$sql_insertar_venta = 
+			"
+			INSERT INTO ventas 
+			VALUES(
+				NULL,
+				'{$producto_en_carrito['producto_id']}',
+				'{$producto_en_carrito['cantidad']}', 
+				'{$producto_en_carrito['precio']}', 
+				'{$producto_en_carrito['costo']}', 
+				'".date("Y-m-d H:i:s")."', 
+				'{$_COOKIE["kiosco"]}', 
+	    		'".getSucursal($_COOKIE["sucursal"])."', 
+	    		'$estado', 
+	    		NULL, 
+	    		'1612', 
+	    		'$lista_precio' 
+			)";
+
+		if ($conn->query($sql_insertar_venta) === FALSE) {
+			echo "Error en UPDATE: " . $sql_insertar_venta . "<br>" . $conn->error;
+		}
+
+		array_push($array_ids_ventas, $conn->insert_id);
+	}
+}
+
+if (intval($_GET["presupuesto"]) == 0) {
+	$sql = "SELECT v.*,p.nombre as nombre_producto FROM ventas v inner join productos p on p.id = v.productos_id WHERE v.estado = 1 AND v.sucursal_id = ".getSucursal($_COOKIE["sucursal"])." AND v.usuario = '".$_COOKIE["kiosco"]."'";
+} else {
+	$sql = "SELECT v.*, p.nombre as nombre_producto FROM ventas v inner join productos p on p.id = v.productos_id WHERE v.estado = 3 AND v.fecha > '".date("Y-m-d 00:00:00")."' AND v.sucursal_id = ".getSucursal($_COOKIE["sucursal"])." AND v.usuario = '".$_COOKIE["kiosco"]."'";
+}
+
 $item = array();
 $total = 0;
 $datos = array();
@@ -110,7 +169,8 @@ if ($resultado->num_rows > 0) {
 	}
 }else{
 	$devolucion["error"] = "No existen productos para facturar";
-	echo json_encode($devolucion);exit();
+	echo json_encode($devolucion);
+	exit();
 }
 $fecha = explode("-",$_GET["fecha-facturacion"]);
 if (count($fecha) < 3) { echo "error"; exit(); }
@@ -258,28 +318,23 @@ if($voucher_info === NULL){
 	if ($conn->query($sql_insert) === TRUE) {
 		$factura_id = $conn->insert_id;
 
-		foreach ($datos_productos as $key => $value) {
-			$sql_update = "UPDATE ventas SET estado = 2, factura_id = '{$factura_id}'  WHERE id = ".$value["id"];
-			$conn->query($sql_update);
-		}
-
-		// Agarro los productos y modifico stock de las sucursales
-		$productos_venta = $_REQUEST["productos_venta"];
-
-		foreach($productos_venta AS $producto_venta) {
-			$sql_descontar_stock = "UPDATE stock SET stock = (stock - {$producto_venta["cantidad"]}) WHERE productos_id = ".$producto_venta["id"]." AND sucursal_id = ".getSucursal($_COOKIE["sucursal"]);
-
-			if ($conn->query($sql_descontar_stock) === FALSE) {
-				echo "Error en UPDATE: " . $sql_descontar_stock . "<br>" . $conn->error;
+		foreach($array_ids_ventas as $id) {
+			$sql_update_venta_factura = "UPDATE ventas SET factura_id = '$factura_id' WHERE id = '{$id}'";
+		
+			if ($conn->query($sql_update_venta_factura) === FALSE) {
+				echo json_encode("Error: " . $sql_update_venta_factura . "<br>" . $conn->error);
+				exit();
 			}
 		}
-	}else{
-		echo "error en la facturacion, por favor comuniquese con el administrador eh indiquele el codigo 502";
+	} else {
+		echo "Error en la facturacion, por favor comuniquese con el administrador eh indiquele el codigo 502";
 		echo $sql_insert;
 	}
+
 	if (strlen($arrSucursal["direccion"]) > 25)
 	$arrDireccion = substr($arrSucursal["direccion"],0,strpos($arrSucursal["direccion"]," ",20))."<br />".substr($arrSucursal["direccion"],strpos($arrSucursal["direccion"]," ",20)); 
 	else $arrDireccion = $arrSucursal["direccion"];
+	
 	$html = utf8_encode("
 							<style>
 								h3{
@@ -330,6 +385,7 @@ if($voucher_info === NULL){
 							</tr>
 							");
 	}
+
 	$html .= utf8_encode("<tr>
 							<td></td>
 							<td style='border-bottom: 1px solid #000;'>Total</td>
@@ -341,7 +397,6 @@ if($voucher_info === NULL){
 						<b>Fecha de Vto. CAE: </b>".$res["CAEFchVto"]."<br /></p>");
 	}
 
-	//	echo $html;exit();
 	$html2pdf = new HTML2PDF('P', 'A4', 'pt', true, 'UTF-8');
 	$html2pdf->setDefaultFont('Arial');
 	$html = str_replace("@@FACTURANRO@@",$facturanro,$html);
@@ -351,6 +406,6 @@ if($voucher_info === NULL){
 	$devolucion["factura"] = $nombre_factura;
 	echo json_encode($devolucion);
 }
-exit();
 
+	exit();
 ?>

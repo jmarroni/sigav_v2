@@ -66,9 +66,10 @@ if (intval($emitir) === 1 ){ // Habilito la factura online
 }else{
     $estado = 3;
 }
+
 if (isset($_COOKIE["lista_precio"])) $lista_precio = $_COOKIE["lista_precio"];
 else $lista_precio = 1;
-$sql = "INSERT INTO ventas VALUES (NULL, '{$_POST["id"]}', 
+/*$sql = "INSERT INTO ventas VALUES (NULL, '{$_POST["id"]}', 
                                     '{$_POST["cantidad"]}', 
                                     '$precio',
                                     '$costo',
@@ -77,17 +78,35 @@ $sql = "INSERT INTO ventas VALUES (NULL, '{$_POST["id"]}',
                                     '".getSucursal($_COOKIE["sucursal"])."',
                                     '$estado',
                                     NULL,1612,
-                                    {$lista_precio})";
+                                    {$lista_precio})";*/
+
+$sql = "INSERT INTO productos_en_carrito 
+        VALUES ( 
+            NULL, 
+            '{$_POST["venta_id"]}', 
+            '{$_POST["id"]}', 
+            '0', 
+            '".date("Y-m-d H:i:s")."', 
+            '{$_COOKIE["kiosco"]}', 
+            '".getSucursal($_COOKIE["sucursal"])."', 
+            '{$_POST["cantidad"]}', 
+            '$precio', 
+            '$costo' 
+        )";
 
 // Agarro la cantidad
-$datos["cantidad"] = $_POST["cantidad"];
+// $datos["cantidad"] = $_POST["cantidad"];
 
 if ($conn->query($sql) === TRUE) {
     // QUITAR
     //$sql_update = "UPDATE stock SET stock = (stock - {$_POST["cantidad"]}) WHERE productos_id = ".$_POST["id"]." AND sucursal_id = ".getSucursal($_COOKIE["sucursal"]);
     // HASTA ACA
 
-    $datos["ventas_id"] = $conn->insert_id;
+    $datos["ventas_id"] = $_POST["id"];
+
+    /*$sql = "INSERT INTO relacion_ VALUES (NULL, '{$_POST["id"]}', 
+                                    '{$conn->insert_id}',
+                                    '{$_POST['id']}')";*/
     
     //if ($conn->query($sql_update) === TRUE) {
     echo json_encode($datos);

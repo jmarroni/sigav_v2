@@ -1,5 +1,5 @@
-    // Productos
-    var productos_venta = [];
+    // Id de la venta
+    var venta_id = Math.floor(Math.random() * 1123122) + 5432;  
 
     var precio = 0;
     var devolucion = '';
@@ -34,9 +34,9 @@
                         '&tipo-documento='  + $("#tipo").val() +
                         '&fecha-facturacion='  + $("#fecha").val() + 
                         '&iva=' + iva +
+                        '&venta_id=' + venta_id +
                         '&clientes_id=' + $("#clientes_id").val() + 
-                        "&direccion=" + $("#direccion-cliente").val(),
-                data: { productos_venta: productos_venta },
+                        '&direccion=' + $("#direccion-cliente").val(),
                 datatype: 'json'
             })
                 .done(function (msg) {
@@ -47,9 +47,7 @@
                             $("#tablaProductos").html("");
                             $("#total_ventas").html(0);
                             $("#iframe")[0].contentWindow.print();
-                            
-                        },2000);
-                        
+                        }, 2000);
                     }else{
                         var error = '';
                         if (msg.error) error = msg.error;
@@ -81,7 +79,7 @@
             }
         });
 
-        jQuery("#presupuesto").click(function(){    
+        jQuery("#presupuesto").click(function() {  
             var medio_de_pago = "0";
             if ($("#debito").prop("checked")) medio_de_pago = $("#debito").val();
             if ($("#efectivo").prop("checked")) medio_de_pago = $("#efectivo").val();
@@ -90,8 +88,8 @@
             var iva = "0";
             if ($("#resp_i").prop("checked"))   iva = $("#resp_i").val();
             if ($("#mono").prop("checked"))     iva = $("#mono").val();
-            if ($("#excento").prop("checked"))  iva = $("#excento").val();  
-            if ($("#final").prop("checked"))    iva = $("#final").val();  
+            if ($("#excento").prop("checked"))  iva = $("#excento").val();
+            if ($("#final").prop("checked"))    iva = $("#final").val();
 
             $.ajax({
                 url: "facturar.php?tipo=" + medio_de_pago + 
@@ -101,12 +99,11 @@
                         '&fecha-facturacion='  + $("#fecha").val() + 
                         '&iva=' + iva +
                         '&clientes_id=' + $("#clientes_id").val() +
-                        "&direccion=" + $("#direccion-cliente").val(),
-                data: { productos_venta: productos_venta },
+                        "&direccion=" + $("#direccion-cliente").val() +
+                        '&venta_id=' + venta_id,
                 datatype: 'json'
             })
                 .done(function (msg) {
-                    console.log(msg);
                     if (msg.factura){
                         $("#factura_iframe").show();
                         $("#iframe").attr("src",msg.factura);
@@ -125,7 +122,7 @@
                         method: "POST",
                         url: "ventas_post.php",
                         datatype: 'json',
-                        data: {id: $("#producto_id").val(), cantidad: $("#cantidad").val(), nombreproducto: $("#nombre-producto").val(), precio: $("#precio").val() }
+                        data: {id: $("#producto_id").val(), venta_id: venta_id, cantidad: $("#cantidad").val(), nombreproducto: $("#nombre-producto").val(), precio: $("#precio").val() }
                     })
                         .done(function (msg) {
                             devolucion = msg;
@@ -139,9 +136,6 @@
                             $("#precio").html("0.00");
                             $("#cantidad").val('1');
                             $("#codigo-barras").focus();
-
-                            // Agarro los productos y los guardo 
-                            productos_venta.push(msg);
                         });
                 } else {
                     alert('Verifica la cantidad ingresada es incorrecta');
@@ -274,20 +268,12 @@
                     $.ajax({
                         method: "POST",
                         url: "eliminar_venta.php",
-                        data: {id: ventas, cantidad: cantidad, producto_id: producto_id}
+                        data: {id: venta_id, cantidad: cantidad, producto_id: producto_id}
                     })
                     .done(function (msg) {
                         $("#" + ventas).hide("slow");
                     }).fail(function() { 
                         $("#" + ventas).hide("slow");
-
-
-                       // Recorro los productos de la venta
-                       productos_venta.forEach( function(producto, index) {
-                          if (producto.id == producto_id) {
-                              productos_venta.splice(index, 1);
-                          }
-                       });
                     });
         }
     }

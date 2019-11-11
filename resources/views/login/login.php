@@ -7,21 +7,24 @@
 </head>
 <body>
 	<h1>Registrarse</h1>
-	<form method="POST" action="<?php echo url('/api/auth/signup')?>">
+	<form method="POST" action="<?php echo url('/oauth/clients')?>">
 		<?php csrf_field() ?>
 		<input type="text" id="name" name="name" placeholder="name">
 		<input type="email" id="email" name="email" placeholder="email">
 		<input type="password" id="password" name="password" placeholder="password">
-		<input type="checkbox" id="cbox">
 		<button type="submit" id="registro">Registro</button>
 		<button type="submit" id="login">Login</button>
 		<button type="submit" id="user">Devolver usuario</button>
 		<button type="submit" id="logout">Cerrar sesion</button>
 		<button type="submit" id="productos">Productos</button>
+		<button type="submit" id="sucursales">Sucursales</button>
+		<button type="submit" id="productos_sucursal">Productos por sucursal</button>
 	</form>
 
 	<script>
 		var token = '';
+		var user_id = '';
+		var sucursal = '';
 
 		$("#registro").click( function() {
 			event.preventDefault();
@@ -45,18 +48,17 @@
 
 		$("#login").click( function() {
 			event.preventDefault();
-			var cbox = $("#cbox").is(":checked");;
 			var email = $("#email").val();
 			var password = $("#password").val();
 
 			$.ajax({
 				url: 'http://localhost:8000/api/auth/login',
-				method: 'get',
-				data: { email: email, password: password, remember_me: cbox },
+				method: 'post',
+				data: { email: email, password: password },
 				dataType: 'json',
 				success: function(msg) {
 					token += msg.access_token;
-					console.log(token);
+					console.log(msg);
 				},
 				fail: function(msg) {
 					console.log(msg);
@@ -66,16 +68,40 @@
 
 		$("#user").click( function() {
 			event.preventDefault();
-			var email = $("#email").val();
-			var password = $("#password").val();
 
 			$.ajax({
 				url: 'http://localhost:8000/api/auth/user',
-				method: 'get',
-				data: { email: email, password: password },
-				// data: token,
+				method: 'post',
+				headers: {
+			        "Accept": "application/json",
+			        "Authorization": "Bearer " + token
+			    },
+				data: token,
 				dataType: 'json',
 				success: function(msg) {
+					user_id = msg.user.id;
+					console.log(msg);
+				},
+				fail: function(msg) {
+					console.log(msg);
+				}
+			});
+		});
+
+		$("#sucursales").click( function() {
+			event.preventDefault();
+
+			$.ajax({
+				url: 'http://localhost:8000/api/auth/sucursales',
+				method: 'post',
+				headers: {
+			        "Accept": "application/json",
+			        "Authorization": "Bearer " + token
+			    },
+				data: { token: token, user_id: user_id},
+				dataType: 'json',
+				success: function(msg) {
+					sucursal = msg[0].nombre;
 					console.log(msg);
 				},
 				fail: function(msg) {
@@ -91,9 +117,12 @@
 
 			$.ajax({
 				url: 'http://localhost:8000/api/auth/logout',
-				method: 'get',
-				data: { email: email, password: password },
-				// data: token,
+				method: 'post',
+				headers: {
+			        "Accept": "application/json",
+			        "Authorization": "Bearer " + token
+			    },
+				data: token,
 				dataType: 'json',
 				success: function(msg) {
 					console.log(msg);
@@ -111,8 +140,33 @@
 
 			$.ajax({
 				url: 'http://localhost:8000/api/auth/productos',
-				method: 'get',
-				data: { email: email, password: password },
+				method: 'post',
+				headers: {
+			        "Accept": "application/json",
+			        "Authorization": "Bearer " + token
+			    },
+				data: token,
+				dataType: 'json',
+				success: function(msg) {
+					console.log(msg);
+				},
+				fail: function(msg) {
+					console.log(msg);
+				}
+			});
+		});
+
+		$("#productos_sucursal").click( function() {
+			event.preventDefault();
+
+			$.ajax({
+				url: 'http://localhost:8000/api/auth/productosPorSucursal',
+				method: 'post',
+				headers: {
+			        "Accept": "application/json",
+			        "Authorization": "Bearer " + token
+			    },
+				data: { token: token, nombre_sucursal: sucursal, user_id: user_id },
 				dataType: 'json',
 				success: function(msg) {
 					console.log(msg);

@@ -443,6 +443,9 @@ function getMes($numero){
                             <li>
                                 <a href="/devoluciones.php">Devoluciones</a>
                             </li>
+                            <li>
+                                <a href="/usuarios_api.php">Api</a>
+                            </li>   
                         </ul>
                     </li> 
                     
@@ -453,13 +456,6 @@ function getMes($numero){
                             <i class="fa fa-address-card-o push-5-r"></i>Obsequios
                         </a>
                     </li>      
-                    <?php } ?>
-                    <?php if (getRol() > 4) { ?>
-                    <li>
-                        <a href="/usuarios_api.php">
-                            Api
-                        </a>
-                    </li>     
                     <?php } ?>
                     <!--
                     <li>
