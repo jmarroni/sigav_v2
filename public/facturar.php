@@ -89,7 +89,7 @@ $resultado_perfil = $conn->query($sql) or die("Error: " . $sql . "<br>" . $conn-
 if ($resultado_perfil->num_rows > 0) {
     if ($row_perfil = $resultado_perfil->fetch_assoc()) {
         $logo = "http://".$_SERVER['HTTP_HOST'].$row_perfil["logo"];
-        $logo = (file_exists($logo))?$logo:"http://".$_SERVER['HTTP_HOST']."/assets/img/photos/no-image-featured-image.png";
+        // $logo = (file_exists($logo))?$logo:"http://".$_SERVER['HTTP_HOST']."/assets/img/photos/no-image-featured-image.png";
 		$nombre_fantasia = $row_perfil["nombre"];
 		$datos_factura = $row_perfil;
     }
