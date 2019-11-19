@@ -138,7 +138,7 @@ if ($resultados_productos_en_carrito->num_rows > 0) {
 				'".date("Y-m-d H:i:s")."', 
 				'{$_COOKIE["kiosco"]}', 
 	    		'".getSucursal($_COOKIE["sucursal"])."', 
-	    		'3', 
+	    		'$estado', 
 	    		NULL, 
 	    		'1612', 
 	    		'$lista_precio' 
