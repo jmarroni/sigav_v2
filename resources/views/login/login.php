@@ -33,7 +33,7 @@
 			var password = $("#password").val();
 
 			$.ajax({
-				url: 'http://localhost:8000/api/auth/signup',
+				url: 'http://local.sigav.com.ar/api/auth/signup',
 				method: 'post',
 				data: { name: name, email: email, password: password },
 				dataType: 'json',
@@ -52,7 +52,7 @@
 			var password = $("#password").val();
 
 			$.ajax({
-				url: 'http://localhost:8000/api/auth/login',
+				url: 'http://local.sigav.com.ar/api/auth/login',
 				method: 'post',
 				data: { email: email, password: password },
 				dataType: 'json',
@@ -70,7 +70,7 @@
 			event.preventDefault();
 
 			$.ajax({
-				url: 'http://localhost:8000/api/auth/user',
+				url: 'http://local.sigav.com.ar/api/auth/user',
 				method: 'post',
 				headers: {
 			        "Accept": "application/json",
@@ -92,7 +92,7 @@
 			event.preventDefault();
 
 			$.ajax({
-				url: 'http://localhost:8000/api/auth/sucursales',
+				url: 'http://local.sigav.com.ar/api/auth/sucursales',
 				method: 'post',
 				headers: {
 			        "Accept": "application/json",
@@ -119,7 +119,7 @@
 			var password = $("#password").val();
 
 			$.ajax({
-				url: 'http://localhost:8000/api/auth/logout',
+				url: 'http://local.sigav.com.ar/api/auth/logout',
 				method: 'post',
 				headers: {
 			        "Accept": "application/json",
@@ -142,7 +142,7 @@
 			var password = $("#password").val();
 
 			$.ajax({
-				url: 'http://localhost:8000/api/auth/productos',
+				url: 'http://local.sigav.com.ar/api/auth/productos',
 				method: 'post',
 				headers: {
 			        "Accept": "application/json",
@@ -163,7 +163,7 @@
 			event.preventDefault();
 
 			$.ajax({
-				url: 'http://localhost:8000/api/auth/productosPorSucursal',
+				url: 'http://local.sigav.com.ar/api/auth/productosPorSucursal',
 				method: 'post',
 				headers: {
 			        "Accept": "application/json",

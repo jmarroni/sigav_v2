@@ -126,6 +126,24 @@ require ('header.php');
                     <label for="bd-qsettings-name">Cargar Imagen</label>
                     <input type="file" class="form-control" readonly name="imagen3" id="imagen3" value="" placeholder="Codigo de Barras" />
                 </div>
+                <div class="col-xs-4">
+                    <label for="bd-qsettings-name">Cargar Imagen</label>
+                    <input type="file" class="form-control" readonly name="imagen4" id="imagen4" value="" placeholder="Codigo de Barras" />
+                </div>
+                <div class="col-xs-4">
+                    <label for="bd-qsettings-name">Cargar Imagen</label>
+                    <input type="file" class="form-control" readonly name="imagen5" id="imagen5" value="" placeholder="Codigo de Barras" />
+                </div>
+                <div class="col-xs-4">
+                    <label for="bd-qsettings-name">Cargar Imagen</label>
+                    <input type="file" class="form-control" readonly name="imagen6" id="imagen6" value="" placeholder="Codigo de Barras" />
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <label>Descripci&oacute;n</label>
+                        <textarea type="text" class="form-control" name="descripcion" id="descripcion"placeholder="Describa el producto" ></textarea>
+                    </div>
+                </div>
                 <div class="form-group">
                     <div class="col-xs-8 col-xs-offset-2">
                         <button class="btn btn-sm btn-minw btn-rounded btn-primary" style="width:98%;margin-top:25px;" type="submit">
@@ -151,7 +169,8 @@ require ('header.php');
                     $sql = "SELECT 
                                 p.*,
                                 CONCAT(c.nombre,', ',c.abreviatura) as categoria,
-                                CONCAT(prov.nombre,', ',prov.apellido) as proveedor
+                                CONCAT(prov.nombre,', ',prov.apellido) as proveedor,
+                                descripcion
                                 FROM productos p 
                                 LEFT JOIN proveedor prov
                                 ON prov.id = p.proveedores_id
@@ -210,9 +229,10 @@ require ('header.php');
                                     </button>
                                 </td>
                                 <td>
-                                    <p class="remove-margin-b">Artesano: <span class="text-gray-dark"><?php echo (isset($row["proveedor"]))?$row["proveedor"]:"";//$row["precio_unidad"]; ?></span>
+                                    <p class="remove-margin-b"><b>Artesano: </b><span class="text-gray-dark"><?php echo (isset($row["proveedor"]))?$row["proveedor"]:"";//$row["precio_unidad"]; ?></span>
                                     </p>
-                                    <p class="remove-margin-b">Categoria: <span class="text-gray-dark"> <?php echo (isset($row["categoria"]))?$row["categoria"]:""; ?></span></p>
+                                    <p class="remove-margin-b"><b>Categoria: </b><span class="text-gray-dark"> <?php echo (isset($row["categoria"]))?$row["categoria"]:""; ?></span></p>
+                                    <p class="remove-margin-b"><b>Descripci&oacute;n:</b><br><?php echo nl2br($row["descripcion"]); ?></p>
                                 </td>
                                 <td class="text-center">
                                     <p class="remove-margin-b">Costo:$ <span class="text-gray-dark"> <?php echo $row["costo"]; ?></span></p>
@@ -234,5 +254,5 @@ require ('header.php');
     <!-- END Products -->
 </div>
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="assets/js/pages/carga.js?v=1.01"></script>
+<script src="assets/js/pages/carga.js?v=1.08"></script>
 <?php require ("footer.php"); ?>
