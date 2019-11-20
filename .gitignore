@@ -18,3 +18,8 @@ Homestead.json
 
 # Rocketeer PHP task runner and deployment package. https://github.com/rocketeers/rocketeer
 .rocketeer/
+
+#Only for system
+public/presupuesto/
+public/facturas/
+public/notas_credito/

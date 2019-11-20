@@ -81,7 +81,7 @@ if ($_GET["clientes_id"] == ""){
 					'',
 					'',
 					'');";
-	if ($conn->query($insert_cliente) === TRUE) {}else{}
+	if ($conn->query($insert_cliente) === TRUE) {}else{}  
 }
 
 $sql = "Select * FROM perfil";
@@ -89,6 +89,7 @@ $resultado_perfil = $conn->query($sql) or die("Error: " . $sql . "<br>" . $conn-
 if ($resultado_perfil->num_rows > 0) {
     if ($row_perfil = $resultado_perfil->fetch_assoc()) {
         $logo = "http://".$_SERVER['HTTP_HOST'].$row_perfil["logo"];
+
         // $logo = (file_exists($logo))?$logo:"http://".$_SERVER['HTTP_HOST']."/assets/img/photos/no-image-featured-image.png";
 		$nombre_fantasia = $row_perfil["nombre"];
 		$datos_factura = $row_perfil;
@@ -361,7 +362,7 @@ if($voucher_info === NULL){
 										<table>
 											<tr>
 												<td>
-													<img = src='$logo' style='height:80px;width:120px;'/>
+													<img = src='http://mercado-artesanal.com.ar/assets/perfil/20190524111724-54396137.jpeg' style='height:80px;width:120px;'/>
 												</td>
 												<td>	
 													<br />{$arrSucursal["nombre"]}
