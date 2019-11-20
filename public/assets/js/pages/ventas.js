@@ -1,5 +1,5 @@
     // Id de la venta
-    var venta_id = Math.floor(Math.random() * 1123122) + 5432;  
+    var venta_id = "";  
 
     var precio = 0;
     var devolucion = '';
@@ -43,9 +43,11 @@
                     if (msg.factura){
                         $("#factura_iframe").show();
                         $("#iframe").attr("src",msg.factura);
+                        venta_id = '';
                         setTimeout(function(){
                             $("#tablaProductos").html("");
                             $("#total_ventas").html(0);
+
                             $("#iframe")[0].contentWindow.print();
                         }, 2000);
                     }else{
@@ -105,6 +107,7 @@
             })
                 .done(function (msg) {
                     if (msg.factura){
+                        venta_id = '';
                         $("#factura_iframe").show();
                         $("#iframe").attr("src",msg.factura);
                         setTimeout(function(){
@@ -126,6 +129,7 @@
                     })
                         .done(function (msg) {
                             devolucion = msg;
+                            venta_id = msg.ventas_id;
                             jQuery("#nombre-devuelto").html('Venta del producto ' + msg.nombre + ' ingresada correctamente');
                             $("#add_success").show('slow');
                             setTimeout(function(){ $("#add_success").hide('slow');jQuery("#nombre-devuelto").html(''); }, 3000);

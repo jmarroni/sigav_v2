@@ -79,11 +79,11 @@ else $lista_precio = 1;
                                     '$estado',
                                     NULL,1612,
                                     {$lista_precio})";*/
-
+$ventas_id = (intval($_POST["venta_id"]) != "")?$_POST["venta_id"]:rand(111111,999999);
 $sql = "INSERT INTO productos_en_carrito 
         VALUES ( 
             NULL, 
-            '{$_POST["venta_id"]}', 
+            '$ventas_id', 
             '{$_POST["id"]}', 
             '0', 
             '".date("Y-m-d H:i:s")."', 
@@ -102,7 +102,7 @@ if ($conn->query($sql) === TRUE) {
     //$sql_update = "UPDATE stock SET stock = (stock - {$_POST["cantidad"]}) WHERE productos_id = ".$_POST["id"]." AND sucursal_id = ".getSucursal($_COOKIE["sucursal"]);
     // HASTA ACA
 
-    $datos["ventas_id"] = $_POST["id"];
+    $datos["ventas_id"] = $ventas_id;
 
     /*$sql = "INSERT INTO relacion_ VALUES (NULL, '{$_POST["id"]}', 
                                     '{$conn->insert_id}',

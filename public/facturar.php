@@ -3,9 +3,10 @@
 if (!isset($_COOKIE["kiosco"])) {
     exit();
 }
-
 header('Content-Type: application/json');
-
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require_once ("conection.php");
 require 'vendor/autoload.php';
 use Spipu\Html2Pdf\Html2Pdf;
@@ -20,8 +21,6 @@ if (isset($_COOKIE["sucursal"])){
 		$arrSucursal = $resultado_perfil->fetch_assoc();
 	}else{exit();}
 } else exit();
-
-
 // DATOS PARA EL COMPROBANTE
 
 $comprobante 		= file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/comprobante");
@@ -82,7 +81,7 @@ if ($_GET["clientes_id"] == ""){
 					'',
 					'',
 					'');";
-	if ($conn->query($insert_cliente) === TRUE) {}else{}
+	if ($conn->query($insert_cliente) === TRUE) {}else{}  
 }
 
 $sql = "Select * FROM perfil";
@@ -90,6 +89,8 @@ $resultado_perfil = $conn->query($sql) or die("Error: " . $sql . "<br>" . $conn-
 if ($resultado_perfil->num_rows > 0) {
     if ($row_perfil = $resultado_perfil->fetch_assoc()) {
         $logo = "http://".$_SERVER['HTTP_HOST'].$row_perfil["logo"];
+
+        // $logo = (file_exists($logo))?$logo:"http://".$_SERVER['HTTP_HOST']."/assets/img/photos/no-image-featured-image.png";
 		$nombre_fantasia = $row_perfil["nombre"];
 		$datos_factura = $row_perfil;
     }
@@ -112,6 +113,7 @@ if (intval($emitir) === 1 ) {
 
 // Agarro los productos del carrito para esta venta
 $sql_productos_en_carrito = "SELECT * FROM productos_en_carrito WHERE venta_id = '{$_GET['venta_id']}'";
+
 $resultados_productos_en_carrito = $conn->query($sql_productos_en_carrito);
 
 // Ids ventas insertadas
@@ -150,12 +152,13 @@ if ($resultados_productos_en_carrito->num_rows > 0) {
 		array_push($array_ids_ventas, $conn->insert_id);
 	}
 }
-
+/*
 if (intval($_GET["presupuesto"]) == 0) {
 	$sql = "SELECT v.*,p.nombre as nombre_producto FROM ventas v inner join productos p on p.id = v.productos_id WHERE v.estado = 1 AND v.sucursal_id = ".getSucursal($_COOKIE["sucursal"])." AND v.usuario = '".$_COOKIE["kiosco"]."'";
 } else {
+	*/
 	$sql = "SELECT v.*, p.nombre as nombre_producto FROM ventas v inner join productos p on p.id = v.productos_id WHERE v.estado = 3 AND v.fecha > '".date("Y-m-d 00:00:00")."' AND v.sucursal_id = ".getSucursal($_COOKIE["sucursal"])." AND v.usuario = '".$_COOKIE["kiosco"]."'";
-}
+//}
 
 $item = array();
 $total = 0;
@@ -166,7 +169,16 @@ if ($resultado->num_rows > 0) {
 	while($row = $resultado->fetch_assoc()) {
 		$total += $row["precio"] * $row["cantidad"];
 		$datos_productos[] = $row;
+		$update_producto = "UPDATE ventas SET estado = 5 WHERE id = ".$row["id"];
+		if ($conn->query($update_producto) === FALSE) {
+			echo "Error en UPDATE estado venta: " . $update_producto . "<br>" . $conn->error;
+		}
+
 	}
+	$eliminar_carrito = "DELETE FROM productos_en_carrito WHERE venta_id = '{$_GET['venta_id']}'";	
+	if ($conn->query($eliminar_carrito) === FALSE) {
+			echo "Error al eliminar carrito: " . $eliminar_carrito . "<br>" . $conn->error;
+		}
 }else{
 	$devolucion["error"] = "No existen productos para facturar";
 	echo json_encode($devolucion);
@@ -350,7 +362,7 @@ if($voucher_info === NULL){
 										<table>
 											<tr>
 												<td>
-													<img = src='$logo' style='height:80px;width:120px;'/>
+													<img = src='http://mercado-artesanal.com.ar/assets/perfil/20190524111724-54396137.jpeg' style='height:80px;width:120px;'/>
 												</td>
 												<td>	
 													<br />{$arrSucursal["nombre"]}
@@ -400,7 +412,11 @@ if($voucher_info === NULL){
 	$html2pdf = new HTML2PDF('P', 'A4', 'pt', true, 'UTF-8');
 	$html2pdf->setDefaultFont('Arial');
 	$html = str_replace("@@FACTURANRO@@",$facturanro,$html);
+
+	
+
 	$html2pdf->writeHTML("<page>".str_replace("@@COMPROBANTE@@","ORIGINAL",$html)."<br><br><hr style='border-style: dotted;' /><br><br></page><page>".str_replace("@@COMPROBANTE@@","DUPLICADO",$html)."<br><br><hr style='border-style: dotted;' /><br><br></page>");
+
 	//$html2pdf->Output();
 	$html2pdf->Output(dirname(__FILE__).$nombre_factura, "F");
 	$devolucion["factura"] = $nombre_factura;

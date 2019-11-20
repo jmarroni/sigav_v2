@@ -18,10 +18,3 @@ Route::get('/', function () {
 Route::get('/loginejemplo', function(){
 	return view('login/login');
 });
-
-/*
-Route::get('/test_passsport', "TestPassportController@login_logout");
-=======
-Route::get('signup', 'Api\AuthController@signup');
->>>>>>> cbe5c9a8694a979f6e2abd6675b5c0d2ac458b7c
-*/
