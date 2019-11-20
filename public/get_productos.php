@@ -12,7 +12,8 @@ $sql = "SELECT
             p.*,
             c.abreviatura,
             CONCAT(c.nombre,', ',c.abreviatura) as categoria,
-            CONCAT(prov.nombre,', ',prov.apellido) as proveedor 
+            CONCAT(prov.nombre,', ',prov.apellido) as proveedor,
+            descripcion
             FROM productos p 
             LEFT JOIN proveedor prov
             ON prov.id = p.proveedores_id

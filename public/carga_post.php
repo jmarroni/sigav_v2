@@ -27,7 +27,10 @@ if (isset($_GET["identificador"]) && intval($_GET["identificador"]) != "" && iss
 $imagenes = array(
     "1" =>$_FILES["imagen3"],
     "2" => $_FILES["imagen2"],
-    "3" => $_FILES["imagen1"]
+    "3" => $_FILES["imagen1"],
+    "4" =>$_FILES["imagen4"],
+    "5" => $_FILES["imagen5"],
+    "6" => $_FILES["imagen6"]
 );
 
 // Llamo funcion imagen con el arreglo de imagenes y guardo las ulrs
@@ -54,9 +57,10 @@ function imagen($imagenes) {
                 // Verifico como redimensiono parejo
                 $sizeI = getimagesize($target_file);
 
-                $ancho = 180;
-                $largo = round($ancho * $sizeI[1] / $sizeI[0],0);
-
+                //$ancho = 180;
+                //$largo = round($ancho * $sizeI[1] / $sizeI[0],0);
+               $ancho = $sizeI[0];
+                $largo = $sizeI[1];
                 sleep(2); redim ($target_file,$target_dir.$xmlFile,$ancho,$largo); 
                 // rename($target_file, $target_dir.$xmlFile);
                 array_unshift($urlImagenes, "/upload_articles/".$xmlFile);
@@ -81,6 +85,7 @@ if (($_POST["id"] !== NULL)  && intval($_POST["id"]) != ""){
                                      nombre = '{$_POST["producto"]}',
                                      stock_minimo = '{$_POST["stock_minimo"]}',
                                      codigo_barras =  '{$_POST["codigo_de_barras"]}',
+                                     descripcion =  '{$_POST["descripcion"]}',
                                      precio_mayorista = '{$_POST["precio_mayorista"]}' WHERE id = ".intval($_POST["id"]);
     $id = $_POST["id"];
     if ($conn->query($sql) === TRUE) {
@@ -118,7 +123,8 @@ if (($_POST["id"] !== NULL)  && intval($_POST["id"]) != ""){
                                      '{$_POST["categoria"]}',
                                      '$usuario',
                                      '".date("Y-m-d H:i:s")."',
-                                     '{$_POST["precio_mayorista"]}')";
+                                     '{$_POST["precio_mayorista"]}',
+                                     '{$_POST["descripcion"]}')";
     if ($conn->query($sql) === TRUE) {
         $id = $conn->insert_id;
         
