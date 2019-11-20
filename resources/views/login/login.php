@@ -12,10 +12,10 @@
 		<input type="text" id="name" name="name" placeholder="name">
 		<input type="email" id="email" name="email" placeholder="email">
 		<input type="password" id="password" name="password" placeholder="password">
-		<button type="submit" id="registro">Registro</button>
+		<!-- <button type="submit" id="registro">Registro</button> -->
 		<button type="submit" id="login">Login</button>
 		<button type="submit" id="user">Devolver usuario</button>
-		<button type="submit" id="logout">Cerrar sesion</button>
+		<!-- <button type="submit" id="logout">Cerrar sesion</button> -->
 		<button type="submit" id="productos">Productos</button>
 		<button type="submit" id="sucursales">Sucursales</button>
 		<button type="submit" id="productos_sucursal">Productos por sucursal</button>
@@ -34,7 +34,7 @@
 
 			$.ajax({
 				url: 'http://localhost:8000/api/auth/signup',
-				method: 'get',
+				method: 'post',
 				data: { name: name, email: email, password: password },
 				dataType: 'json',
 				success: function(msg) {
@@ -76,7 +76,7 @@
 			        "Accept": "application/json",
 			        "Authorization": "Bearer " + token
 			    },
-				data: token,
+				data: { token: token },
 				dataType: 'json',
 				success: function(msg) {
 					user_id = msg.user.id;
@@ -101,7 +101,10 @@
 				data: { token: token, user_id: user_id},
 				dataType: 'json',
 				success: function(msg) {
-					sucursal = msg[0].nombre;
+					if (msg[0]) {
+						sucursal = msg[0].nombre;
+					}
+
 					console.log(msg);
 				},
 				fail: function(msg) {
