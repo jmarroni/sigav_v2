@@ -8,7 +8,7 @@ Route::group([
     Route::post('login', ['uses' => 'Api\AuthController@login']); 
 
     Route::group([ 
-      'middleware' => 'auth:api' 
+      'middleware' => ['auth:api', 'cors']
     ], function() {
         Route::post('user', ['uses' =>'Api\AuthController@user']);
         Route::post('productos', ['uses' => 'Api\ProductoController@productos']);
