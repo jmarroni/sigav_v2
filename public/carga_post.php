@@ -123,7 +123,7 @@ if (($_POST["id"] !== NULL)  && intval($_POST["id"]) != ""){
                                      '{$_POST["categoria"]}',
                                      '$usuario',
                                      '".date("Y-m-d H:i:s")."',
-                                     '{$_POST["precio_mayorista"]}',
+                                     '{$_POST["precio_mayorista"]}',0,
                                      '{$_POST["descripcion"]}')";
     if ($conn->query($sql) === TRUE) {
         $id = $conn->insert_id;
