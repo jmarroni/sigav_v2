@@ -99,6 +99,10 @@ require ('header.php');
                             <option value="">Seleccione un rubro</option>
                         </select>
                     </div>
+                    <div class="col-xs-4">
+                        <label>Material</label>
+                        <input type="text" class="form-control" name="material" id="material" value="" placeholder="Madera, Metal, Alphaca" />
+                    </div>
                 </div>
                 <div class="form-group">
                 <div class="col-xs-4">
@@ -141,7 +145,19 @@ require ('header.php');
                 <div class="form-group">
                     <div class="col-xs-12">
                         <label>Descripci&oacute;n</label>
-                        <textarea type="text" class="form-control" name="descripcion" id="descripcion"placeholder="Describa el producto" ></textarea>
+                        <textarea type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Describa el producto" ></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <label>Descripci&oacute;n Ingles</label>
+                        <textarea type="text" class="form-control" name="descripcion_en" id="descripcion_en" placeholder="Describa el producto" ></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <label>Descripci&oacute;n Portugues</label>
+                        <textarea type="text" class="form-control" name="descripcion_pr" id="descripcion_pr" placeholder="Describa el producto" ></textarea>
                     </div>
                 </div>
                 <div class="form-group">

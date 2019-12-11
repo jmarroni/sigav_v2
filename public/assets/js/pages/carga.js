@@ -45,6 +45,9 @@ function modificar(identificador){
         $("#stock").val(jsonData.stock);
         $("#stock_minimo").val(jsonData.stock_minimo);
         $("#descripcion").val(jsonData.descripcion);
+        $("#descripcion_en").val(jsonData.descripcion_en);
+        $("#descripcion_pr").val(jsonData.descripcion_pr);
+        $("#material").val(jsonData.material);
         $("#precio_mayorista").val(jsonData.precio_mayorista);
         if (jsonData.es_comodato) $("#es_comodato").prop('checked',true); else $("#es_comodato").prop('checked',false);;
         $("#proveedor").change();

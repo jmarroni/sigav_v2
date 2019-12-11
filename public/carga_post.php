@@ -86,6 +86,9 @@ if (($_POST["id"] !== NULL)  && intval($_POST["id"]) != ""){
                                      stock_minimo = '{$_POST["stock_minimo"]}',
                                      codigo_barras =  '{$_POST["codigo_de_barras"]}',
                                      descripcion =  '{$_POST["descripcion"]}',
+                                     descripcion_en =  '{$_POST["descripcion_en"]}',
+                                     descripcion_pr =  '{$_POST["descripcion_pr"]}',
+                                     material =  '{$_POST["material"]}',
                                      precio_mayorista = '{$_POST["precio_mayorista"]}' WHERE id = ".intval($_POST["id"]);
     $id = $_POST["id"];
     if ($conn->query($sql) === TRUE) {
@@ -124,7 +127,10 @@ if (($_POST["id"] !== NULL)  && intval($_POST["id"]) != ""){
                                      '$usuario',
                                      '".date("Y-m-d H:i:s")."',
                                      '{$_POST["precio_mayorista"]}',0,
-                                     '{$_POST["descripcion"]}')";
+                                     '{$_POST["descripcion"]}',
+                                     '{$_POST["descripcion_pr"]}',
+                                     '{$_POST["descripcion_en"]}',
+                                     '{$_POST["material"]}')";
     if ($conn->query($sql) === TRUE) {
         $id = $conn->insert_id;
         

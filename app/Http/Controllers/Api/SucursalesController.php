@@ -40,7 +40,7 @@ class SucursalesController extends Controller
                 join('relacion_users_sucursales', 'relacion_users_sucursales.sucursal_id','sucursales.id')->
                 join('categorias', 'categorias.id', 'productos.categorias_id')->
                 join('proveedor', 'proveedor.id', 'productos.proveedores_id')->
-                select('productos.codigo_barras','productos.id as id', 'productos.nombre', 'productos.precio_unidad as precio', 'productos.costo', 'productos.usuario', 'productos.fecha','productos.descripcion','productos.precio_mayorista', 'proveedor.nombre AS nombre_proveedor', 'proveedor.apellido AS apellido_proveedor')->
+                select('productos.codigo_barras','productos.id as id', 'productos.nombre', 'productos.precio_unidad as precio', 'productos.costo', 'productos.usuario', 'productos.fecha','productos.descripcion','productos.descripcion_en','productos.descripcion_pr','productos.material','productos.precio_mayorista', 'proveedor.nombre AS nombre_proveedor', 'proveedor.apellido AS apellido_proveedor')->
                 where('sucursales.nombre', $request->nombre_sucursal)->
                 where('relacion_users_sucursales.user_id', $request->user_id)->
                 get();
