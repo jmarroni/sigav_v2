@@ -188,6 +188,9 @@ $conn->query($sql_update);
                         <label class="radio-inline" for="example-inline-credito">
                             <input type="radio" name="example-inline-pago" id="credito" value="3"> Credito
                         </label>
+                        <label class="radio-inline" for="example-inline-credito">
+                            <input type="radio" name="example-inline-pago" id="transferencia" value="4"> Transferencia
+                        </label>
                     </div>
                     <div class="col-xs-6">
                         <h3 class="block-title">IVA</h3>
@@ -360,5 +363,5 @@ $conn->query($sql_update);
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="/assets/js/pages/ventas.js?v=1.08"></script>
+    <script src="/assets/js/pages/ventas.js?v=1.09"></script>
 <?php require ("footer.php"); ?>

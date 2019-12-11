@@ -383,6 +383,9 @@ function getMes($numero){
                                 <li>
                                     <a href="/productos_por_sucursal.php?pagina=1">Productos y stock</a>
                                 </li>
+                                <li>
+                                    <a href="/stock_por_sucursal.php">Stock por sucursales</a>
+                                </li>
                                 <?php } ?>
                                 <li>
                                     <a href="/transferencias_realizadas_sucursales.php">Transferencias realizadas</a>

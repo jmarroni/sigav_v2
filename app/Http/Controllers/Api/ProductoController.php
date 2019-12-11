@@ -28,7 +28,7 @@ class ProductoController extends Controller
         $productos = DB::table('productos')->
             join('categorias', 'categorias.id', 'productos.categorias_id')->
             join('proveedor', 'proveedor.id', 'productos.proveedores_id')->
-            select('productos.id', 'productos.codigo_barras', 'productos.nombre', 'productos.precio_unidad', 'productos.costo', 'productos.stock', 'productos.stock_minimo', 'productos.usuario', 'productos.fecha', 'productos.precio_mayorista', 'productos.es_comodato', 'categorias.nombre AS categoria', 'proveedor.nombre AS nombre_proveedor', 'proveedor.apellido AS apellido_proveedor')
+            select('productos.id', 'productos.codigo_barras', 'productos.nombre', 'producto.descripcion','productos.precio_unidad', 'productos.costo', 'productos.stock', 'productos.stock_minimo', 'productos.usuario', 'productos.fecha', 'productos.precio_mayorista', 'productos.es_comodato', 'categorias.nombre AS categoria', 'proveedor.nombre AS nombre_proveedor', 'proveedor.apellido AS apellido_proveedor')
             ->get();
 
         $imagenes = DB::table('imagen_producto')->

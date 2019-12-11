@@ -139,7 +139,7 @@ if ($resultados_productos_en_carrito->num_rows > 0) {
 				'".date("Y-m-d H:i:s")."', 
 				'{$_COOKIE["kiosco"]}', 
 	    		'".getSucursal($_COOKIE["sucursal"])."', 
-	    		'$estado', 
+	    		'3', 
 	    		NULL, 
 	    		'1612', 
 	    		'$lista_precio' 
@@ -271,6 +271,7 @@ if($voucher_info === NULL){
 			case '1': $texto_tipo = "Efectivo";break;
 			case '2': $texto_tipo = "Debito";break;
 			case '3': $texto_tipo = "Credito";break;
+			case '4': $texto_tipo = "Transferencia";break;
 			default:
 				$texto_tipo = "Efectivo";
 				break;
@@ -407,6 +408,10 @@ if($voucher_info === NULL){
 	if ($res["CAE"] != ""){
 		$html .= utf8_encode("<p style='text-align:right'><b>CAE Nro.:</b> ".$res["CAE"]."<br />
 						<b>Fecha de Vto. CAE: </b>".$res["CAEFchVto"]."<br /></p>");
+	}
+
+	if ($tipo == 4){ // Si es transferencia coloco la leyenda
+		$html .= utf8_encode("<p style='text-align:left'> *P&aacute;guese a la cuenta oficial Tesorer&iacute;a General Mercado Artesanal Provincial-Recaudadora. <br/><b>N° Cta Bco.</b> - 900001194 <br/><b>CBU</b> - 0340250600900001194004 <br/><b>CUIT</b> - Tesorer&iacute;a General Nro. 30-63945328-2 </p>");
 	}
 
 	$html2pdf = new HTML2PDF('P', 'A4', 'pt', true, 'UTF-8');

@@ -128,6 +128,7 @@ class AuthController extends Controller
      */
     public function user(Request $request)
     {
+        header('Access-Control-Allow-Origin: *');
         $user = $request->user();
 
         return response()->json(['user' => $user]);

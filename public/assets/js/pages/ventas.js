@@ -18,7 +18,8 @@
             var medio_de_pago = "0";
             if ($("#debito").prop("checked")) medio_de_pago = $("#debito").val();
             if ($("#efectivo").prop("checked")) medio_de_pago = $("#efectivo").val();
-            if ($("#credito").prop("checked")) medio_de_pago = $("#credito").val();  
+            if ($("#credito").prop("checked")) medio_de_pago = $("#credito").val(); 
+            if ($("#transferencia").prop("checked")) medio_de_pago = $("#transferencia").val(); 
             
             var iva = "0";
             if ($("#resp_i").prop("checked"))   iva = $("#resp_i").val();
@@ -86,7 +87,7 @@
             if ($("#debito").prop("checked")) medio_de_pago = $("#debito").val();
             if ($("#efectivo").prop("checked")) medio_de_pago = $("#efectivo").val();
             if ($("#credito").prop("checked")) medio_de_pago = $("#credito").val();       
-
+            if ($("#transferencia").prop("checked")) medio_de_pago = $("#transferencia").val();
             var iva = "0";
             if ($("#resp_i").prop("checked"))   iva = $("#resp_i").val();
             if ($("#mono").prop("checked"))     iva = $("#mono").val();
