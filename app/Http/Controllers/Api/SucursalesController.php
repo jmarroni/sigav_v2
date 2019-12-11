@@ -61,7 +61,7 @@ class SucursalesController extends Controller
                     }
                    //s }
                 }
-                $producto->material = 'Generico';
+                $producto->material = $producto->material;
                 $producto->categoria = 3;
                 $producto->cantidad = 1;
                 $producto->condicion = 0;
