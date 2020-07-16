@@ -1,0 +1,7 @@
+exception 'Exception' with message '(10069) Campo DocNro no puede ser igual al del emisor.' in /var/www/virtual/mercado-artesanal.com.ar/tucat/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php:363
+Stack trace:
+#0 /var/www/virtual/mercado-artesanal.com.ar/tucat/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(307): ElectronicBilling->_CheckErrors('FECAESolicitar', Object(stdClass))
+#1 /var/www/virtual/mercado-artesanal.com.ar/tucat/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(92): ElectronicBilling->ExecuteRequest('FECAESolicitar', Array)
+#2 /var/www/virtual/mercado-artesanal.com.ar/tucat/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(129): ElectronicBilling->CreateVoucher(Array)
+#3 /var/www/virtual/mercado-artesanal.com.ar/tucat/public/facturar.php(221): ElectronicBilling->CreateNextVoucher(Array)
+#4 {main}
