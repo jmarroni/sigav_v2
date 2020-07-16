@@ -282,13 +282,14 @@ function line_chart() {
                                     <td>Precio</td>
                                     <td>Costo</td>
                                     <td>Ganancia</td>
+                                    <td>Costo Reposici&oacute;n</td>
                                 </tr>
                             </thead>
                             <tbody>
                             <?php 
                             if (isset($_POST["reporte_desde"]) && isset($_POST["reporte_hasta"]) ){
-                                $sql = "SELECT SUM(v.cantidad) as cantidad,pr.nombre, pr.precio_unidad as precio, pr.costo as costo, pr.precio_unidad - pr.costo as ganancia, stock FROM `ventas` v inner join productos pr on pr.id = v.productos_id WHERE v.`fecha` between '".$_POST["reporte_desde"]."' AND '".$_POST["reporte_hasta"]."' AND v.sucursal_id = ".getSucursal($_COOKIE["sucursal"])." $proveedor group BY pr.id ORDER BY cantidad DESC";
-                            } else $sql = "SELECT SUM(v.cantidad) as cantidad,pr.nombre, pr.precio_unidad as precio, pr.costo as costo, pr.precio_unidad - pr.costo as ganancia, stock FROM `ventas` v inner join productos pr on pr.id = v.productos_id WHERE v.`fecha` > '".date("Y-m-d")."' AND v.sucursal_id = ".getSucursal($_COOKIE["sucursal"])."  $proveedor group BY pr.id ORDER BY cantidad DESC";
+                                $sql = "SELECT SUM(v.cantidad) as cantidad,pr.nombre, pr.precio_unidad as precio, pr.costo as costo, pr.precio_unidad - pr.costo as ganancia, stock, precio_reposicion FROM `ventas` v inner join productos pr on pr.id = v.productos_id WHERE v.`fecha` between '".$_POST["reporte_desde"]."' AND '".$_POST["reporte_hasta"]."' AND v.sucursal_id = ".getSucursal($_COOKIE["sucursal"])." $proveedor group BY pr.id ORDER BY cantidad DESC";
+                            } else $sql = "SELECT SUM(v.cantidad) as cantidad,pr.nombre, pr.precio_unidad as precio, pr.costo as costo, pr.precio_unidad - pr.costo as ganancia, stock, precio_reposicion FROM `ventas` v inner join productos pr on pr.id = v.productos_id WHERE v.`fecha` > '".date("Y-m-d")."' AND v.sucursal_id = ".getSucursal($_COOKIE["sucursal"])."  $proveedor group BY pr.id ORDER BY cantidad DESC";
                             $resultado = $conn->query($sql) or die(mysqli_error($conn)." Q=".$sql);
                             if ($resultado->num_rows > 0) {
                                 $i = 1;
@@ -300,6 +301,7 @@ function line_chart() {
                                         <td><?php echo round($row["precio"] * $row["cantidad"],2); ?></td>
                                         <td><?php echo round($row["costo"] * $row["cantidad"],2); ?></td>
                                         <td><?php echo round($row["ganancia"] * $row["cantidad"],2); ?></td>
+                                        <td><?php echo round($row["precio_reposicion"]); ?></td>
                                     </tr>
                                 <?php $i++;}
                             }
