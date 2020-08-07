@@ -89,8 +89,7 @@ $resultado_perfil = $conn->query($sql) or die("Error: " . $sql . "<br>" . $conn-
 if ($resultado_perfil->num_rows > 0) {
     if ($row_perfil = $resultado_perfil->fetch_assoc()) {
         $logo = "http://".$_SERVER['HTTP_HOST'].$row_perfil["logo"];
-
-        // $logo = (file_exists($logo))?$logo:"http://".$_SERVER['HTTP_HOST']."/assets/img/photos/no-image-featured-image.png";
+        //$logo = (file_exists($logo))?$logo:"http://".$_SERVER['HTTP_HOST']."/assets/img/photos/no-image-featured-image.png";
 		$nombre_fantasia = $row_perfil["nombre"];
 		$datos_factura = $row_perfil;
     }
@@ -98,7 +97,6 @@ if ($resultado_perfil->num_rows > 0) {
 	$logo = "http://".$_SERVER['HTTP_HOST']."/assets/img/photos/no-image-featured-image.png";
     $nombre_fantasia = "SIGAV";
 }
-
 // Agarro el numero de lista para la venta
 if (isset($_COOKIE["lista_precio"])) $lista_precio = $_COOKIE["lista_precio"];
 else $lista_precio = 1;
@@ -187,24 +185,38 @@ if ($resultado->num_rows > 0) {
 $fecha = explode("-",$_GET["fecha-facturacion"]);
 if (count($fecha) < 3) { echo "error"; exit(); }
 $afip = new Afip(array('CUIT' => floatval($cuit), "production" => TRUE));
+if (intval($comprobante) != 11){
+	$ImpNeto = round($total / 1.21,2);
+	$impuestoIVA = round($ImpNeto * 0.21,2);
+}else{
+	$impuestoIVA = 0;
+	$ImpNeto = $total;
+}
+
 $data = array(
 	'CantReg' 		=> 1,  // Cantidad de comprobantes a registrar
 	'PtoVta' 		=> $ptovta,  // Punto de venta
-	'CbteTipo' 		=> 11,  // Tipo de comprobante (ver tipos disponibles) 
+	'CbteTipo' 		=> $comprobante,  // Tipo de comprobante (ver tipos disponibles) 
 	'Concepto' 		=> 1,  // Concepto del Comprobante: (1)Productos, (2)Servicios, (3)Productos y Servicios
 	'DocTipo' 		=> 99, // Tipo de documento del comprador (99 consumidor final, ver tipos disponibles)
 	'DocNro' 		=> 0,  // Número de documento del comprador (0 consumidor final)
 	'CbteFch' 		=> $fecha[0].$fecha[1].$fecha[2], // (Opcional) Fecha del comprobante (yyyymmdd) o fecha actual si es nulo
 	'ImpTotal' 		=> $total, // Importe total del comprobante
 	'ImpTotConc' 	=> 0,   // Importe neto no gravado
-	'ImpNeto' 		=> $total, // Importe neto gravado
+	'ImpNeto' 		=> $ImpNeto, // Importe neto gravado
 	'ImpOpEx' 		=> 0,   // Importe exento de IVA
-	'ImpIVA' 		=> 0,  //Importe total de IVA
+	'ImpIVA' 		=> $impuestoIVA,  //Importe total de IVA
 	'ImpTrib' 		=> 0,   //Importe total de tributos
 	'MonId' 		=> 'PES', //Tipo de moneda usada en el comprobante (ver tipos disponibles)('PES' para pesos argentinos) 
-	'MonCotiz' 		=> 1,     // Cotización de la moneda usada (1 para pesos argentinos)  
+	'MonCotiz' 		=> 1, // Cotización de la moneda usada (1 para pesos argentinos)  
+	'Iva' 		=> array( // (Opcional) Alícuotas asociadas al comprobante
+		array(
+			'Id' 		=> 5, // Id del tipo de IVA (5 para 21%)(ver tipos disponibles) 
+			'BaseImp' 	=> $ImpNeto, // Base imponible
+			'Importe' 	=> $impuestoIVA // Importe 
+		)
+	),
 );
-
 // Me fijo si se coloco el cliente
 if ($tipoDocumento != "" && $documento != ""){
 	$data['DocTipo'] 	= $tipoDocumento;
@@ -277,6 +289,15 @@ if($voucher_info === NULL){
 				$texto_tipo = "Efectivo";
 				break;
 		}
+		switch ($comprobante) {
+			case '11': $tipo_comprobante = "C";break;
+			case '1': $tipo_comprobante = "A";break;
+			case '6': $tipo_comprobante = "B";break;
+			default:
+			$tipo_comprobante = "X";
+				break;
+		}
+		
 		$html_datos_cliente = "<tr>
 									<td colspan='3' style='border-bottom: 1px solid #000;'><b>Nombre y Apellido</b> $nombre</td>
 								</tr><tr>
@@ -364,7 +385,7 @@ if($voucher_info === NULL){
 										<table>
 											<tr>
 												<td>
-													<img = src='http://mercado-artesanal.com.ar/assets/perfil/20190524111724-54396137.jpeg' style='height:80px;width:120px;'/>
+													<img = src='$logo' style='height:80px;width:120px;'/>
 												</td>
 												<td>	
 													<br />{$arrSucursal["nombre"]}
@@ -375,7 +396,7 @@ if($voucher_info === NULL){
 											</tr>
 										</table>
 									</td>
-									<td style='border: 2px solid #000;height: 100px;font-size: 60px;width: 70px;text-align: center;'>C</td>
+									<td style='border: 2px solid #000;height: 100px;font-size: 60px;width: 70px;text-align: center;'>$tipo_comprobante</td>
 									<td style='border: 2px solid #000;height: 100px;font-size: 14px;width: 280px;text-align: left;'>
 										<b>@@FACTURANRO@@</b>&nbsp;".substr("00000".$ptovta,-6)."&nbsp;-&nbsp;".substr("000000".$res["voucher_number"],-6)."<br />
 										<b>CUIT</b>&nbsp;$cuit<br />
@@ -404,6 +425,16 @@ if($voucher_info === NULL){
 							<td></td>
 							<td style='border-bottom: 1px solid #000;'>Total</td>
 							<td style='border-bottom: 1px solid #000;'>".number_format($total,2,",",".")."</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td style='border-bottom: 1px solid #000;'>Importe Neto</td>
+							<td style='border-bottom: 1px solid #000;'>".number_format($ImpNeto,2,",",".")."</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td style='border-bottom: 1px solid #000;'>IVA (21%)</td>
+							<td style='border-bottom: 1px solid #000;'>".number_format($impuestoIVA,2,",",".")."</td>
 						</tr></table>");
 
 	if ($res["CAE"] != ""){
