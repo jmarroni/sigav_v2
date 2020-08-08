@@ -11,7 +11,7 @@
                 $("#clientes_id").val("");
             }
           });
-
+  
         $( "#codigo-barras" ).focus();
 
         jQuery("#concretar_venta").click(function(){    
