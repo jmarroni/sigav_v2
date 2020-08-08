@@ -7,7 +7,8 @@ require_once ("conection.php");
 if (getRol() < 4 && getRol() != 1) {
     exit();
 }
-
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
 
 if (PRODUCTOS_LIBRE !== null && PRODUCTOS_LIBRE == "SI" && $_POST["id"] == ''){
     $insert_producto = "INSERT INTO `productos`
