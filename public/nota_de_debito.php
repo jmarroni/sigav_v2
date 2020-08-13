@@ -165,7 +165,7 @@ if($voucher_info === NULL){
 								<td colspan='3' style='height:30px;'>&nbsp;</td>
 							</tr>";
 
-	$sql_insert = "INSERT INTO `nota_de_credito`
+	$sql_insert = "INSERT INTO `nota_de_debito`
 						(`id`,
 						`sucursal_id`,
 						`fecha`,
