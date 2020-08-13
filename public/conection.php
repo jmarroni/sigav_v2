@@ -1,6 +1,6 @@
 <?php
 define('SEMILLA','$%Reset20122017AnnaLuca#^');
-define('PRODUCTOS_LIBRE','NO');
+define('PRODUCTOS_LIBRE','SI');
 
 $conn = mysqli_connect("127.0.0.1", "jmarroni", "Afoo2te1", "mercado-artesanal");
 date_default_timezone_set('America/Argentina/Buenos_Aires');

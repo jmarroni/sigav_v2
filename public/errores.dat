@@ -1,7 +1,10 @@
-Exception: (11002) El punto de venta no se encuentra habilitado a usar en el presente WS. Ver metodo FEParamGetPtosVenta in C:\xampp\htdocs\sigav\vendor\afipsdk\afip.php\src\Class\ElectronicBilling.php:363
+Exception: SOAP Fault: soap:Sender
+Server was unable to read request. ---> There is an error in XML document (2, 1526). ---> Input string was not in a correct format.
+ in /var/www/sigav_v2/public/vendor/afipsdk/afip.php/src/Afip.php:401
 Stack trace:
-#0 C:\xampp\htdocs\sigav\vendor\afipsdk\afip.php\src\Class\ElectronicBilling.php(307): ElectronicBilling->_CheckErrors('FECompUltimoAut...', Object(stdClass))
-#1 C:\xampp\htdocs\sigav\vendor\afipsdk\afip.php\src\Class\ElectronicBilling.php(41): ElectronicBilling->ExecuteRequest('FECompUltimoAut...', Array)
-#2 C:\xampp\htdocs\sigav\vendor\afipsdk\afip.php\src\Class\ElectronicBilling.php(122): ElectronicBilling->GetLastVoucher('123', 11)
-#3 C:\xampp\htdocs\sigav\facturar.php(149): ElectronicBilling->CreateNextVoucher(Array)
-#4 {main}
+#0 /var/www/sigav_v2/public/vendor/afipsdk/afip.php/src/Afip.php(381): AfipWebService->_CheckErrors()
+#1 /var/www/sigav_v2/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(306): AfipWebService->ExecuteRequest()
+#2 /var/www/sigav_v2/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(92): ElectronicBilling->ExecuteRequest()
+#3 /var/www/sigav_v2/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(129): ElectronicBilling->CreateVoucher()
+#4 /var/www/sigav_v2/public/nota_de_credito.php(135): ElectronicBilling->CreateNextVoucher()
+#5 {main}
