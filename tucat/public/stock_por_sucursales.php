@@ -99,7 +99,6 @@ require ('header.php'); ?>
                         ON p.id = s.productos_id and s.sucursal_id = ".$sucursal_activa." 
                         LEFT JOIN imagen_producto ip 
                         ON ip.productos_id = p.id
-                        group by p.id
                         order by p.nombre ASC ";
                         $resultado = $conn->query($sql) or die($sql." -- ".$conn->error);
                         $datos = '{"data":"no data"}';

@@ -101,20 +101,20 @@ require ('header.php'); ?>
         <div class="block-header">
             <h3 class="block-title">Pagos Realizados</h3>
             <div class="col-xs-6" style="padding-left: 0px;padding-top: 20px;">
-                        <label>Filtro  por proveedor</label>
-                        <select class="form-control" name="proveedor_filtro" id="proveedor_filtro" >
-                            <option value="0">Seleccione un proveedor</option>
-                            <?php 
-                            $sql = "SELECT * FROM `proveedor`";
-                            $resultado = $conn->query($sql);
-                            if ($resultado->num_rows > 0) {
-                                // output data of each row
-                                while($row = $resultado->fetch_assoc()) {
-                            ?>
-                                <option value="<?php echo $row["id"]; ?>"><?php echo $row["nombre"]; ?></option>
-                            <?php }} ?>
-                        </select>
-                    </div>
+                <label>Filtro  por proveedor</label>
+                <select class="form-control" name="proveedor_filtro" id="proveedor_filtro" >
+                    <option value="0">Seleccione un proveedor</option>
+                    <?php 
+                    $sql = "SELECT * FROM `proveedor`";
+                    $resultado = $conn->query($sql);
+                    if ($resultado->num_rows > 0) {
+                        // output data of each row
+                        while($row = $resultado->fetch_assoc()) {
+                    ?>
+                        <option value="<?php echo $row["id"]; ?>"><?php echo $row["nombre"]; ?></option>
+                    <?php }} ?>
+                </select>
+            </div>
         </div>
         <div class="block-content">
             <div class="table-responsive">

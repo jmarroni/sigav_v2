@@ -1,7 +1,7 @@
-Exception: (11002) El punto de venta no se encuentra habilitado a usar en el presente WS. Ver metodo FEParamGetPtosVenta in C:\xampp\htdocs\sigav\vendor\afipsdk\afip.php\src\Class\ElectronicBilling.php:363
+exception 'Exception' with message '(11000) Campo PtoVta, no es un punto de venta valido, los valores posibles son entre 1 y 99998' in /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php:363
 Stack trace:
-#0 C:\xampp\htdocs\sigav\vendor\afipsdk\afip.php\src\Class\ElectronicBilling.php(307): ElectronicBilling->_CheckErrors('FECompUltimoAut...', Object(stdClass))
-#1 C:\xampp\htdocs\sigav\vendor\afipsdk\afip.php\src\Class\ElectronicBilling.php(41): ElectronicBilling->ExecuteRequest('FECompUltimoAut...', Array)
-#2 C:\xampp\htdocs\sigav\vendor\afipsdk\afip.php\src\Class\ElectronicBilling.php(122): ElectronicBilling->GetLastVoucher('123', 11)
-#3 C:\xampp\htdocs\sigav\facturar.php(149): ElectronicBilling->CreateNextVoucher(Array)
+#0 /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(307): ElectronicBilling->_CheckErrors('FECompUltimoAut...', Object(stdClass))
+#1 /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(41): ElectronicBilling->ExecuteRequest('FECompUltimoAut...', Array)
+#2 /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(122): ElectronicBilling->GetLastVoucher('0', 11)
+#3 /var/www/virtual/mercado-artesanal.com.ar/public/facturar.php(221): ElectronicBilling->CreateNextVoucher(Array)
 #4 {main}

@@ -83,7 +83,6 @@ if(isset($_POST["proveedor"]) && $_POST["proveedor"] != 0){ $proveedor = " and p
                             if (isset($_POST["reporte_desde"]) && isset($_POST["reporte_hasta"]) ){
                                 $sql = "SELECT f.*,s.nombre as nombre_sucursal FROM factura f inner join sucursales s ON s.id = f.sucursal_id WHERE f.cae <> '' and f.fechacae <> '' AND `fecha` between '".$_POST["reporte_desde"]."' AND '".$_POST["reporte_hasta"]."' AND v.sucursal_id = ".getSucursal($_COOKIE["sucursal"])." $proveedor group BY pr.id ORDER BY cantidad DESC";
                             } else $sql = "SELECT f.*,s.nombre as nombre_sucursal FROM factura f inner join sucursales s ON s.id = f.sucursal_id WHERE f.cae <> '' and f.fechacae <> '' ORDER BY fecha DESC";
-
                             $resultado = $conn->query($sql) or die(mysqli_error($conn)." Q=".$sql);
                             if ($resultado->num_rows > 0) {
                                 $i = 1;

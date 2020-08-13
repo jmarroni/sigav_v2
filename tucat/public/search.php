@@ -63,8 +63,9 @@ if (isset($_GET["producto"]) && (intval($_GET["producto"])) !== null){
                         LEFT JOIN imagen_producto ip 
                         ON ip.productos_id = p.id 
             WHERE p.nombre like '%".$_GET["term"]."%' OR p.codigo_barras like '%".$_GET["term"]."%' AND s.id = ".$sucursal_seleccionada;
+    $sql .= " GROUP BY p.id";
     //echo $sql;exit();
-    $resultado = $conn->query($sql);  
+    $resultado = $conn->query($sql) or die('Error, en la query '.$sql);  
     $i = 0;
     $lista_precio = (isset($_COOKIE["lista_precio"]))?$_COOKIE["lista_precio"]:1;
     if ($resultado->num_rows > 0) {
@@ -76,7 +77,7 @@ if (isset($_GET["producto"]) && (intval($_GET["producto"])) !== null){
             $datos[$i]["id"]            = $row["id"];
             $datos[$i]["costo"]         = $row["costo"];
             $datos[$i]["precio"]        = ($lista_precio == 1)?$row["precio_unidad"]:$row["precio_mayorista"];
-            $datos[$i]["imagen"]         = (isset($row["imagen"]))?$row["imagen"]:"http://todo-kiosco.sigav.com.ar/assets/img/photos/no-image-featured-image.png";
+            $datos[$i]["imagen"]         = (isset($row["imagen"]))?str_replace('/'.$row["id"].'/','/'.$row["id"].'/thumb_300x300_',$row["imagen"]):"/assets/img/photos/no-image-featured-image.png";
             $datos[$i]["stock"]         = $row["stock_sucursal"];
             $datos[$i]["stock_minimo"]  = $row["stock_sucursal"];
             $datos[$i]["codigo_barras"] = $row["codigo_barras"];
@@ -102,7 +103,6 @@ if (isset($_GET["producto"]) && (intval($_GET["producto"])) !== null){
         }
     } else {
         $datos = array("data" => "no data");
-        echo "[]";
     }
 }
 echo json_encode($datos);

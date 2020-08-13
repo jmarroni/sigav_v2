@@ -20,13 +20,13 @@ if ($_POST){
                     header('Location: /ventas.php');
                     break;
                 default:
-                    header('Location: /carga.php');
+                    header('Location: /carga');
                     break;
             }
         }
         
     }else{
-        $mensaje = "Nonono metiste mal los dedos ;)";
+        $mensaje = "Error por favor verifica usuario y clave";
     }
 }
 

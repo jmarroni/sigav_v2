@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+	<title>Sistema</title>
 	<script src="/assets/js/core/jquery.min.js"></script>
 </head>
 <body>

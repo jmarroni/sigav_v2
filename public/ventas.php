@@ -316,7 +316,7 @@ $conn->query($sql_update);
                         <table class="table table-hover table-vcenter">
                             <tbody>
                             <?php
-                            $sql = "SELECT v.*,v.fecha as fecha_vta, v.usuario as usuario_vta,pr.*,st.stock as stock_sucursal,ip.imagen_url as imagen  FROM `ventas` v inner join productos pr on pr.id = v.productos_id left join imagen_producto ip ON ip.productos_id = pr.id left join stock st ON (st.productos_id = pr.id AND st.sucursal_id = ".getSucursal($_COOKIE["sucursal"]).") WHERE v.`fecha` > '".date("Y-m-d")."' ORDER BY v.id DESC";
+                            $sql = "SELECT v.*,v.fecha as fecha_vta, v.usuario as usuario_vta,pr.*,st.stock as stock_sucursal FROM `ventas` v inner join productos pr on pr.id = v.productos_id left join stock st ON (st.productos_id = pr.id AND st.sucursal_id = ".getSucursal($_COOKIE["sucursal"]).") WHERE v.`fecha` > '".date("Y-m-d")."' ORDER BY v.id DESC";
                             // echo $sql;exit();
                             $resultado = $conn->query($sql);
                             if ($resultado->num_rows > 0) {
@@ -325,8 +325,17 @@ $conn->query($sql_update);
                                     <tr>
                                        <td class="text-center">
                                            <div style="width: 180px;">
-                                               <img class="img-responsive" src="<?php echo (isset($row["imagen"]))?$row["imagen"]:"assets/img/photos/no-image-featured-image.png"; ?>" alt="">
-                                               </div>
+                                           <?php
+                                           $sql_img = "SELECT * FROM imagen_producto WHERE productos_id =".$row["id"];
+                                            // echo $sql;exit();
+                                            $resultado_img = $conn->query($sql_img);
+                                            if ($resultado_img->num_rows > 0) { 
+                                                if ($row_img = $resultado_img->fetch_assoc()) {?>
+                                                <img class="img-responsive" src="<?php echo (isset($row_img["imagen_url"]))?str_replace('/'.$row["id"].'/','/'.$row["id"].'/thumb_300x300_',$row_img["imagen_url"]):"assets/img/photos/no-image-featured-image.png"; ?>" alt="">
+                                            <?php } }else{ ?>
+                                                <img class="img-responsive" src="assets/img/photos/no-image-featured-image.png" alt="">
+                                            <?php } ?>
+                                            </div>
                                            </td>
                                        <td>
                                            <h4><?php echo $row["nombre"] ?></h4>

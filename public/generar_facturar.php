@@ -11,11 +11,11 @@ use Spipu\Html2Pdf\Html2Pdf;
 // Datos a completar
 
 		$html_datos_cliente = "<tr>
-									<td colspan='3' style='border-bottom: 1px solid #000;'><b>Nombre y Apellido</b> LEGISLATURA DE RIO NEGRO</td>
+									<td colspan='3' style='border-bottom: 1px solid #000;'><b>Nombre y Apellido</b> </td>
 								</tr><tr>
 									<td colspan='3' style='border-bottom: 1px solid #000;'><b>Direcci&oacute;n</b></td>
 								</tr><tr>
-									<td colspan='3' style='border-bottom: 1px solid #000;'><b>CUIT, CUIL &oacute; CDI </b> 30643169742</td>
+									<td colspan='3' style='border-bottom: 1px solid #000;'><b>CUIT, CUIL &oacute; CDI </b></td>
 								</tr>
 								<tr>
 									<td colspan='3' style='border-bottom: 1px solid #000;'><b>IVA </b> Cons. Final</td>
@@ -55,9 +55,9 @@ use Spipu\Html2Pdf\Html2Pdf;
 									</td>
 									<td style='border: 2px solid #000;height: 100px;font-size: 60px;width: 70px;text-align: center;'>C</td>
 									<td style='border: 2px solid #000;height: 100px;font-size: 14px;width: 280px;text-align: left;'>
-										<b>@@FACTURANRO@@</b>&nbsp;".substr("0000020",-6)."&nbsp;-&nbsp;".substr("0000000038",-8)."<br />
+										<b>@@FACTURANRO@@</b>&nbsp;".substr("0000020",-6)."&nbsp;-&nbsp;".substr("0000000056",-8)."<br />
 										<b>CUIT</b>&nbsp;30715251988<br />
-										<b>Fecha de Emisi&oacute;n</b>&nbsp;29-10-2019<br />
+										<b>Fecha de Emisi&oacute;n</b>&nbsp;06-06-2020<br />
 										<b>Ing.&nbsp;Bruto</b>&nbsp;30715251988<br />
 
 									</td>
@@ -69,16 +69,16 @@ use Spipu\Html2Pdf\Html2Pdf;
 									<td style='border-bottom: 1px solid #000;'><b>Precio</b></td>
 								</tr>
 								<tr>
-								<td style='border-bottom: 1px solid #000;'><i>BANDERAS TEJIDAS EN TELAR MAPUCHE (PAISES) <br />+ bolsa protocolar packaging</i></td>
-								<td style='border-bottom: 1px solid #000;'>3</td>
-								<td style='border-bottom: 1px solid #000;'>5.670,00</td>
+								<td style='border-bottom: 1px solid #000;'><i>BOMBILLA CON DETALLE</i></td>
+								<td style='border-bottom: 1px solid #000;'>10</td>
+								<td style='border-bottom: 1px solid #000;'>756</td>
 							</tr>
 							<tr>
 							<td></td>
 							<td style='border-bottom: 1px solid #000;'>Total</td>
-							<td style='border-bottom: 1px solid #000;'>17.010,00</td>
-						</tr></table><p style='text-align:right'><b>CAE Nro.:</b> 69448610778819<br />
-						<b>Fecha de Vto. CAE: </b>08-11-2019<br /></p>");
+							<td style='border-bottom: 1px solid #000;'>7560</td>
+						</tr></table><p style='text-align:right'><b>CAE Nro.:</b> 70238737165188<br />
+						<b>Fecha de Vto. CAE: </b>16-06-2020<br /></p>");
 	//echo $html;exit();
 	$html2pdf = new HTML2PDF('P', 'A4', 'pt', true, 'UTF-8');
 	$html2pdf->setDefaultFont('Arial');

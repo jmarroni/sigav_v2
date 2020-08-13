@@ -5,7 +5,7 @@
 <footer id="page-footer" class="bg-body font-s12">
     <div class="content-mini content-mini-full content-boxed clearfix push-15">
         <div class="pull-right">
-            Realizado por <a class="font-w600" href="http://goo.gl/vNS3I" target="_blank">Marroni Juan Pablo</a>
+            Realizado por <a class="font-w600" href="http://goo.gl/vNS3I" target="_blank">SIGAV</a>
         </div>
         <div class="pull-left">
             <a class="font-w600" href="http://goo.gl/6LF10W" target="_blank"><?php echo $nombre_fantasia; ?></a> &copy; <span class="js-year-copy"></span>
