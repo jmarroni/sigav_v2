@@ -20,7 +20,7 @@ if ($_POST){
                     header('Location: /ventas.php');
                     break;
                 default:
-                    header('Location: /carga');
+                    header('Location: /ventas.php');
                     break;
             }
         }

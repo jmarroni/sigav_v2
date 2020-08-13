@@ -7,6 +7,8 @@ require_once ("conection.php");
 if (getRol() < 4 && getRol() != 1) {
     exit();
 }
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
 
 if (PRODUCTOS_LIBRE !== null && PRODUCTOS_LIBRE == "SI" && $_POST["id"] == ''){
     $insert_producto = "INSERT INTO `productos`
@@ -21,7 +23,15 @@ if (PRODUCTOS_LIBRE !== null && PRODUCTOS_LIBRE == "SI" && $_POST["id"] == ''){
                                             `categorias_id`,
                                             `usuario`,
                                             `fecha`,
-                                            `precio_mayorista`)
+                                            `precio_mayorista`,
+                                            `es_comodato`,
+                                            `descripcion`,
+                                            `descripcion_pr`,
+                                            `descripcion_en`,
+                                            `material`,
+                                            `precio_reposicion`,
+                                            `updated_at`,
+                                            `created_at`)
                                         VALUES (NULL,
                                         '',
                                         '{$_POST["nombreproducto"]}',
@@ -33,12 +43,18 @@ if (PRODUCTOS_LIBRE !== null && PRODUCTOS_LIBRE == "SI" && $_POST["id"] == ''){
                                         '1',
                                         '{$_COOKIE["kiosco"]}',
                                         '".date("Y-m-d H:i:s")."',
-                                        '0');";
+                                        '0',0,
+                                        'Producto brindado por sistema ".date("Y-m-d")."',
+                                        '',
+                                        '',
+                                        '',0,'".date("Y-m-d H:i:s")."','".date("Y-m-d H:i:s")."');";
     if ($conn->query($insert_producto) === TRUE) {
         $_POST["id"] = $conn->insert_id;
-    }else exit();
+    }else{
+        echo "Error: " . $sql . "<br>" . $conn->error;
+        exit();
+    } 
 }
-
 $sql = "SELECT p.*,st.stock as stock_sucursal,ip.imagen_url as imagen  FROM productos p left join imagen_producto ip ON ip.productos_id = p.id Left JOIN stock st ON (st.productos_id = p.id AND  st.sucursal_id = ".getSucursal($_COOKIE["sucursal"]).") WHERE p.id = ".$_POST["id"];
 
 $resultado = $conn->query($sql);
@@ -120,5 +136,4 @@ if ($conn->query($sql) === TRUE) {
 
 $conn->close();
 exit();
-?>
 ?>

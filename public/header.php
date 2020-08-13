@@ -432,7 +432,7 @@ function getMes($numero){
                     </li>
                     <?php } ?>
                     <?php if (getRol() > 4 || getRol() == 1) { ?>
-                    <li class="<?php echo (isset($menu["caja"]))?$menu["caja"]:""; ?>">
+                    <li class="<?php echo (isset($menu["operaciones"]))?$menu["operaciones"]:""; ?>">
                         <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-lock push-5-r"></i>Operaciones<span class="caret"></span>
                         </a>
@@ -442,6 +442,9 @@ function getMes($numero){
                             </li>
                             <li>
                                 <a href="/devoluciones.php">Devoluciones</a>
+                            </li>
+                            <li>
+                                <a href="/nota_debito.php">Nota Debito</a>
                             </li>
                             <li>
                                 <a href="/usuarios_api.php">Api</a>

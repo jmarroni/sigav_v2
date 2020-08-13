@@ -31,6 +31,19 @@ $inicio_actividad = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.ph
 $condicion_iva = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/condicion_iva");
 $ingresos_brutos = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/ingresos_brutos");
 $solicitar_datos = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/solicitar_datos");
+
+
+$sql = "Select * FROM sucursales WHERE id = '".getSucursal($_COOKIE["sucursal"])."'";
+
+    $resultado_sucursal = $conn->query($sql) or die("Error: " . $sql . "<br>" . $conn->error);
+    if ($resultado_sucursal->num_rows > 0) {
+        if ($row_sucursal = $resultado_sucursal->fetch_assoc()) {
+            $ptovta = $row_sucursal["pto_vta"];
+        }
+    }else{
+        echo "Error 100010";
+        exit();
+    }
 require ('header.php'); 
 ?>
 <style>

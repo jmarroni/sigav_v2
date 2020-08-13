@@ -11,7 +11,7 @@ require_once ("conection.php");
 require 'vendor/autoload.php';
 use Spipu\Html2Pdf\Html2Pdf;
 
-$arrSucursal = array();
+$arrSucursal = array(); 
 
 if (isset($_COOKIE["sucursal"])){
 	$datos_sucursal = "SELECT * FROM sucursales where id = '".getSucursal($_COOKIE["sucursal"])."'";
@@ -89,8 +89,7 @@ $resultado_perfil = $conn->query($sql) or die("Error: " . $sql . "<br>" . $conn-
 if ($resultado_perfil->num_rows > 0) {
     if ($row_perfil = $resultado_perfil->fetch_assoc()) {
         $logo = "http://".$_SERVER['HTTP_HOST'].$row_perfil["logo"];
-
-        // $logo = (file_exists($logo))?$logo:"http://".$_SERVER['HTTP_HOST']."/assets/img/photos/no-image-featured-image.png";
+        //$logo = (file_exists($logo))?$logo:"http://".$_SERVER['HTTP_HOST']."/assets/img/photos/no-image-featured-image.png";
 		$nombre_fantasia = $row_perfil["nombre"];
 		$datos_factura = $row_perfil;
     }
@@ -98,7 +97,7 @@ if ($resultado_perfil->num_rows > 0) {
 	$logo = "http://".$_SERVER['HTTP_HOST']."/assets/img/photos/no-image-featured-image.png";
     $nombre_fantasia = "SIGAV";
 }
-
+if (strpos($logo,"127.0.0.1") > 0) $logo = "http://mercado-artesanal.com.ar/assets/img/photos/no-image-featured-image.png";
 // Agarro el numero de lista para la venta
 if (isset($_COOKIE["lista_precio"])) $lista_precio = $_COOKIE["lista_precio"];
 else $lista_precio = 1;
@@ -152,13 +151,8 @@ if ($resultados_productos_en_carrito->num_rows > 0) {
 		array_push($array_ids_ventas, $conn->insert_id);
 	}
 }
-/*
-if (intval($_GET["presupuesto"]) == 0) {
-	$sql = "SELECT v.*,p.nombre as nombre_producto FROM ventas v inner join productos p on p.id = v.productos_id WHERE v.estado = 1 AND v.sucursal_id = ".getSucursal($_COOKIE["sucursal"])." AND v.usuario = '".$_COOKIE["kiosco"]."'";
-} else {
-	*/
-	$sql = "SELECT v.*, p.nombre as nombre_producto FROM ventas v inner join productos p on p.id = v.productos_id WHERE v.estado = 3 AND v.fecha > '".date("Y-m-d 00:00:00")."' AND v.sucursal_id = ".getSucursal($_COOKIE["sucursal"])." AND v.usuario = '".$_COOKIE["kiosco"]."'";
-//}
+$sql = "SELECT v.*, p.nombre as nombre_producto FROM ventas v inner join productos p on p.id = v.productos_id WHERE v.estado = 3 AND v.fecha > '".date("Y-m-d 00:00:00")."' AND v.sucursal_id = ".getSucursal($_COOKIE["sucursal"])." AND v.usuario = '".$_COOKIE["kiosco"]."'";
+
 
 $item = array();
 $total = 0;
@@ -176,9 +170,6 @@ if ($resultado->num_rows > 0) {
 
 	}
 	$eliminar_carrito = "DELETE FROM productos_en_carrito WHERE venta_id = '{$_GET['venta_id']}'";	
-	//if ($conn->query($eliminar_carrito) === FALSE) {
-	//		echo "Error al eliminar carrito: " . $eliminar_carrito . "<br>" . $conn->error;
-	//	}
 }else{
 	$devolucion["error"] = "No existen productos para facturar";
 	echo json_encode($devolucion);
@@ -187,24 +178,38 @@ if ($resultado->num_rows > 0) {
 $fecha = explode("-",$_GET["fecha-facturacion"]);
 if (count($fecha) < 3) { echo "error"; exit(); }
 $afip = new Afip(array('CUIT' => floatval($cuit), "production" => TRUE));
+if (intval($comprobante) != 11){
+	$ImpNeto = round($total / 1.21,2);
+	$impuestoIVA = round($ImpNeto * 0.21,2);
+}else{
+	$impuestoIVA = 0;
+	$ImpNeto = $total;
+}
+
 $data = array(
 	'CantReg' 		=> 1,  // Cantidad de comprobantes a registrar
 	'PtoVta' 		=> $ptovta,  // Punto de venta
-	'CbteTipo' 		=> 11,  // Tipo de comprobante (ver tipos disponibles) 
+	'CbteTipo' 		=> $comprobante,  // Tipo de comprobante (ver tipos disponibles) 
 	'Concepto' 		=> 1,  // Concepto del Comprobante: (1)Productos, (2)Servicios, (3)Productos y Servicios
 	'DocTipo' 		=> 99, // Tipo de documento del comprador (99 consumidor final, ver tipos disponibles)
 	'DocNro' 		=> 0,  // Número de documento del comprador (0 consumidor final)
 	'CbteFch' 		=> $fecha[0].$fecha[1].$fecha[2], // (Opcional) Fecha del comprobante (yyyymmdd) o fecha actual si es nulo
 	'ImpTotal' 		=> $total, // Importe total del comprobante
 	'ImpTotConc' 	=> 0,   // Importe neto no gravado
-	'ImpNeto' 		=> $total, // Importe neto gravado
+	'ImpNeto' 		=> $ImpNeto, // Importe neto gravado
 	'ImpOpEx' 		=> 0,   // Importe exento de IVA
-	'ImpIVA' 		=> 0,  //Importe total de IVA
+	'ImpIVA' 		=> $impuestoIVA,  //Importe total de IVA
 	'ImpTrib' 		=> 0,   //Importe total de tributos
 	'MonId' 		=> 'PES', //Tipo de moneda usada en el comprobante (ver tipos disponibles)('PES' para pesos argentinos) 
-	'MonCotiz' 		=> 1,     // Cotización de la moneda usada (1 para pesos argentinos)  
+	'MonCotiz' 		=> 1, // Cotización de la moneda usada (1 para pesos argentinos)  
+	'Iva' 		=> array( // (Opcional) Alícuotas asociadas al comprobante
+		array(
+			'Id' 		=> 5, // Id del tipo de IVA (5 para 21%)(ver tipos disponibles) 
+			'BaseImp' 	=> $ImpNeto, // Base imponible
+			'Importe' 	=> $impuestoIVA // Importe 
+		)
+	),
 );
-
 // Me fijo si se coloco el cliente
 if ($tipoDocumento != "" && $documento != ""){
 	$data['DocTipo'] 	= $tipoDocumento;
@@ -259,40 +264,50 @@ if($voucher_info === NULL){
 	}
 
 	$solicitar = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/solicitar_datos"); 
-		switch ($iva) {
-			case '1': $texto_iva = "Resp. Inscripto";break;
-			case '2': $texto_iva = "Monotributista";break;
-			case '3': $texto_iva = "Excento";break;
-			case '4': $texto_iva = "Cons. Final";break;
-			default:
-				$texto_iva = "Consumidor Final";
-				break;
-		}
-		switch ($tipo) {
-			case '1': $texto_tipo = "Efectivo";break;
-			case '2': $texto_tipo = "Debito";break;
-			case '3': $texto_tipo = "Credito";break;
-			case '4': $texto_tipo = "Transferencia";break;
-			default:
-				$texto_tipo = "Efectivo";
-				break;
-		}
-		$html_datos_cliente = "<tr>
-									<td colspan='3' style='border-bottom: 1px solid #000;'><b>Nombre y Apellido</b> $nombre</td>
-								</tr><tr>
-									<td colspan='3' style='border-bottom: 1px solid #000;'><b>Direcci&oacute;n</b> $direccion</td>
-								</tr><tr>
-									<td colspan='3' style='border-bottom: 1px solid #000;'><b>CUIT, CUIL &oacute; CDI </b> $documento</td>
-								</tr>
-								<tr>
-									<td colspan='3' style='border-bottom: 1px solid #000;'><b>IVA </b> $texto_iva</td>
-								</tr>
-								<tr>
-									<td colspan='3' style='border-bottom: 1px solid #000;'><b>Forma de pago </b> $texto_tipo</td>
-								</tr>
-								<tr>
-									<td colspan='3' style='height:30px;'>&nbsp;</td>
-								</tr>";
+	switch ($iva) {
+		case '1': $texto_iva = "Resp. Inscripto";break;
+		case '2': $texto_iva = "Monotributista";break;
+		case '3': $texto_iva = "Excento";break;
+		case '4': $texto_iva = "Cons. Final";break;
+		default:
+			$texto_iva = "Consumidor Final";
+			break;
+	}
+	switch ($tipo) {
+		case '1': $texto_tipo = "Efectivo";break;
+		case '2': $texto_tipo = "Debito";break;
+		case '3': $texto_tipo = "Credito";break;
+		case '4': $texto_tipo = "Transferencia";break;
+		default:
+			$texto_tipo = "Efectivo";
+			break;
+	}
+	switch ($comprobante) {
+		case '11': $tipo_comprobante = "C";break;
+		case '1': $tipo_comprobante = "A";break;
+		case '6': $tipo_comprobante = "B";break;
+		default:
+		$tipo_comprobante = "X";
+			break;
+	}
+	$tipo_comprobante = (intval($_GET["presupuesto"]) == 0)?$tipo_comprobante:"X";
+	$valido_o_no = (intval($_GET["presupuesto"]) == 0)?"Comprobante Electronico":"No valido como factura";
+	$html_datos_cliente = "<tr>
+								<td colspan='3' style='border-bottom: 1px solid #000;'><b>Nombre y Apellido</b> $nombre</td>
+							</tr><tr>
+								<td colspan='3' style='border-bottom: 1px solid #000;'><b>Direcci&oacute;n</b> $direccion</td>
+							</tr><tr>
+								<td colspan='3' style='border-bottom: 1px solid #000;'><b>CUIT, CUIL &oacute; CDI </b> $documento</td>
+							</tr>
+							<tr>
+								<td colspan='3' style='border-bottom: 1px solid #000;'><b>IVA </b> $texto_iva</td>
+							</tr>
+							<tr>
+								<td colspan='3' style='border-bottom: 1px solid #000;'><b>Forma de pago </b> $texto_tipo</td>
+							</tr>
+							<tr>
+								<td colspan='3' style='height:30px;'>&nbsp;</td>
+							</tr>";
 
 	$sql_insert = "INSERT INTO `factura`
 						(`id`,
@@ -364,18 +379,18 @@ if($voucher_info === NULL){
 										<table>
 											<tr>
 												<td>
-													<img = src='http://mercado-artesanal.com.ar/assets/perfil/20190524111724-54396137.jpeg' style='height:80px;width:120px;'/>
+													<img = src='$logo' style='height:80px;width:120px;'/>
 												</td>
 												<td>	
 													<br />{$arrSucursal["nombre"]}
 													<br />$arrDireccion<br />
 													{$arrSucursal["codigo_postal"]} - {$arrSucursal["provincia"]}<br />
-													<b>Comprobante Electronico</b>
+													<b>$valido_o_no</b>
 												</td>
 											</tr>
 										</table>
 									</td>
-									<td style='border: 2px solid #000;height: 100px;font-size: 60px;width: 70px;text-align: center;'>C</td>
+									<td style='border: 2px solid #000;height: 100px;font-size: 60px;width: 70px;text-align: center;'>$tipo_comprobante</td>
 									<td style='border: 2px solid #000;height: 100px;font-size: 14px;width: 280px;text-align: left;'>
 										<b>@@FACTURANRO@@</b>&nbsp;".substr("00000".$ptovta,-6)."&nbsp;-&nbsp;".substr("000000".$res["voucher_number"],-6)."<br />
 										<b>CUIT</b>&nbsp;$cuit<br />
@@ -404,16 +419,29 @@ if($voucher_info === NULL){
 							<td></td>
 							<td style='border-bottom: 1px solid #000;'>Total</td>
 							<td style='border-bottom: 1px solid #000;'>".number_format($total,2,",",".")."</td>
-						</tr></table>");
-
+						</tr>");
+	if ($comprobante == 1){
+		$html .= utf8_encode("
+						<tr>
+							<td></td>
+							<td style='border-bottom: 1px solid #000;'>Importe Neto</td>
+							<td style='border-bottom: 1px solid #000;'>".number_format($ImpNeto,2,",",".")."</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td style='border-bottom: 1px solid #000;'>IVA (21%)</td>
+							<td style='border-bottom: 1px solid #000;'>".number_format($impuestoIVA,2,",",".")."</td>
+						</tr>");
+	}
+	$html .= utf8_encode("</table>");
 	if ($res["CAE"] != ""){
 		$html .= utf8_encode("<p style='text-align:right'><b>CAE Nro.:</b> ".$res["CAE"]."<br />
 						<b>Fecha de Vto. CAE: </b>".$res["CAEFchVto"]."<br /></p>");
 	}
 
-	if ($tipo == 4){ // Si es transferencia coloco la leyenda
-		$html .= utf8_encode("<p style='text-align:left'> *P&aacute;guese a la cuenta oficial Tesorer&iacute;a General Mercado Artesanal Provincial-Recaudadora. <br/><b>N° Cta Bco.</b> - 900001194 <br/><b>CBU</b> - 0340250600900001194004 <br/><b>CUIT</b> - Tesorer&iacute;a General Nro. 30-63945328-2 </p>");
-	}
+	//if ($tipo == 4){ // Si es transferencia coloco la leyenda
+	//	$html .= utf8_encode("<p style='text-align:left'> *P&aacute;guese a la cuenta oficial Tesorer&iacute;a General Mercado Artesanal Provincial-Recaudadora. <br/><b>N° Cta Bco.</b> - 900001194 <br/><b>CBU</b> - 0340250600900001194004 <br/><b>CUIT</b> - Tesorer&iacute;a General Nro. 30-63945328-2 </p>");
+	//}
 
 	$html2pdf = new HTML2PDF('P', 'A4', 'pt', true, 'UTF-8');
 	$html2pdf->setDefaultFont('Arial');
@@ -423,7 +451,7 @@ if($voucher_info === NULL){
 
 	$html2pdf->writeHTML("<page>".str_replace("@@COMPROBANTE@@","ORIGINAL",$html)."<br><br><hr style='border-style: dotted;' /><br><br></page><page>".str_replace("@@COMPROBANTE@@","DUPLICADO",$html)."<br><br><hr style='border-style: dotted;' /><br><br></page>");
 
-	//$html2pdf->Output();
+	
 	$html2pdf->Output(dirname(__FILE__).$nombre_factura, "F");
 	$devolucion["factura"] = $nombre_factura;
 	echo json_encode($devolucion);
