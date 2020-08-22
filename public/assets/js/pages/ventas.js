@@ -84,6 +84,8 @@
 
         jQuery("#presupuesto").click(function() {  
             var medio_de_pago = "0";
+            $("#presupuesto").hide();
+            $("#espere_venta_activa").show();
             if ($("#debito").prop("checked")) medio_de_pago = $("#debito").val();
             if ($("#efectivo").prop("checked")) medio_de_pago = $("#efectivo").val();
             if ($("#credito").prop("checked")) medio_de_pago = $("#credito").val();       
@@ -108,6 +110,8 @@
             })
                 .done(function (msg) {
                     if (msg.factura){
+                        $("#espere_venta_activa").hide();
+                        $("#presupuesto").show();
                         venta_id = '';
                         $("#factura_iframe").show();
                         $("#iframe").attr("src",msg.factura);
