@@ -136,7 +136,7 @@ class ProductoController extends Controller
             Imagen_producto::where("productos_id",$productos->id)->delete();
             foreach($imagenes as $imagen){
                 $imagen_producto = new Imagen_producto();
-                $imagen_producto->imagen_url = env("APP_URL").str_replace("public","/storage",$path);
+                $imagen_producto->imagen_url = env("APP_URL").str_replace("public","/storage",$imagen);
                 $imagen_producto->productos_id = $productos->id;
                 $imagen_producto->save();
             }
