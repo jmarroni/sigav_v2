@@ -1,6 +1,9 @@
 @extends('layout.layout');
 @section("body")
 <div class="block block-rounded">
+    <div class="block-header">
+        <h3 class="block-title">Datos del Productos</h3>
+    </div>
     <div class="block-content" id="block-content">  
         <form class="form-horizontal" action="/carga" enctype="multipart/form-data" method="post" >
             <input type="hidden" value="" name="id" id="id" />

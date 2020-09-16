@@ -24,3 +24,4 @@ Route::resource('carga', 'ProductoController');
 Route::get('carga/mensaje/{mensaje}','ProductoController@index' );
 Route::get('producto.actualizar.stock/{id}/{stock}/{stock_minimo}/{sucursal}','ProductoController@update_stock' );
 Route::get('tipo/{type}', 'SweetController@notification');
+Route::get('reporte.factura/{desde?}/{hasta?}', 'ReporteController@factura');
