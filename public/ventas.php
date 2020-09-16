@@ -275,7 +275,7 @@ $conn->query($sql_update);
                         <button class="btn btn-sm btn-minw btn-rounded btn-primary" type="button" id="concretar_venta" style="<?php if (intval($emitir) != 1) echo "display:none;"; ?>margin-bottom: 20px;margin-top: 20px;width: 30%;">
                             <i class="fa fa-check push-5-r"></i>Concretar Venta y facturar
                         </button>
-                    
+                        <div id="espere_venta_activa" style="display:none;" ><i>(En proceso de emision, por favor aguarde unos segundos)</i></div>
                         <div id="emitir_online" style="<?php if (intval($emitir) != 1) echo "display:none;"; ?>"><i>(Se encuentra habilitada la emision online de Factura Electronica)</i></div>
                         <button class="btn btn-sm btn-minw btn-rounded btn-primary" type="button" id="presupuesto" name="presupuesto" style="<?php if (intval($emitir) == 1) echo "display:none;"; ?>margin-top: 20px;margin-bottom: 20px;width: 30%;">
                             <i class="fa fa-check push-5-r"></i>Concretar Venta
@@ -372,5 +372,5 @@ $conn->query($sql_update);
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="/assets/js/pages/ventas.js?v=1.11"></script>
+    <script src="/assets/js/pages/ventas.js?v=1.13"></script>
 <?php require ("footer.php"); ?>

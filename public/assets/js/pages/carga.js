@@ -9,7 +9,7 @@ jQuery("document").ready(function() {
         var stock           = $("#stock_" + identificador).val();
         var stock_minimo    = $("#stock_minimo_" + identificador).val();
         var sucursal        = $("#sucursal").val();
-        var url = "producto.actualizar.stock/" + identificador + "/" + stock + "/" + stock_minimo + "/" + sucursal;
+        var url = "/producto.actualizar.stock/" + identificador + "/" + stock + "/" + stock_minimo + "/" + sucursal;
         $.get(url, function(data, status){  
             if(data.proceso == "OK"){
                 swal({
@@ -57,7 +57,7 @@ jQuery("document").ready(function() {
 
     $("#proveedor").change(function(){
         if ($(this).val() != 0){
-            $.post("list_categorias.php?proveedor=" + $(this).val(), function(data, status){  
+            $.post("/list_categorias.php?proveedor=" + $(this).val(), function(data, status){  
                 $("#categoria").html(data);
                 $("#categoria").removeAttr("disabled");
             });

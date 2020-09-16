@@ -295,7 +295,7 @@ function getMes($numero){
                 <ul class="nav nav-pills nav-sub-header push">
                     <?php if (getRol() > 4 || getRol() == 1) { ?>
                         <li class="<?php echo $menu["ventas"]; ?>">
-                            <a href="ventas.php">
+                            <a href="/ventas.php">
                                 <i class="fa fa-dashboard push-5-r"></i>Ventas
                             </a>
                         </li>
@@ -313,7 +313,7 @@ function getMes($numero){
                                 <a href="/reportes_proveedores.php">Reporte de Proveedores</a>
                             </li>
                             <li>
-                                <a href="/facturacion.php">Reporte de Facturaci&oacute;n</a>
+                                <a href="/reporte.factura">Reporte de Facturaci&oacute;n</a>
                             </li>
                             <li>
                                 <a href="/presupuestos.php">Reporte de Presupuestos</a>
