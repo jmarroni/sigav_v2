@@ -105,7 +105,6 @@ if ($tipoDocumento != "" && $documento != ""){
 }
 
 
-print_r($data);exit();
 //$res["CAE"] = "1111";
 //$res["CAEFchVto"] = date("Y-m-d");
 //$res["voucher_number"] = date("YmdHis");
@@ -128,7 +127,7 @@ if($voucher_info === NULL){
 	echo json_encode($devolucion);exit();
 }else{
 	$nombre_factura = "/notas_credito/".$ptovta."_".$res["CAE"]."_".substr("00000".$res["voucher_number"],-6).".pdf";
-	$facturanro = "NOTA DE CREDITO NRO.";
+	$facturanro = "NOTA DE DEBITO NRO.";
 
 	$solicitar = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/solicitar_datos"); 
 	switch ($iva) {
