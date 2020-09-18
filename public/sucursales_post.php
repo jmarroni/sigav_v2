@@ -44,13 +44,14 @@ if (isset($_GET["identificador"]) && intval($_GET["identificador"]) != "" && iss
 if (intval($_POST["id"]) != ""){
     $fecha_alta = ($_POST["Fecha_alta"] != "")?$_POST["Fecha_alta"]:date("Y-m-d");
     $fecha_alta = ($_POST["Fecha_baja"] != "")?$_POST["Fecha_baja"]:date("Y-m-d");
+    $pto_vta = ($_POST["pto_vta"] != "")?$_POST["pto_vta"]:0;
     $sql = "UPDATE sucursales SET 
                 nombre = '{$_POST["nombre"]}',
                 fecha_alta = '{$fecha_alta}',
                 fecha_baja = '{$fecha_alta}',
                 provincia = '{$_POST["provincia"]}',
                 codigo_postal = '{$_POST["codigo_postal"]}',
-                pto_vta = '{$_POST["pto_vta"]}',
+                pto_vta = '$pto_vta',
                 direccion = '{$_POST["direccion"]}'";
     if ($imagen != ""){
         $sql .= ", imagen= '$imagen' ";
