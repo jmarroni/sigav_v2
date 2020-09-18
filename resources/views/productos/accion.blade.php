@@ -10,7 +10,7 @@
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <div class="form-group">
                 <div class="col-xs-4">
-                    <label for="bd-qsettings-name">Nombre</label>
+                    <label for="bd-qsettings-name">Nombre (*)</label>
                     <input type="text" class="form-control" name="producto" id="producto" value="" placeholder="Nombre del Producto Completo" />
                 </div>
                 <div class="col-xs-4">
@@ -33,7 +33,7 @@
             </div>
             <div class="form-group">
                 <div class="col-xs-4">
-                    <label>Rubro</label>
+                    <label>Proveedor (*)</label>
                     <select class="form-control" id="proveedor" name="proveedor">
                         <option value="0">Seleccione un rubro</option>
                         @foreach($proveedores as $provedor)
@@ -42,20 +42,20 @@
                     </select>
                 </div>
                 <div class="col-xs-4">
-                    <label>Categoria</label>
+                    <label>Categoria (*)</label>
                     <select class="form-control" disabled="disabled" name="categoria" id="categoria">
                         <option value="">Seleccione un rubro</option>
                     </select>
                 </div>
                 <div class="col-xs-4">
-                    <label>Precio Ultima Compra</label>
+                    <label>Precio Ultima Compra (*)</label>
                     <input type="text" class="form-control" name="costo" id="costo" value="" placeholder="Costo por unidad" />
                 </div>
             </div>
             <div class="form-group">
                 
                 <div class="col-xs-4">
-                    <label>Precio Minorista</label>
+                    <label>Precio Minorista (*)</label>
                     <input type="text" class="form-control" name="precio_unidad" id="precio_unidad" value="" placeholder="Precio unidad (. para decimales 5.5)" />
                 </div>
                 <div class="col-xs-4">
@@ -93,7 +93,7 @@
             </div>
             <div class="form-group">
                 <div class="col-xs-12">
-                    <label>Descripci&oacute;n</label>
+                    <label>Descripci&oacute;n (*)</label>
                     <textarea type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Describa el producto" ></textarea>
                 </div>
             </div>
@@ -111,7 +111,7 @@
             </div>
             <div class="form-group">
                 <div class="col-xs-8 col-xs-offset-2">
-                    <button class="btn btn-sm btn-minw btn-rounded btn-primary" style="width:98%;margin-top:25px;" type="submit">
+                    <button id="anadir" class="btn btn-sm btn-minw btn-rounded btn-primary" style="width:98%;margin-top:25px;" type="submit">
                         <i class="fa fa-check push-5-r"></i>A&ntilde;adir
                     </button>
                 </div>
