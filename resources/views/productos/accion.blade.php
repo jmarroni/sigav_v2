@@ -2,7 +2,7 @@
 @section("body")
 <div class="block block-rounded">
     <div class="block-header">
-        <h3 class="block-title">Datos del Productos</h3>
+        <h3 class="block-title">Datos del Producto</h3>
     </div>
     <div class="block-content" id="block-content">  
         <form class="form-horizontal" action="/carga" enctype="multipart/form-data" method="post" >
@@ -149,7 +149,7 @@
                 </thead>
                 <tbody>
                     @foreach($productos as $producto)
-                    <tr>
+                    <tr id="<?php echo $producto->id; ?>">
                         <td style="text-align:center">
                             <div class="block">
                                 <div class="block-content">
