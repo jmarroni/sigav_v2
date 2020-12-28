@@ -1,7 +1,0 @@
-exception 'Exception' with message '(600) ValidacionDeToken: Parametro nulo o vacio (token)' in /var/www/virtual/mercado-artesanal.com.ar/tucat/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php:363
-Stack trace:
-#0 /var/www/virtual/mercado-artesanal.com.ar/tucat/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(307): ElectronicBilling->_CheckErrors('FECompUltimoAut...', Object(stdClass))
-#1 /var/www/virtual/mercado-artesanal.com.ar/tucat/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(41): ElectronicBilling->ExecuteRequest('FECompUltimoAut...', Array)
-#2 /var/www/virtual/mercado-artesanal.com.ar/tucat/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(122): ElectronicBilling->GetLastVoucher('25', 13)
-#3 /var/www/virtual/mercado-artesanal.com.ar/tucat/public/nota_de_credito.php(135): ElectronicBilling->CreateNextVoucher(Array)
-#4 {main}
