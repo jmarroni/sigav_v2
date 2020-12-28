@@ -9,7 +9,7 @@ jQuery("document").ready(function() {
             swal({
                 "title":"Verificar",
                 'icon': 'warning',
-                "text":"El nombre del producto no puede ser vacio.",
+                "text":"El nombre del producto no puede estar vacío.",
                 'confirmButtonText': 'Listo'
             });
             return;
@@ -23,11 +23,20 @@ jQuery("document").ready(function() {
             });
             return;
         }
+         if ($("#categoria").val() == "" || $("#categoria").val() == 0 || $("#categoria").val() == null){
+            swal({
+                "title":"Verificar",
+                'icon': 'warning',
+                "text":"Debe seleccionar una categoría",
+                'confirmButtonText': 'Listo'
+            });
+            return;
+        }
         if ($("#costo").val() == ""){
             swal({
                 "title":"Verificar",
                 'icon': 'warning',
-                "text":"Debe colocar el Precio de Ultima Compra",
+                "text":"Debe colocar el Precio de última Compra",
                 'confirmButtonText': 'Listo'
             });
             return;
@@ -71,7 +80,7 @@ jQuery("document").ready(function() {
                     swal({
                         "title":"Perfecto !!",
                         'icon': 'success',
-                        "text":"Actualizar realizada con exito !",
+                        "text":"Actualización realizada con éxito !",
                         'confirmButtonText': 'Listo',
                         
                     });
@@ -93,8 +102,7 @@ jQuery("document").ready(function() {
         modificar(identificador);
     });
 
-
-    $("button[id^='eliminar_']" ).click(function( index ) {
+ $("button[id^='eliminar_']" ).click(function( index ) {
         var identificador = $(this).attr("id").split("_")[1];
         swal({
             title: '¿Está seguro de eliminarlo?',
@@ -107,11 +115,33 @@ jQuery("document").ready(function() {
             },
             function(isConfirm){
                 if (isConfirm){
-                    eliminar(identificador);
+            var stock           = $("#stock_" + identificador).val();
+            var stock_minimo    = $("#stock_minimo_" + identificador).val();
+            var sucursal        = $("#sucursal").val();
+            var url = "/producto.eliminar.stock/" + identificador + "/" + stock + "/" + stock_minimo + "/" + sucursal;
+            $.get(url, function(data, status){  
+                if(data.proceso == "OK"){
+                    swal({
+                        "title":"Perfecto !!",
+                        'icon': 'success',
+                        "text":"Eliminación realizada con éxito !",
+                        'confirmButtonText': 'Listo',
+                       
+                    });
+                   $("#"+identificador).remove();
+                        
+                }else{
+                    swal({
+                        "title":"Error",
+                        'icon': 'error',
+                        "text":"Error al realizar la eliminación",
+                        'confirmButtonText': 'Listo'
+                    });
+                }
+            });
                 }
             });
     });
-    
 
     $("#proveedor").change(function(){
         if ($(this).val() != 0){
