@@ -2,7 +2,7 @@
 @section("body")
 <div class="block block-rounded">
     <div class="block-header">
-        <h3 class="block-title">Datos del Productos</h3>
+        <h3 class="block-title">Datos del Producto</h3>
     </div>
     <div class="block-content" id="block-content">  
         <form class="form-horizontal" action="/carga" enctype="multipart/form-data" method="post" >
@@ -14,7 +14,7 @@
                     <input type="text" class="form-control" name="producto" id="producto" value="" placeholder="Nombre del Producto Completo" />
                 </div>
                 <div class="col-xs-4">
-                    <label for="bd-qsettings-name">Codigo de Barras <i>(autogenerado si se deja en blanco)</i> </label>
+                    <label for="bd-qsettings-name">C&oacute;digo de Barras <i>(autogenerado si se deja en blanco)</i> </label>
                     <input type="text" class="form-control" name="codigo_de_barras" id="codigo_de_barras" value="" placeholder="Codigo de Barras" />
                 </div>
                 <div class="col-xs-4">
@@ -26,7 +26,7 @@
                     <input type="text" class="form-control" name="stock" id="stock" value="0" placeholder="stock" />
                 </div>
                 <div style="display:none;" class="col-xs-4">
-                    <label>Stock Minimo</label>
+                    <label>Stock M&iacute;nimo</label>
                     <input type="text" class="form-control" name="stock_minimo" id="stock_minimo" value="0" placeholder="Alerta Stock Minimo" />
                 </div>
                 
@@ -35,20 +35,20 @@
                 <div class="col-xs-4">
                     <label>Proveedor (*)</label>
                     <select class="form-control" id="proveedor" name="proveedor">
-                        <option value="0">Seleccione un rubro</option>
+                        <option value="0">Seleccione un proveedor</option>
                         @foreach($proveedores as $provedor)
                             <option value="{{$provedor->id}}">{{$provedor->nombre}}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="col-xs-4">
-                    <label>Categoria (*)</label>
+                    <label>Categor&iacute;a (*)</label>
                     <select class="form-control" disabled="disabled" name="categoria" id="categoria">
                         <option value="">Seleccione un rubro</option>
                     </select>
                 </div>
                 <div class="col-xs-4">
-                    <label>Precio Ultima Compra (*)</label>
+                    <label>Precio &Uacute;ltima Compra (*)</label>
                     <input type="text" class="form-control" name="costo" id="costo" value="" placeholder="Costo por unidad" />
                 </div>
             </div>
@@ -63,7 +63,7 @@
                     <input type="text" class="form-control" name="precio_mayorista" id="precio_mayorista" value="" placeholder="Precio mayorista (. para decimales 5.5)" />
                 </div>
                 <div class="col-xs-4">
-                    <label>Precio Reposicion <i>(Solo si utiliza)</i></label>
+                    <label>Precio Reposici&oacute;n <i>(Solo si utiliza)</i></label>
                     <input type="text" class="form-control" name="precio_reposicion" id="precio_reposicion" value="" placeholder="Precio reposicion (. para decimales 5.5)" />
                 </div>
             </div>
@@ -149,7 +149,7 @@
                 </thead>
                 <tbody>
                     @foreach($productos as $producto)
-                    <tr>
+                    <tr id="<?php echo $producto->id; ?>">
                         <td style="text-align:center">
                             <div class="block">
                                 <div class="block-content">
