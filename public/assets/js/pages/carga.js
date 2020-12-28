@@ -9,7 +9,7 @@ jQuery("document").ready(function() {
             swal({
                 "title":"Verificar",
                 'icon': 'warning',
-                "text":"El nombre del producto no puede ser vacio.",
+                "text":"El nombre del producto no puede estar vacío.",
                 'confirmButtonText': 'Listo'
             });
             return;
@@ -23,11 +23,20 @@ jQuery("document").ready(function() {
             });
             return;
         }
+         if ($("#categoria").val() == "" || $("#categoria").val() == 0 || $("#categoria").val() == null){
+            swal({
+                "title":"Verificar",
+                'icon': 'warning',
+                "text":"Debe seleccionar una categoría",
+                'confirmButtonText': 'Listo'
+            });
+            return;
+        }
         if ($("#costo").val() == ""){
             swal({
                 "title":"Verificar",
                 'icon': 'warning',
-                "text":"Debe colocar el Precio de Ultima Compra",
+                "text":"Debe colocar el Precio de última Compra",
                 'confirmButtonText': 'Listo'
             });
             return;
@@ -71,7 +80,7 @@ jQuery("document").ready(function() {
                     swal({
                         "title":"Perfecto !!",
                         'icon': 'success',
-                        "text":"Actualizar realizada con exito !",
+                        "text":"Actualización realizada con éxito !",
                         'confirmButtonText': 'Listo',
                         
                     });

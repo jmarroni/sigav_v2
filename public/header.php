@@ -449,6 +449,9 @@ function getMes($numero){
                             <li>
                                 <a href="/usuarios_api.php">Api</a>
                             </li>   
+                               <li>
+                                <a href="/productos_auditoria.php">Productos</a>
+                            </li>  
                         </ul>
                     </li> 
                     
