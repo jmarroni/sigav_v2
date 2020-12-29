@@ -33,10 +33,10 @@ class ProductoController extends Controller
         $sucursales = Sucursales::all();
         $sucursal = (isset($request->sucursal)?$request->sucursal:Sucursales::getSucursal());
         $productos = Producto::with(['stock_' => 
-                                        function ($query) use ($sucursal)
-                                        {
-                                            $query->where("sucursal_id",$sucursal);
-                                        }])->get();
+            function ($query) use ($sucursal)
+            {
+                $query->where("sucursal_id",$sucursal);
+            }])->get();
         return view("productos.accion",compact("productos","proveedores","mensaje","sucursal","sucursales"));
     }
 
@@ -50,6 +50,7 @@ class ProductoController extends Controller
         $stock_logs->stock          = $_stock;
         $stock_logs->stock_minimo   = $stock_minimo;
         $stock_logs->usuario        = $_COOKIE["kiosco"];
+        $stock_logs->tipo_operacion = 'Actualización';
         if (!(isset($stock))){
             $stock = new Stock();
             $stock_logs->stock_anterior         = "-1";
@@ -84,7 +85,8 @@ class ProductoController extends Controller
      */
     public function store(Request $request)
     {
-
+        $id=0;
+        $stock_logs = new Stock_log();
         if ($request->id != ""){
             $productos = Producto::find($request->id);
             $stock = new Stock();
@@ -94,6 +96,13 @@ class ProductoController extends Controller
             $stock->stock_minimo    = 0;
             $stock->usuario         = $_COOKIE["kiosco"];
             $stock->save();
+            $stock_logs->productos_id   = $request->id;
+            $stock_logs->sucursal_id    = Sucursales::getSucursal();;
+            $stock_logs->stock          = 0;
+            $stock_logs->stock_minimo   = 0;
+            $stock_logs->usuario        = $_COOKIE["kiosco"];
+            $stock_logs->tipo_operacion = 'Actualización';
+            $stock_logs->save();
             $mensaje = "Actualizaci&oacute;n realizada exitosamente";
         }else{
             $productos = new Producto();
@@ -103,7 +112,7 @@ class ProductoController extends Controller
         if ($request->codigo_de_barras != ""){ 
             $codigo_barras =  $request->codigo_de_barras;
         }else 
-            $codigo_barras = $request->categoria.substr("000000".$request->proveedor,-5).rand(111111,999999);
+        $codigo_barras = $request->categoria.substr("000000".$request->proveedor,-5).rand(111111,999999);
         $productos->codigo_barras       = $codigo_barras;
         $productos->nombre              = $request->producto;
         $productos->precio_unidad       = $request->precio_unidad;
@@ -122,6 +131,16 @@ class ProductoController extends Controller
         $productos->material            = $request->material;
         $productos->precio_reposicion   = ($request->precio_reposicion == "")?0:$request->precio_reposicion;
         $productos->save();
+       // $id=Producto::latest('id')->first()->id;
+        $stock_logs->productos_id   = $productos->id;
+        $stock_logs->sucursal_id    = 0;
+        $stock_logs->stock          = 0;
+        $stock_logs->stock_minimo   = 0;
+        $stock_logs->usuario        = $_COOKIE["kiosco"];
+        $stock_logs->stock_minimo_anterior=0;
+        $stock_logs->stock_anterior=0;
+        $stock_logs->tipo_operacion = 'Alta';
+        $stock_logs->save();
         $imagenes = array();
         for($i = 0;$i < 7; $i ++){
             if ($request->hasFile('imagen'.$i)) {
@@ -189,6 +208,39 @@ class ProductoController extends Controller
     public function destroy($id)
     {
         //
+        
     }
+    public function delete_stock(Request $request,$id,$_stock,$stock_minimo,$sucursal)
+    {
+     if (!isset($_COOKIE["kiosco"])) {
+        if (!isset($_GET["apiKey"]) || $_GET["apiKey"] != "a0a035dc5213448bb1a130c27f2494c5")
+            header('Location: /');
+        else{
+            header('Access-Control-Allow-Origin: *');
+            header('Content-Type: application/json');
+        }
+    }
+    $stock = Stock::where("productos_id",$id)->where("sucursal_id",$sucursal)->first();
+    $producto =Producto::find($id);
+    $stock_logs = new Stock_log();
+    $stock_logs->productos_id   = $id;
+    $stock_logs->sucursal_id    = 0;
+    $stock_logs->stock          = $_stock;
+    $stock_logs->stock_minimo   = $stock_minimo;
+    $stock_logs->usuario        = $_COOKIE["kiosco"];
+    $stock_logs->tipo_operacion = 'Baja';
+    $stock_logs->stock_anterior         = $producto->stock;
+    $stock_logs->stock_minimo_anterior  = $producto->stock_minimo;
+        //Elimina el producto
+    Producto::destroy($id);
+        //Elimina los stocks de las diferentes sucursales asociados a ese producto
+    Stock::where('productos_id', '=', $id)->delete();
+        //Se guarda el registro en la tabla de auditoría
+    $stock_logs->save();
+    return response()->json(array("proceso" => "OK"));
+        // $mensaje="Eliminaci&oacute;n realizada exitosamente";
+        // return redirect('carga/mensaje/'.base64_encode($mensaje));
+}
+
 
 }
