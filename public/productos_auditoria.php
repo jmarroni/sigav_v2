@@ -140,7 +140,11 @@ require ('header.php'); ?>
                                         <td><?php echo $row["stock"]; ?></td>
                                         <td><?php echo $row["stock_minimo"]; ?></td>
                                         <td><?php echo $row["updated_at"]; ?></td>
+<<<<<<< HEAD
+                                        <td><?php echo str_replace("?","&Oacute;",utf8_decode($row["tipo_operacion"])) ?></td>
+=======
                                         <td><?php echo $row["tipo_operacion"]; ?></td>
+>>>>>>> master
                                     </tr>
                                     <?php $i++;}
                                 }

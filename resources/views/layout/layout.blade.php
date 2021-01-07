@@ -30,10 +30,10 @@ require (public_path().'/header.php');
         padding-top: 50px !important;
     }
 </style>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
-        <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
-        <!-- Page Content -->
+<link rel="stylesheet" href="/assets/css/core/bootstrapv3.3.7.css">
+<link rel="stylesheet" href="/assets/css/core/sweetalert.minv1.1.3.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/core/slickv1.8.1.css"/>
+<!-- Page Content -->
 <div class="content content-boxed">
     <?php if (isset($mensaje)){ ?>
         <div class="block block-rounded" id="add_success" style="background-color: #46c37b !important;color:white;">
@@ -45,13 +45,13 @@ require (public_path().'/header.php');
     <!-- END Products -->
     <!-- END Main Container --> 
     @section('body')
-        @show
+    @show
     <!-- Footer -->
 </div>
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="/assets/js/pages/carga.js?v=1.08"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
-        @include('sweet::alert')
+@include('sweet::alert')
 @section('scripts')
-        @show
+<script src="/assets/js/core/jqueryv1.12.4.js"></script>
+<script src="/assets/js/pages/carga.js?v=1.08"></script>
+
+@show
 <?php require (public_path()."/footer.php"); ?>

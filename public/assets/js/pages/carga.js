@@ -195,6 +195,7 @@ function modificar(identificador){
             $("#precio_unidad").val(jsonData.precio_unidad);
             $("#codigo_de_barras").val(jsonData.codigo_barras);
             $("#proveedor").val(jsonData.proveedores_id);
+            $("#categoria").val(jsonData.categorias_id + '_' + jsonData.abreviatura);
             $("#descripcion").val(jsonData.descripcion);
             $("#descripcion_en").val(jsonData.descripcion_en);
             $("#descripcion_pr").val(jsonData.descripcion_pr);
@@ -203,11 +204,11 @@ function modificar(identificador){
             if (jsonData.es_comodato) $("#es_comodato").prop('checked',true); else $("#es_comodato").prop('checked',false);;
             $("#proveedor").change();
             document.location.href="#bg-black-op";
-            setTimeout(function(){ 
+           /* setTimeout(function(){ 
                 $("#categoria").val(jsonData.categorias_id + '_' + jsonData.abreviatura);
             // $("#proveedor").attr("disabled","disabled");
             // $("#categoria").attr("disabled","disabled");
-            },1000);   
+            },1000);   */
         });
     }
 }
