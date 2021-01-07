@@ -1,3 +1,12 @@
+<<<<<<< HEAD
+exception 'Exception' with message '(11000) Campo PtoVta, no es un punto de venta valido, los valores posibles son entre 1 y 99998' in /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php:363
+Stack trace:
+#0 /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(307): ElectronicBilling->_CheckErrors('FECompUltimoAut...', Object(stdClass))
+#1 /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(41): ElectronicBilling->ExecuteRequest('FECompUltimoAut...', Array)
+#2 /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(122): ElectronicBilling->GetLastVoucher('0', 11)
+#3 /var/www/virtual/mercado-artesanal.com.ar/public/facturar.php(221): ElectronicBilling->CreateNextVoucher(Array)
+#4 {main}
+=======
 Exception: SOAP Fault: soap:Sender
 Server was unable to read request. ---> There is an error in XML document (2, 1526). ---> Input string was not in a correct format.
  in /var/www/sigav_v2/public/vendor/afipsdk/afip.php/src/Afip.php:401
@@ -8,3 +17,4 @@ Stack trace:
 #3 /var/www/sigav_v2/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(129): ElectronicBilling->CreateVoucher()
 #4 /var/www/sigav_v2/public/nota_de_credito.php(135): ElectronicBilling->CreateNextVoucher()
 #5 {main}
+>>>>>>> 8427da76395b61a4f2fc26bc1854f7795ee004b3

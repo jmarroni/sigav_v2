@@ -105,7 +105,6 @@ if ($tipoDocumento != "" && $documento != ""){
 }
 
 
-print_r($data);exit();
 //$res["CAE"] = "1111";
 //$res["CAEFchVto"] = date("Y-m-d");
 //$res["voucher_number"] = date("YmdHis");
