@@ -15,6 +15,9 @@ if ($_POST){
             setcookie("rol",setRol($row_stock["rol_id"]),time() + 3600*24,"/");
             if (!(isset($_COOKIE["lista_precio"]))) setcookie("lista_precio",1,time() + 3600*24,"/");
             switch ($row_stock["rol_id"]) {
+                case '3':
+                    header('Location: /carga');
+                    break;
                 case '1':
                 case '4':
                     header('Location: /ventas.php');
