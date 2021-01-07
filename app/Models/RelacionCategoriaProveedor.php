@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Proveedor extends Model
+class RelacionCategoriaProveedor extends Model
 {
-    protected $table ='proveedor';
+    protected $table ='relacion_categoria_proveedor';
     public $timestamps = false;
 }
