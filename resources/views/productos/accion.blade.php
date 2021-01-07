@@ -49,22 +49,22 @@
                 </div>
                 <div class="col-xs-4">
                     <label>Precio &Uacute;ltima Compra (*)</label>
-                    <input type="text" class="form-control" name="costo" id="costo" value="" placeholder="Costo por unidad" />
+                    <input type="text" class="form-control prices" name="costo" id="costo" value="" placeholder="Costo por unidad" />
                 </div>
             </div>
             <div class="form-group">
                 
                 <div class="col-xs-4">
                     <label>Precio Minorista (*)</label>
-                    <input type="text" class="form-control" name="precio_unidad" id="precio_unidad" value="" placeholder="Precio unidad (. para decimales 5.5)" />
+                    <input type="text" class="form-control prices" name="precio_unidad" id="precio_unidad" value="" placeholder="Precio unidad (. para decimales 5.5)" />
                 </div>
                 <div class="col-xs-4">
                     <label>Precio Mayorista <i>(Solo si utiliza)</i></label>
-                    <input type="text" class="form-control" name="precio_mayorista" id="precio_mayorista" value="" placeholder="Precio mayorista (. para decimales 5.5)" />
+                    <input type="text" class="form-control prices" name="precio_mayorista" id="precio_mayorista" value="" placeholder="Precio mayorista (. para decimales 5.5)" />
                 </div>
                 <div class="col-xs-4">
                     <label>Precio Reposici&oacute;n <i>(Solo si utiliza)</i></label>
-                    <input type="text" class="form-control" name="precio_reposicion" id="precio_reposicion" value="" placeholder="Precio reposicion (. para decimales 5.5)" />
+                    <input type="text" class="form-control prices" name="precio_reposicion" id="precio_reposicion" value="" placeholder="Precio reposicion (. para decimales 5.5)" />
                 </div>
             </div>
             <div class="col-xs-4">
@@ -169,14 +169,14 @@
                         </td>
                         <td>{{$producto->nombre}}</td>
                         @if (isset($producto->stock_->stock))
-                            <td style="text-align:center"><input style="width:50px" type="text" value="{{$producto->stock_->stock}}" name="stock_{{$producto->id}}" id="stock_{{$producto->id}}" /></td>
+                            <td style="text-align:center"><input style="width:50px" type="text" value="{{$producto->stock_->stock}}" name="stock_{{$producto->id}}" class="numbers" id="stock_{{$producto->id}}" /></td>
                         @else
-                            <td style="text-align:center"><input style="width:50px" type="text" value="0" name="stock_{{$producto->id}}" id="stock_{{$producto->id}}" /></td>
+                            <td style="text-align:center"><input style="width:50px" type="text" value="0" name="stock_{{$producto->id}}" class="numbers" id="stock_{{$producto->id}}" /></td>
                         @endif
                         @if (isset($producto->stock_->stock_minimo))
                             <td style="text-align:center"><input style="width:50px" type="text" value="{{$producto->stock_->stock_minimo}}" name="stock_minimo_{{$producto->id}}" id="stock_minimo_{{$producto->id}}" /></td>
                         @else
-                        <td style="text-align:center"><input style="width:50px" type="text" value="0" name="stock_minimo_{{$producto->id}}" id="stock_minimo_{{$producto->id}}" /></td>
+                        <td style="text-align:center"><input style="width:50px" type="text" value="0" name="stock_minimo_{{$producto->id}}" class="numbers" id="stock_minimo_{{$producto->id}}" /></td>
                         @endif
                         <td>{{$producto->precio_unidad}}</td>
                         <td>{{$producto->precio_reposicion}}</td>

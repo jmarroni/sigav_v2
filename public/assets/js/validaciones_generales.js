@@ -16,7 +16,12 @@ jQuery("document").ready(function() {
    $(".lettersNumbers").on("input", function(){
      $(this).val($(this).val().toUpperCase());
     });
-
+ $(".prices").on("input", function(){
+     var regexp = /[^0-9 .,]/g;
+     if($(this).val().match(regexp)){
+       $(this).val( $(this).val().replace(regexp,'') );
+   }
+   });
 });
 function validarMail()
 {
