@@ -351,13 +351,13 @@ function getMes($numero){
                                         <a href="/carga" >Productos</a>
                                     </li>
                                     <li>
-                                        <a href="/actualizar_artesanos.php">Proveedor</a>
+                                        <a href="/proveedor">Proveedor</a>
                                     </li>
                                     <li>
-                                        <a href="/actualizar_categorias.php">Categorias</a>
+                                        <a href="/actualizar_categorias.php">Categor&iacute;as</a>
                                     </li>
                                     <li>
-                                        <a href="/impresion_etiquetas.php">Impresion de etiquetas</a>
+                                        <a href="/impresion_etiquetas.php">Impresi&oacute;n de etiquetas</a>
                                     </li>
                                 </ul>
                             </li>
@@ -376,9 +376,6 @@ function getMes($numero){
                                 <?php if (getRol() > 2) { ?>
                                 <li>
                                     <a href="/transferencias_sucursales.php">Transferencias</a>
-                                </li>
-                                <li>
-                                    <a href="/productos_por_sucursal.php?pagina=1">Productos y stock</a>
                                 </li>
                                 <li>
                                     <a href="/stock_por_sucursal.php">Stock por sucursales</a>
@@ -444,13 +441,13 @@ function getMes($numero){
                                 <a href="/devoluciones.php">Devoluciones</a>
                             </li>
                             <li>
-                                <a href="/nota_debito.php">Nota Debito</a>
+                                <a href="/nota_debito.php">Nota D&eacute;bito</a>
                             </li>
                             <li>
                                 <a href="/usuarios_api.php">Api</a>
                             </li>   
                                <li>
-                                <a href="/productos_auditoria.php">Productos</a>
+                                <a href="/productos_auditoria.php">Logs Productos</a>
                             </li>  
                         </ul>
                     </li> 

@@ -1,6 +1,5 @@
 </main>
 <!-- END Main Container -->
-
 <!-- Footer -->
 <footer id="page-footer" class="bg-body font-s12">
     <div class="content-mini content-mini-full content-boxed clearfix push-15">
@@ -25,5 +24,7 @@
 <script src="/assets/js/core/jquery.placeholder.min.js"></script>
 <script src="/assets/js/core/js.cookie.min.js"></script>
 <script src="/assets/js/app.js"></script>
+<script src="/assets/js/core/js.sweetalertv1.1.3.js"></script>
+<script src="/assets/js/validaciones_generales.js"></script>
 </body>
 </html> 
