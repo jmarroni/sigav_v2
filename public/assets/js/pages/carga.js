@@ -150,7 +150,7 @@ jQuery("document").ready(function() {
                 $("#categoria").removeAttr("disabled");
             });
         }else{
-            $("#categoria").html("<option value='0'>Seleccione un artesano</option>");
+            $("#categoria").html("<option value='0'>Seleccione un proveedor</option>");
             $("#categoria").attr("disabled","disabled");
         }
     });

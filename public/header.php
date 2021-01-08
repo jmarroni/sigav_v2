@@ -354,7 +354,7 @@ function getMes($numero){
                                         <a href="/proveedor">Proveedor</a>
                                     </li>
                                     <li>
-                                        <a href="/actualizar_categorias.php">Categor&iacute;as</a>
+                                        <a href="/categoria">Categor&iacute;as</a>
                                     </li>
                                     <li>
                                         <a href="/impresion_etiquetas.php">Impresi&oacute;n de etiquetas</a>
@@ -448,6 +448,10 @@ function getMes($numero){
                             </li>   
                                <li>
                                 <a href="/productos_auditoria.php">Logs Productos</a>
+                            </li>  
+                             </li>   
+                               <li>
+                                <a href="/categorias_auditoria.php">Logs Categor&iacute;as</a>
                             </li>  
                         </ul>
                     </li> 

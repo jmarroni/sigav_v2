@@ -5,7 +5,7 @@ jQuery("document").ready(function() {
     }, 3000);
     $("#enviar").click(function(event){
         event.preventDefault();
-        if ($("#nombre").val()=="" || $("#apellido").val()=="" || $("#direccion").val()=="" || $("#ciudad").val()=="" || $("#provincia").val()=="" || $("#telefono").val()=="" || $("#categoria").val()=="0")
+        if ($("#nombre").val()=="" ||  $("#abreviatura").val()=="")
         { 
            swal({
             "title":"Verificar",
@@ -17,9 +17,9 @@ jQuery("document").ready(function() {
        else
        { 
         $(".form-horizontal").submit();
-        var datos = $("#form-artesano").serialize();
-          var url = "/proveedor.save/" + datos;
-          //console.log(datos);
+        var datos = $("#form-categoria").serialize();
+          var url = "/categoria.save/" + datos;
+          console.log(datos);
             $.post(url, function(data, status){  
                 if(data.proceso == "OK"){
                     swal({
@@ -33,7 +33,7 @@ jQuery("document").ready(function() {
                     swal({
                         "title":"Error",
                         'icon': 'error',
-                        "text":"Ocurrió un error al guardar el proveedor",
+                        "text":"Ocurrió un error al guardar la categoría",
                         'confirmButtonText': 'Listo'
                     });
                 }
@@ -42,9 +42,9 @@ jQuery("document").ready(function() {
     });
 });
 
-function eliminarArtesano(identificador){
-    if (confirm('¿Está seguro que desea eliminar el proveedor?')) {
-        $.get("/proveedor.checkProducts/"+ identificador, function(data, status) {
+function eliminarCategoria(identificador){
+    if (confirm('¿Está seguro que desea eliminar la categoría?')) {
+        $.get("/categoria.checkProducts/"+ identificador, function(data, status) {
             if (status === 'success') {
                 if (data.proceso=='FAIL' ) {
                     $("#erroreliminar").fadeIn();
@@ -54,7 +54,7 @@ function eliminarArtesano(identificador){
                         $("#erroreliminar").fadeOut();
                     }, 3000);
                 } else {
-                    var url= "/proveedor.delete/" + identificador;
+                    var url= "/categoria.delete/" + identificador;
                     $.get(url, function(data, status){  
                 if(data.proceso == "OK"){
                     swal({
@@ -81,31 +81,46 @@ function eliminarArtesano(identificador){
     }
 }
 
-function modificarArtesano(identificador) {
-    $.get("/proveedor.getProveedor/"+identificador , function(data, status) {
+function modificarCategoria(identificador) {
+    $.get("/categoria.getCategoria/"+identificador , function(data, status) {
         if (status === 'success') {
-            $("#id_proveedor").val(data.id);
+            $("#id_categoria").val(data.id);
             $("#nombre").val(data.nombre);
-            $("#apellido").val(data.apellido);
-            $("#direccion").val(data.direccion);
-            $("#ciudad").val(data.ciudad);
-            $("#provincia").val(data.provincia);
-            $("#telefono").val(data.telefono);
-            $("#mail").val(data.mail);
-            $("#sitio_web").val(data.sitio_web);
+            $("#abreviatura").val(data.abreviatura);
         }
     });
-     $.get("/getCategoriasProveedor/"+identificador , function(data, status) {
+}
+function cambiarStatus(identificador) {
+    $.get("/categoria.changeStatus/"+identificador , function(data, status) {
         if (status === 'success') {
-            var arrayCategorias = data.split(',');
-            //console.log(arrayCategorias);
-            for (var i=0; i < arrayCategorias.length; i++) 
-            {
-                if (arrayCategorias[i]!='')
+             if(data.proceso == "OK"){
+                if(data.status == 0)
                     {
-                        $("#categoria option[value="+arrayCategorias[i]+"]").attr("selected",true);
+                         $("#status_"+identificador).text("Habilitar");
+                         $("#spanHabilitada_"+identificador).text("Habilitado No");
+                         $("#spanHabilitada_"+identificador).css("color","red")
                     }
-            }
+                else
+                    {
+                         $("#status_"+identificador).text("Desabilitar");
+                         $("#spanHabilitada_"+identificador).text("Habilitado Si");
+                         $("#spanHabilitada_"+identificador).css("color","")
+                    }
+           swal({
+                        "title":"Perfecto !!",
+                        'icon': 'success',
+                        "text":"Estatus cambiado con éxito!",
+                        'confirmButtonText': 'Listo',
+                       
+                    });
+            }else{
+                    swal({
+                        "title":"Error",
+                        'icon': 'error',
+                        "text":"Error al cambiar el estatus",
+                        'confirmButtonText': 'Listo'
+                    });
+                }
         }
     });
 }

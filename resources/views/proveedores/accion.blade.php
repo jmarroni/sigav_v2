@@ -1,7 +1,7 @@
 @extends('layout.layout');
 <style>
     .ui-autocomplete-loading {
-        background: white url("assets/img/favicons/ui-anim_basic_16x16.gif") right center no-repeat;
+        background: white url("/assets/img/favicons/ui-anim_basic_16x16.gif") right center no-repeat;
     }
 </style>
 @section("body")
@@ -13,7 +13,7 @@
                 <div class="block block-transparent block-themed text-center">
                     <div class="block-content">
                         <h1 class="h1 font-w700 text-white animated fadeInDown push-5">&Aacute;rea Carga</h1>
-                        <h2 class="h4 font-w400 text-white-op animated fadeInUp">Se cargaron <?php echo count($productos); ?> productos</h2>
+                        <h2 class="h4 font-w400 text-white-op animated fadeInUp">Se cargaron <?php echo $total; ?> productos</h2>
                     </div>
                 </div>
             </div>
@@ -33,7 +33,7 @@
         <div class="block-content">
             <form class="form-horizontal" id="form-artesano" action="/proveedor.save" enctype="multipart/form-data" method="post" >
                 <input type="hidden" value="" name="id" id="id" />
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
                 <input type="hidden" value="" name="id_proveedor" id="id_proveedor"/>
                 <div class="form-group">
                     <div class="col-xs-4">
@@ -66,8 +66,9 @@
                 </div>
                 <div class="form-group">
                     <div class="col-xs-4">
-                        <label>Categor&iacute;as de Producci&oacute;n</label>
+                        <label>Categor&iacute;as de Producci&oacute;n (*)</label>
                          <select class="form-control" id="categoria" multiple name="categoria[]">
+                            <option value="0" selected></option>
                             @foreach($categorias as $categoria)
                             <option value={{$categoria->id}}>{{$categoria->nombre}}</option>
                             @endforeach
@@ -104,8 +105,8 @@
         <div class="block-content">
             <div class="table-responsive">
                 <table class="table table-hover table-vcenter">
-                    @foreach($proveedores as $proveedor)
                     @if (count($proveedores)>0)
+                    @foreach($proveedores as $proveedor)               
                     <tr id="<?php echo $proveedor->id; ?>">
                         <td class="text-center">
                             <div style="width: 180px;">
@@ -134,16 +135,15 @@
                          </span>
                      </td>
                  </tr>
-
-
+               
+                @endforeach
                  @else
                  <tr>
                     <td>
-                        <label  style="text-align: center;padding-bottom: 15px;font-weight: bold;width: 100%;">No hay ventas en el d&iacute;a de hoy</label>
+                        <label  style="text-align: center;padding-bottom: 15px;font-weight: bold;width: 100%;">No existen proveedores registrados</label>
                     </td>
                 </tr>
-                @endif
-                @endforeach
+                 @endif
             </tbody>
         </table>
     </div>

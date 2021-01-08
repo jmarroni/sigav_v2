@@ -20,6 +20,7 @@ Route::get('/loginejemplo', function(){
 });
 
 Route::get('signup', ['uses' =>'Api\AuthController@signup']);
+//Producto
 Route::resource('carga', 'ProductoController');
 Route::get('carga/mensaje/{mensaje}','ProductoController@index');
 Route::get('producto.actualizar.stock/{id}/{stock}/{stock_minimo}/{sucursal}','ProductoController@update_stock' );
@@ -31,7 +32,15 @@ Route::get('proveedor/mensaje/{mensaje}','ProveedorController@index');
 Route::get('proveedor.delete/{id}','ProveedorController@delete' );
 Route::get('proveedor.checkProducts/{id}', 'ProveedorController@checkProducts');
 Route::get('proveedor.getProveedor/{id}', 'ProveedorController@getProveedor');
-Route::get('getCategoriasProveedor/{id}', 'ProveedorController@getCategoriasProveedor');
+Route::get('proveedor.getCategoriasProveedor/{id}', 'ProveedorController@getCategoriasProveedor');
+//Categoría
+Route::get('categoria', 'CategoriaController@index');
+Route::post('categoria.save', 'CategoriaController@save');
+Route::get('categoria.getCategoria/{id}', 'CategoriaController@getCategoria');
+Route::get('categoria.checkProducts/{id}', 'CategoriaController@checkProducts');
+Route::get('categoria.delete/{id}','CategoriaController@delete' );
+Route::get('categoria.changeStatus/{id}','CategoriaController@changeStatus' );
+Route::get('categoria/mensaje/{mensaje}','CategoriaController@index');
 
 Route::get('tipo/{type}', 'SweetController@notification');
 Route::get('reporte.factura/{desde?}/{hasta?}', 'ReporteController@factura');

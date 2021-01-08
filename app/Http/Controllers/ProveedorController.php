@@ -44,7 +44,7 @@ class ProveedorController extends Controller
         $RCategoriasProveedor = Categoria::join("relacion_categoria_proveedor","relacion_categoria_proveedor.categoria_id", "=", "categorias.id")
         ->select("categorias.nombre", "categorias.habilitada","categorias.id","relacion_categoria_proveedor.proveedor_id")
         ->get();
-        return view("proveedores.accion",compact("productos","proveedores","mensaje","sucursal","sucursales","categorias","RCategoriasProveedor"));
+        return view("proveedores.accion",compact("productos","proveedores","mensaje","sucursal","sucursales","categorias","RCategoriasProveedor","total"));
     }
 
 
@@ -75,21 +75,24 @@ class ProveedorController extends Controller
         $proveedor->save();
 
         //Se recorren las categorías seleccionadas para ingresarlas en la tabla relacion_categoria_proveedor
-        foreach ($request->categoria as $categoria)
+        if (isset($request->categoria))
         {
-           $relacionCategoria= new RelacionCategoriaProveedor();
-        if ($accion==1)
+            foreach ($request->categoria as $categoria)
             {
+             $relacionCategoria= new RelacionCategoriaProveedor();
+             if ($accion==1)
+             {
                 $relacionCategoria->proveedor_id=$request->id_proveedor;
             } 
-        else
+            else
             {
                 $relacionCategoria->proveedor_id= $proveedor->id;
             } 
-        $relacionCategoria->categoria_id=$categoria;
-        $relacionCategoria->save();
+            $relacionCategoria->categoria_id=$categoria;
+            $relacionCategoria->save();
         }  
-     return redirect('proveedor/mensaje/'.base64_encode($mensaje));
+    }  
+    return redirect('proveedor/mensaje/'.base64_encode($mensaje));
 }
     /**
      * Show the form for creating a new resource.
@@ -141,7 +144,7 @@ class ProveedorController extends Controller
      */
     public function delete(Request $request,$id)
     {
-       if (!isset($_COOKIE["kiosco"])) {
+     if (!isset($_COOKIE["kiosco"])) {
         if (!isset($_GET["apiKey"]) || $_GET["apiKey"] != "a0a035dc5213448bb1a130c27f2494c5")
             header('Location: /');
         else{
@@ -161,8 +164,8 @@ public function checkProducts(Request $request, $id)
 {
   $productos=Producto::where('proveedores_id', '=', $id)->get();
   if (count($productos)>0)
-     return response()->json(array("proceso" => "FAIL"));
- else 
+   return response()->json(array("proceso" => "FAIL"));
+else 
   return response()->json(array("proceso" => "OK"));
 }
 
@@ -176,12 +179,12 @@ public function getCategoriasProveedor(Request $request, $id)
   $categorias=RelacionCategoriaProveedor::select('categoria_id')->where('proveedor_id', '=', $id)->get();
   $idcategorias='';
   if (count($categorias)>0)
+  {
+    foreach($categorias as $categoria)
     {
-        foreach($categorias as $categoria)
-            {
-            $idcategorias= $idcategorias.$categoria->categoria_id.',';
-            }
+        $idcategorias= $idcategorias.$categoria->categoria_id.',';
     }
+}
 return response($idcategorias);
 }
 

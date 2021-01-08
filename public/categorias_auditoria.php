@@ -102,7 +102,7 @@ require ('header.php'); ?>
     <!-- Products -->
     <div class="block block-rounded">
         <div class="block-header">
-            <h3 class="block-title">Operaciones con Productos</h3>
+            <h3 class="block-title">Operaciones con Categor&iacute;as</h3>
         </div>
         <div class="block-content">
             <div class="row text-uppercase">
@@ -111,40 +111,25 @@ require ('header.php'); ?>
                         <thead>
                             <tr>
                                 <td>Id</td>
-                                <td>Sucursal</td>
                                 <td>Usuario</td>
-                                <td>ID Producto</td>
-                                <td>Stock Anterior</td>
-                                <td>Stock Mínimo Anterior</td>
-                                <td>Stock</td>
-                                <td>Stock Mínimo</td>
+                                <td>ID Categor&iacute;a</td>
                                 <td>Fecha</td>
-                                <td>Tipo de Operación</td>
+                                <td>Tipo de Operaci&oacute;n</td>
                             </tr>
                         </thead>
                         <tbody>
                             <?php 
-                            $sql = "SELECT sl.id, sl.stock_anterior, sl.stock_minimo_anterior, sl.stock, sl.stock_minimo, sl.sucursal_id, sl.usuario, sl.productos_id, sl.updated_at, sl.created_at, sl.tipo_operacion, sc.nombre FROM stock_logs sl 
-                            left join sucursales sc on sc.id=sl.sucursal_id";
+                            $sql = "SELECT * FROM categorias_logs";
                             $resultado = $conn->query($sql) or die(mysqli_error($conn)." Q=".$sql);
                             if ($resultado->num_rows > 0) {
                                 $i = 1;
                                 while($row = $resultado->fetch_assoc()) {?>
                                     <tr style="<?php echo (($i % 2)== 0)?"background-color: #fff !important;":"background-color: #f9f9f9 !important;"; ?>">
                                         <td><?php echo $row["id"]; ?></td>
-                                        <td><?php if ($row["sucursal_id"]==0) echo 'Todas'; else echo $row["nombre"]; ?></td>
                                         <td><?php echo $row["usuario"]; ?></td>
-                                        <td><?php echo $row["productos_id"]; ?></td>
-                                        <td><?php echo $row["stock_anterior"]; ?></td>
-                                        <td><?php echo $row["stock_minimo_anterior"]; ?></td>
-                                        <td><?php echo $row["stock"]; ?></td>
-                                        <td><?php echo $row["stock_minimo"]; ?></td>
+                                        <td><?php echo $row["categoria_id"]; ?></td>
                                         <td><?php echo $row["updated_at"]; ?></td>
-
                                         <td><?php echo str_replace("?","&Oacute;",utf8_decode($row["tipo_operacion"])) ?></td>
-
-                                        <td><?php echo $row["tipo_operacion"]; ?></td>
-
                                     </tr>
                                     <?php $i++;}
                                 }
