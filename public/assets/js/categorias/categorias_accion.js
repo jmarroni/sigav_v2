@@ -87,6 +87,7 @@ function modificarCategoria(identificador) {
             $("#id_categoria").val(data.id);
             $("#nombre").val(data.nombre);
             $("#abreviatura").val(data.abreviatura);
+            $("#nombre").focus();
         }
     });
 }
