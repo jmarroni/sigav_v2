@@ -23,19 +23,19 @@ $menu["reportes"] = "";
 require ('header.php'); ?>
 <style>
     .ui-autocomplete-loading {
-        background: white url("assets/img/favicons/ui-anim_basic_16x16.gif") right center no-repeat;
+        background: white url("/assets/img/favicons/ui-anim_basic_16x16.gif") right center no-repeat;
     }
 </style>
 <!-- Page Content -->
 <div class="content content-boxed">
     <!-- Section -->
-    <div class="bg-image img-rounded overflow-hidden push" style="background-image: url('assets/img/photos/photo25@2x.jpg');">
+    <div class="bg-image img-rounded overflow-hidden push" style="background-image: url('/assets/img/photos/photo25@2x.jpg');">
         <div class="bg-black-op">
             <div class="content">
                 <div class="block block-transparent block-themed text-center">
                     <div class="block-content">
-                        <h1 class="h1 font-w700 text-white animated fadeInDown push-5">Area Carga</h1>
-                        <h2 class="h4 font-w400 text-white-op animated fadeInUp">Se cargaron <?php echo $total; ?> productos</h2>
+                        <h1 class="h1 font-w700 text-white animated fadeInDown push-5">Logs Productos</h1>
+                        <h2 class="h4 font-w400 text-white-op animated fadeInUp"></h2>
                     </div>
                 </div>
             </div>
@@ -140,11 +140,7 @@ require ('header.php'); ?>
                                         <td><?php echo $row["stock"]; ?></td>
                                         <td><?php echo $row["stock_minimo"]; ?></td>
                                         <td><?php echo $row["updated_at"]; ?></td>
-
-                                        <td><?php echo str_replace("?","&Oacute;",utf8_decode($row["tipo_operacion"])) ?></td>
-
-                                        <td><?php echo $row["tipo_operacion"]; ?></td>
-
+                                        <td><?php echo str_replace("?","&Oacute;",utf8_decode($row["tipo_operacion"])); ?></td>
                                     </tr>
                                     <?php $i++;}
                                 }
@@ -157,7 +153,6 @@ require ('header.php'); ?>
         </div>
         <!-- END Products -->
     </div>
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script>
         jQuery("document").ready(function() {
             setTimeout(function () {

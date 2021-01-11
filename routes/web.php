@@ -41,6 +41,14 @@ Route::get('categoria.checkProducts/{id}', 'CategoriaController@checkProducts');
 Route::get('categoria.delete/{id}','CategoriaController@delete' );
 Route::get('categoria.changeStatus/{id}','CategoriaController@changeStatus' );
 Route::get('categoria/mensaje/{mensaje}','CategoriaController@index');
+//Impresión de etiquetas
+Route::get('etiqueta', 'EtiquetaController@index');
+Route::get('etiqueta.get_Qr/{id}', 'EtiquetaController@get_Qr');
+//Roles
+Route::get('rol', 'RolController@index');
+Route::post('rol.save', 'RolController@save');
+Route::get('rol/mensaje/{mensaje}','RolController@index');
+Route::get('rol.delete/{id}','RolController@delete' );
 
 Route::get('tipo/{type}', 'SweetController@notification');
 Route::get('reporte.factura/{desde?}/{hasta?}', 'ReporteController@factura');

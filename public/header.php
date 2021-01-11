@@ -398,7 +398,7 @@ function getMes($numero){
                             </li>
                             <?php if (getRol() > 3) { ?>
                             <li>
-                                <a href="/rol.php">Rol</a>
+                                <a href="/rol">Rol</a>
                             </li>
                             <?php } ?>
                             <?php if (getRol() > 2) { ?>
