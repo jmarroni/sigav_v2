@@ -242,5 +242,111 @@ class ProductoController extends Controller
         // return redirect('carga/mensaje/'.base64_encode($mensaje));
 }
 
+public function searchProducts(request $request)
+    {
+
+       if (isset($request->producto) && intval($request->producto) !== null)
+       { 
+            $lista_precio = (isset($_COOKIE["lista_precio"]))?$_COOKIE["lista_precio"]:1;
+            $producto = Stock::join("productos","productos.id", "=", "stock.productos_id")
+            ->leftjoin("imagen_producto ","imagen_producto.productos_id", "=", "productos.id")
+            ->where("sucursal_id =".intval($request->sucursal)." AND productos_id = ".$request->producto)
+            ->select("imagen_producto.imagen_url as imagen","productos.nombre","productos.codigo_barras", "productos.id","stock.stock", "stocks.stock_minimo", "productos.precio_unidad", "productos.precio_mayorista", "productos.costo")
+            ->get();
+            if (count($producto)>0)
+                { 
+                    $datos[0]["value"]         = $producto->nombre." (".$producto->codigo_barras.")";
+                    $datos[0]["label"]         = $producto->nombre." (".$producto->codigo_barras.")";
+                    $datos[0]["id"]            = $producto->id;
+                    $datos[0]["costo"]         = $producto->costo;
+                    $datos[0]["precio"]        = ($lista_precio == 1)?$producto->precio_unidad:$producto->precio_mayorista;
+                    $datos[0]["stock"]         = $producto->stock;
+                    $datos[$i]["imagen"]         = (isset($producto->imagen))?$producto->imagen:"http://mercado-artesanal.com.ar/assets/img/photos/no-image-featured-image.png";
+                    $datos[0]["stock_minimo"]  = $producto->stock_minimo;
+                    $datos[0]["codigo_barras"] = $producto->codigo_barras;
+                }
+            else
+                { 
+                    $imagen_productos = Producto::leftjoin("imagen_producto","imagen_productos.id", "=", "productos.id")
+                    ->where("id =".intval($request->producto))
+                    ->select("productos.*","imagen_producto.imagen_url as imagen")
+                    ->get(); 
+                    $i=0;
+                    if (count($productos)>0) 
+                        { 
+                              foreach($productos as $producto)
+                                    { 
+                                        $datos[$i]["value"]         = $producto->nombre." (".$producto->codigo_barras.")";
+                                        $datos[$i]["label"]         = $producto->nombre." (".$producto->codigo_barras.")";
+                                        $datos[$i]["id"]            = $producto->id;
+                                        $datos[$i]["costo"]         = $producto->costo;
+                                        $datos[$i]["precio"]        = ($_COOKIE["lista_precio"] == 1)?$producto->precio_unidad:$producto->precio_mayorista;
+                                        $datos[$i]["stock"]         = 0;
+                                        $datos[$i]["imagen"]        = (isset($producto->imagen))?$producto->imagen:"http://mercado-artesanal.com.ar/assets/img/photos/no-image-featured-image.png";
+                                        $datos[$i]["stock_minimo"]  = 0;
+                                        $datos[$i]["codigo_barras"] = $producto->codigo_barras;
+                         
+                                    }
+                        }        
+
+                }
+        }       
+        else
+        {
+                 $sucursal_seleccionada = (isset($request->sucursal))?intval($request->sucursal):Sucursales::getSucursal($_COOKIE["sucursal"]);
+                  $productos = Producto::leftjoin("stock","stock.productos_id", "=", "productos.id")
+                            ->leftjoin("sucursales","sucursales.id", "=", "stock.sucursal_id")
+                            ->leftjoin("imagen_producto","imagen_producto.productos_id", "=", "productos.id")
+                            ->where("productos.nombre","like", "%" . $_GET["query"]. "%","OR")
+                            ->ORwhere("productos.codigo_barras","like", "%" . $_GET["query"] . "%")
+                            ->where("sucursales.id",$sucursal_seleccionada)
+                            ->select("productos.*","sucursales.id as idsucursal","imagen_producto.imagen_url","stock.stock AS stock_sucursal","stock.stock_minimo AS stock_sucursal")
+                            ->OrderBy("productos.id")
+                            ->get();
+                            $i=0;    
+                $lista_precio = (isset($_COOKIE["lista_precio"]))?$_COOKIE["lista_precio"]:1;
+                if (count($productos)>0) 
+                    {
+                        foreach($productos as $producto)
+                            {
+                                $datos[$i]["value"]         = utf8_encode($producto->nombre." (".$producto->codigo_barras.")");
+                                $datos[$i]["label"]         = utf8_encode($producto->nombre." (".$producto->codigo_barras.")");
+                                $datos[$i]["id"]            = $producto->id;
+                                $datos[$i]["costo"]         = $producto->costo;
+                                $datos[$i]["precio"]        = ($lista_precio == 1)?$producto->precio_unidad:$producto->precio_mayorista;
+                                $datos[$i]["stock"]         = 0;
+                                $datos[$i]["imagen"]        =  (isset($producto->imagen))?str_replace('/'.$producto->id.'/','/'.$producto->id.'/thumb_300x300_',$producto->imagen):"/assets/img/photos/no-image-featured-image.png";
+                                $datos[$i]["stock"]         = $producto->stock_sucursal;
+                                $datos[$i]["stock_minimo"]  = $producto->stock_sucursal;
+                                $datos[$i]["codigo_barras"] = $producto->codigo_barras;
+                                if (isset($request->sucursal) && ($request->sucursal != ""))
+                                    {
+                                    $stock =Stock::where("sucursal_id =".intval($request->sucursal)." AND productos_id = ".$producto->id)
+                                        ->get();
+                                     if (count($stock)>0) 
+                                        {           
+                                            $datos[$i]["stock"]         =   $stock->stock;
+                                            $datos[$i]["stock_minimo"]  =   $stock->stock_minimo;
+                                        }
+                                        else
+                                        {
+                                            $datos[$i]["stock"]         =   0; 
+                                            $datos[$i]["stock_minimo"]  =   0;
+                                         }
+                               
+                                 } //endif
+                                 $i++;
+                            } //endforeach
+                } //endif
+                else 
+                    {
+                        $datos = array("data" => "no data");
+                    }
+     } //endelse
+ 
+
+ return response()->json($datos);
+
+}
 
 }

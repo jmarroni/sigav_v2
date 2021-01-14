@@ -43,12 +43,21 @@ Route::get('categoria.changeStatus/{id}','CategoriaController@changeStatus' );
 Route::get('categoria/mensaje/{mensaje}','CategoriaController@index');
 //Impresión de etiquetas
 Route::get('etiqueta', 'EtiquetaController@index');
-Route::get('etiqueta.get_Qr/{id}', 'EtiquetaController@get_Qr');
+Route::get('etiqueta.getQr/{id}', 'EtiquetaController@getQr');
+Route::get('etiqueta.buscarProductos', 'ProductoController@searchProducts');
+Route::get('etiqueta.imprimir/{etiquetas}', 'EtiquetaController@printEtiquetas');
 //Roles
 Route::get('rol', 'RolController@index');
 Route::post('rol.save', 'RolController@save');
 Route::get('rol/mensaje/{mensaje}','RolController@index');
 Route::get('rol.delete/{id}','RolController@delete' );
+//Usuarios
+Route::get('usuario', 'UsuarioController@index');
+Route::post('usuario.save', 'UsuarioController@save');
+Route::get('usuario/mensaje/{mensaje}','UsuarioController@index');
+Route::get('usuario.delete/{id}','UsuarioController@delete' );
+Route::get('usuario.getUsuario/{id}', 'UsuarioController@getUsuario');
+
 
 Route::get('tipo/{type}', 'SweetController@notification');
 Route::get('reporte.factura/{desde?}/{hasta?}', 'ReporteController@factura');

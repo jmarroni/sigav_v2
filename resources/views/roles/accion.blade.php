@@ -12,7 +12,7 @@
 			<div class="content">
 				<div class="block block-transparent block-themed text-center">
 					<div class="block-content">
-						<h1 class="h1 font-w700 text-white animated fadeInDown push-5">&Aacute;rea de Roles</h1>
+						<h1 class="h1 font-w700 text-white animated fadeInDown push-5" style="color:white">Roles</h1>
 					</div>
 				</div>
 			</div>
@@ -36,7 +36,7 @@
 				<div class="form-group">
 					<div class="col-xs-4">
 						<label for="bd-qsettings-name">Rol</label>
-						<input type="text" class="form-control letters" name="rol" id="rol" value="" placeholder="nombre de fantasia del rol" />
+						<input type="text" class="form-control letters" name="rol" id="rol" value="" placeholder="Administrador" />
 					</div>
 					<div class="col-xs-3 col-xs-offest-1" style="margin-top:2%;">
 						<label class="css-input switch switch-success">

@@ -12,8 +12,8 @@
             <div class="content">
                 <div class="block block-transparent block-themed text-center">
                     <div class="block-content">
-                        <h1 class="h1 font-w700 text-white animated fadeInDown push-5">&Aacute;rea Carga</h1>
-                        <h2 class="h4 font-w400 text-white-op animated fadeInUp">Se cargaron <?php echo $total; ?> productos</h2>
+                        <h1 class="h1 font-w700 text-white animated fadeInDown push-5" style="color:white">Proveedores</h1>
+                        <h2 class="h4 font-w400 text-white-op animated fadeInUp"></h2>
                     </div>
                 </div>
             </div>

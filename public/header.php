@@ -357,7 +357,7 @@ function getMes($numero){
                                         <a href="/categoria">Categor&iacute;as</a>
                                     </li>
                                     <li>
-                                        <a href="/impresion_etiquetas.php">Impresi&oacute;n de etiquetas</a>
+                                        <a href="/etiqueta">Impresi&oacute;n de etiquetas</a>
                                     </li>
                                 </ul>
                             </li>
@@ -394,7 +394,7 @@ function getMes($numero){
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="/usuarios.php" >Usuarios</a>
+                                <a href="/usuario" >Usuarios</a>
                             </li>
                             <?php if (getRol() > 3) { ?>
                             <li>
