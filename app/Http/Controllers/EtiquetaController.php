@@ -62,7 +62,20 @@ class EtiquetaController extends Controller
         $etiquetasimprimir=($etiquetas=="")?"":$etiquetas;  
         $arrEtiquetas = explode('-',$etiquetasimprimir);
         $productos=Producto::all();
-        return view("etiquetas.imprimir",compact("etiquetasimprimir","arrEtiquetas","productos"));
+        return view("etiquetas.imprimirEtiquetas",compact("etiquetasimprimir","arrEtiquetas","productos"));
+    }
+    public function printQrs(Request $request, $etiquetas)
+    {
+        if (!isset($_COOKIE["kiosco"])) 
+            {
+                header('Location: /');
+            }
+        $etiquetasimprimir=($etiquetas=="")?"":$etiquetas;  
+        $arrEtiquetas = explode('-',$etiquetasimprimir);
+        $productos = Producto::join("proveedor","proveedor.id", "=", "productos.proveedores_id")
+       ->select("proveedor.sitio_web","productos.id")
+       ->get();
+        return view("etiquetas.imprimirQrs",compact("etiquetasimprimir","arrEtiquetas","productos"));
     }
 
 

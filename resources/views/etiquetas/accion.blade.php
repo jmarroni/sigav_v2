@@ -40,12 +40,12 @@
                         <input type="hidden" class="form-control" name="producto_id" id="producto_id" value="" />
                     </div>
                     <div class="col-xs-2">
-                        <label for="bd-qsettings-name">Cantidad</label>
+                        <label for="bd-qsettings-name">Cantidad Etiquetas</label>
                         <input type="text" class="form-control numbers" name="cantidad" id="cantidad" value="" placeholder="3" />
                     </div>
                     <div class="col-xs-4">
                         <button class="btn btn-sm btn-minw btn-rounded btn-primary" id="ver_etiquetas" style="width:98%;margin-top:25px;" type="button">
-                            <i class="fa fa-check push-5-r"></i>Imprimir
+                            <i class="fa fa-check push-5-r"></i>Agregar
                         </button>
                     </div>
                 </div>
@@ -60,14 +60,18 @@
         <div class="block-header">
             <h3 class="block-title">C&oacute;digo QR</h3>
         </div>
-        <div style="text-align: center">
+        <!-- <div style="text-align: center">
             <p id="mensajeqr">Por favor seleccione un producto</p>
             <p id="sitiowebvacio" class="hidden">Este producto no tiene c&oacute;digo QR</p>
+        </div> -->
+        <div class="block-content">
+            <div class="table-responsive">
+                <iframe src="" id="iframe_qrs" style="width:100%;height:400px;"></iframe>
+            </div>
         </div>
-        <div style="display: flex; align-items: center; justify-content: center;" id="qrcode"></div>
-        <button class="btn btn-sm btn-minw btn-rounded btn-primary hidden" id="botonqr" onclick="printJS({ printable: 'qrcode', type: 'html', documentTitle: 'SIGAV', style: '#qrcode {display: flex; justify-content: center;}' })" style="width:98%;height:30px;margin-top:25px;" type="button">
+        <!-- <button class="btn btn-sm btn-minw btn-rounded btn-primary hidden" id="botonqr" onclick="printJS({ printable: 'qrcode', type: 'html', documentTitle: 'SIGAV', style: '#qrcode {display: flex; justify-content: center;}' })" style="width:98%;height:30px;margin-top:25px;" type="button">
             Imprimir QR
-        </button>
+        </button> -->
     </div>
 
     <div class="block block-rounded">
@@ -90,7 +94,7 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
     <!-- script QR -->
-    <script type="text/javascript" src="./assets/js/qr/qrcode.js"></script>
+    <!-- <script type="text/javascript" src="./assets/js/qr/qrcode.js"></script> -->
 
     <!-- PintJS -->
     <script type="text/javascript" src="./assets/js/printJS/print.min.js"></script>

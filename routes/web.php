@@ -45,7 +45,8 @@ Route::get('categoria/mensaje/{mensaje}','CategoriaController@index');
 Route::get('etiqueta', 'EtiquetaController@index');
 Route::get('etiqueta.getQr/{id}', 'EtiquetaController@getQr');
 Route::get('etiqueta.buscarProductos', 'ProductoController@searchProducts');
-Route::get('etiqueta.imprimir/{etiquetas}', 'EtiquetaController@printEtiquetas');
+Route::get('etiqueta.imprimirEtiquetas/{etiquetas}', 'EtiquetaController@printEtiquetas');
+Route::get('etiqueta.imprimirQrs/{etiquetas}', 'EtiquetaController@printQrs');
 //Roles
 Route::get('rol', 'RolController@index');
 Route::post('rol.save', 'RolController@save');
