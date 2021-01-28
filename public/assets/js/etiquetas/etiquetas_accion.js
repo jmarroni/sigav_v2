@@ -5,7 +5,7 @@ jQuery("document").ready(function() {
 jQuery("#nombre-producto").autocomplete({
                 source: function (request, response) {
                         jQuery.get("/etiqueta.buscarProductos", {
-                        query: request.term
+                        term: request.term
                         }, function (data) {
                          response(data);
                         });

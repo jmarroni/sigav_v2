@@ -375,14 +375,14 @@ function getMes($numero){
                                 <?php } ?>
                                 <?php if (getRol() > 2) { ?>
                                 <li>
-                                    <a href="/transferencias_sucursales.php">Transferencias</a>
+                                    <a href="/transferencia">Transferencias</a>
                                 </li>
                                 <li>
                                     <a href="/stock_por_sucursal.php">Stock por sucursales</a>
                                 </li>
                                 <?php } ?>
                                 <li>
-                                    <a href="/transferencias_realizadas_sucursales.php">Transferencias realizadas</a>
+                                    <a href="/transferencias.realizadas">Transferencias realizadas</a>
                                 </li>
                             </ul>
                         </li>
@@ -452,7 +452,10 @@ function getMes($numero){
                              </li>   
                                <li>
                                 <a href="/categorias_auditoria.php">Logs Categor&iacute;as</a>
-                            </li>  
+                            </li> 
+                            <li>
+                                <a href="/transferencias_auditoria.php">Logs Transferencias</a>
+                            </li> 
                         </ul>
                     </li> 
                     

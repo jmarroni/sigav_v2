@@ -58,6 +58,13 @@ Route::post('usuario.save', 'UsuarioController@save');
 Route::get('usuario/mensaje/{mensaje}','UsuarioController@index');
 Route::get('usuario.delete/{id}','UsuarioController@delete' );
 Route::get('usuario.getUsuario/{id}', 'UsuarioController@getUsuario');
+//Transferencias sucursales
+Route::get('transferencia', 'TransferenciaController@index');
+Route::post('transferencia.save', 'TransferenciaController@save');
+Route::get('transferencia/mensaje/{mensaje}','TransferenciaController@index');
+Route::get('transferencia.cambiarstatus', 'TransferenciaController@changeStatus');
+Route::get('transferencias.realizadas', 'TransferenciaController@list');
+Route::get('transferencias.realizadas/mensaje/{mensaje}', 'TransferenciaController@list');
 
 
 Route::get('tipo/{type}', 'SweetController@notification');
