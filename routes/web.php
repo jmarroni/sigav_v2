@@ -65,7 +65,13 @@ Route::get('transferencia/mensaje/{mensaje}','TransferenciaController@index');
 Route::get('transferencia.cambiarstatus', 'TransferenciaController@changeStatus');
 Route::get('transferencias.realizadas', 'TransferenciaController@list');
 Route::get('transferencias.realizadas/mensaje/{mensaje}', 'TransferenciaController@list');
-
+//Reportes
+Route::get('cierreCajaReporte/mensaje/{mensaje}', 'ReporteController@cierreCajaReporte');
+Route::get('cierreCajaReporte', 'ReporteController@cierreCajaReporte');
+Route::post('cierreCajaAccion', 'ReporteController@cierreCajaAccion');
+Route::get('logsProductos', 'ReporteController@logProductos');
+Route::get('logsCategorias', 'ReporteController@logCategorias');
+Route::get('logsTransferencias', 'ReporteController@logTransferencias');
 
 Route::get('tipo/{type}', 'SweetController@notification');
 Route::get('reporte.factura/{desde?}/{hasta?}', 'ReporteController@factura');

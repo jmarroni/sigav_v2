@@ -18,7 +18,7 @@ jQuery("document").ready(function() {
        { 
         $(".form-horizontal").submit();
         var datos = $("#form-rol").serialize();
-       // console.log(datos);
+       //console.log(datos);
           var url = "/rol.save/" + datos;
             $.post(url, function(data, status){  
                 if(data.proceso == "OK"){

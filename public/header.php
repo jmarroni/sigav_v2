@@ -435,7 +435,7 @@ function getMes($numero){
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="/cierre_caja.php" >Caja</a>
+                                <a href="/cierreCajaReporte" >Caja</a>
                             </li>
                             <li>
                                 <a href="/devoluciones.php">Devoluciones</a>
@@ -447,14 +447,14 @@ function getMes($numero){
                                 <a href="/usuarios_api.php">Api</a>
                             </li>   
                                <li>
-                                <a href="/productos_auditoria.php">Logs Productos</a>
+                                <a href="/logsProductos">Logs Productos</a>
                             </li>  
                              </li>   
                                <li>
-                                <a href="/categorias_auditoria.php">Logs Categor&iacute;as</a>
+                                <a href="/logsCategorias">Logs Categor&iacute;as</a>
                             </li> 
                             <li>
-                                <a href="/transferencias_auditoria.php">Logs Transferencias</a>
+                                <a href="/logsTransferencias">Logs Transferencias</a>
                             </li> 
                         </ul>
                     </li> 
