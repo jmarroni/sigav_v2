@@ -164,7 +164,7 @@ jQuery("document").ready(function() {
         });
     });
 
-    $("#sucursal").click(function(){
+    $("#sucursal").change(function(){
         document.location.href="carga?sucursal=" + $(this).val();
     });
 

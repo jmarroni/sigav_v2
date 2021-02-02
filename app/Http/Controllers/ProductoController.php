@@ -32,11 +32,24 @@ class ProductoController extends Controller
         $proveedores = Proveedor::all();
         $sucursales = Sucursales::all();
         $sucursal = (isset($request->sucursal)?$request->sucursal:Sucursales::getSucursal());
-        $productos = Producto::with(['stock_' => 
+         $productos =//Producto::leftjoin("stock","stock.productos_id", "=", "productos.id")
+        //                     ->leftjoin("categorias","categorias.id", "=", "productos.categorias_id")
+        //                     ->leftjoin("proveedor","proveedor.id", "=", "productos.proveedores_id")
+        //                     ->where("stock.sucursal_id","=",$sucursal)
+        //                     ->select("productos.*","stock.stock as stockReal","stock.stock_minimo as stockMinimoReal","proveedor.nombre as nombreProveedor","proveedor.apellido as apellidoProveedor","categorias.nombre as nombreCategoria")
+        //                     ->get();
+
+         Producto::with(['stock_' => 
             function ($query) use ($sucursal)
             {
                 $query->where("sucursal_id",$sucursal);
-            }])->get();
+            }])
+            ->leftjoin("categorias","categorias.id", "=", "productos.categorias_id")
+            ->leftjoin("proveedor","proveedor.id", "=", "productos.proveedores_id")
+            ->select("productos.*","proveedor.nombre as nombreProveedor","proveedor.apellido as apellidoProveedor","categorias.nombre as nombreCategoria")
+            ->get();
+
+         //get();
         return view("productos.accion",compact("productos","proveedores","mensaje","sucursal","sucursales"));
     }
 

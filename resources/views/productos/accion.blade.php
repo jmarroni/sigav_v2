@@ -11,7 +11,7 @@
             <div class="form-group">
                 <div class="col-xs-4">
                     <label for="bd-qsettings-name">Nombre (*)</label>
-                    <input type="text" class="form-control" name="producto" id="producto" value="" placeholder="Nombre del Producto Completo" />
+                    <input type="text" class="form-control lettersNumbers" name="producto" id="producto" value="" placeholder="Nombre del Producto Completo" />
                 </div>
                 <div class="col-xs-4">
                     <label for="bd-qsettings-name">C&oacute;digo de Barras <i>(autogenerado si se deja en blanco)</i> </label>
@@ -19,15 +19,15 @@
                 </div>
                 <div class="col-xs-4">
                     <label>Material</label>
-                    <input type="text" class="form-control" name="material" id="material" value="" placeholder="Madera, Metal, Alphaca" />
+                    <input type="text" class="form-control lettersNumbers" name="material" id="material" value="" placeholder="Madera, Metal, Alphaca" />
                 </div>
                 <div class="col-xs-4" style="display:none;">
                     <label>Stock</label>
-                    <input type="text" class="form-control" name="stock" id="stock" value="0" placeholder="stock" />
+                    <input type="text" class="form-control numbers" name="stock" id="stock" value="0" placeholder="stock" />
                 </div>
                 <div style="display:none;" class="col-xs-4">
                     <label>Stock M&iacute;nimo</label>
-                    <input type="text" class="form-control" name="stock_minimo" id="stock_minimo" value="0" placeholder="Alerta Stock Minimo" />
+                    <input type="text" class="form-control numbers" name="stock_minimo" id="stock_minimo" value="0" placeholder="Alerta Stock Minimo" />
                 </div>
                 
             </div>
@@ -94,19 +94,19 @@
             <div class="form-group">
                 <div class="col-xs-12">
                     <label>Descripci&oacute;n (*)</label>
-                    <textarea type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Describa el producto" ></textarea>
+                    <textarea type="text" class="form-control lettersNumbers" name="descripcion" id="descripcion" placeholder="Describa el producto" ></textarea>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-xs-12">
-                    <label>Descripci&oacute;n Ingles</label>
-                    <textarea type="text" class="form-control" name="descripcion_en" id="descripcion_en" placeholder="Describa el producto" ></textarea>
+                    <label>Descripci&oacute;n Ingl&eacute;s</label>
+                    <textarea type="text" class="form-control lettersNumbers" name="descripcion_en" id="descripcion_en" placeholder="Describa el producto" ></textarea>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-xs-12">
-                    <label>Descripci&oacute;n Portugues</label>
-                    <textarea type="text" class="form-control" name="descripcion_pr" id="descripcion_pr" placeholder="Describa el producto" ></textarea>
+                    <label>Descripci&oacute;n Portugu&eacute;s</label>
+                    <textarea type="text" class="form-control lettersNumbers" name="descripcion_pr" id="descripcion_pr" placeholder="Describa el producto" ></textarea>
                 </div>
             </div>
             <div class="form-group">
@@ -137,10 +137,12 @@
             <table id="tabla_productos">
                 <thead>
                     <tr>
-                        <th style="width:10%">Imagen</th>
+                        <th>Imagen</th>
                         <th>Producto</th>
-                        <th style="wisth:50px">Stock Actual</th>
-                        <th style="wisth:50px">Stock M&iacute;nimo</th>
+                        <th>Proveedor</th>
+                        <th>Categor&iacute;a</th>
+                        <th>Stock Actual</th>
+                        <th>Stock M&iacute;nimo</th>
                         <th>Precio al P&uacute;blico</th>
                         <th>Precio Reposici&oacute;n</th>
                         <th>Costo</th>
@@ -168,6 +170,16 @@
                             </div>
                         </td>
                         <td>{{$producto->nombre}}</td>
+                        @if ($producto->nombreProveedor!=null && $producto->nombreProveedor!="")
+                        <td>{{$producto->nombreProveedor}} {{$producto->apellidoProveedor}}</td>
+                        @else
+                        <td>NO TIENE PROVEEDOR ASOCIADO</td>
+                        @endif
+                        @if ($producto->nombreCategoria!=null && $producto->nombreCategoria!="")
+                        <td>{{$producto->nombreCategoria}}</td>
+                        @else
+                        <td>NO TIENE CATEGOR&Iacute;A ASOCIADA</td>
+                        @endif
                         @if (isset($producto->stock_->stock))
                             <td style="text-align:center"><input style="width:50px" type="text" value="{{$producto->stock_->stock}}" name="stock_{{$producto->id}}" class="numbers" id="stock_{{$producto->id}}" /></td>
                         @else
