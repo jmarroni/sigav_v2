@@ -72,6 +72,7 @@ Route::post('cierreCajaAccion', 'ReporteController@cierreCajaAccion');
 Route::get('logsProductos', 'ReporteController@logProductos');
 Route::get('logsCategorias', 'ReporteController@logCategorias');
 Route::get('logsTransferencias', 'ReporteController@logTransferencias');
+Route::get('reporte.presupuesto', 'ReporteController@reportePresupuesto');
 
 Route::get('tipo/{type}', 'SweetController@notification');
 Route::get('reporte.factura/{desde?}/{hasta?}', 'ReporteController@factura');

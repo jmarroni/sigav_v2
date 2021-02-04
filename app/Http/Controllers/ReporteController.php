@@ -147,6 +147,32 @@ class ReporteController extends Controller
 
     }
 
+     public function reportePresupuesto(request $request)
+    {
+        if(isset($request->reporte_desde) && $request->reporte_desde!="" && isset($request->reporte_hasta) && $request->reporte_hasta!="" )
+            {
+        $presupuestos=Factura::join("sucursales","sucursales.id","=","factura.sucursal_id")
+        ->where("factura.cae","=","")
+        ->where("factura.fechacae","=","")
+        ->whereBetween('factura.fecha', [$request->reporte_desde, $request->reporte_hasta])
+        ->where("sucursales.id","=",Sucursales::getSucursal($_COOKIE["sucursal"]))
+        ->select("factura.*","sucursales.nombre as nombre_sucursal")
+        ->OrderBy("fecha","desc")
+        ->get();
+            }
+            else
+            {   
+         $presupuestos=Factura::join("sucursales","sucursales.id","=","factura.sucursal_id")
+        ->where("factura.cae","=","")
+        ->where("factura.fechacae","=","")
+        ->select("factura.*","sucursales.nombre as nombre_sucursal")
+        ->OrderBy("fecha","desc")
+        ->get();
+
+        return view("reportes.reportePresupuestos",compact("presupuestos"));
+            }
+    }
+
 
 
 }

@@ -19,6 +19,7 @@ $reporte_desde = date("Y-m-d", strtotime('monday this week', strtotime($semana_p
 
 
 $reporte_hasta = date("Y-m-d", strtotime('monday this week', strtotime($fecha_actual)));
+$pagos_ganancias = array();
 
 
 if(isset($_POST["reporte_desde"])) $reporte_desde = $_POST["reporte_desde"];
@@ -36,7 +37,7 @@ $sql = "SELECT *"
         . "FROM proveedores WHERE nombre <> 'Alquiler' AND nombre <> 'Chicos'";   
 $resultado = $conn->query($sql);
 if ($resultado->num_rows > 0) {
-    $pagos_ganancias = array();
+ 
     $indice = 0;
     while($row = $resultado->fetch_assoc()) {
         //Busco las ganancias

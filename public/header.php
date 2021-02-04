@@ -316,7 +316,7 @@ function getMes($numero){
                                 <a href="/reporte.factura">Reporte de Facturaci&oacute;n</a>
                             </li>
                             <li>
-                                <a href="/presupuestos.php">Reporte de Presupuestos</a>
+                                <a href="/reporte.presupuesto">Reporte de Presupuestos</a>
                             </li>
                             <li>
                                 <a href="/nota_credito.php">Reporte de Nota de credito</a>
@@ -377,9 +377,9 @@ function getMes($numero){
                                 <li>
                                     <a href="/transferencia">Transferencias</a>
                                 </li>
-                                <li>
+                               <!--  <li>
                                     <a href="/stock_por_sucursal.php">Stock por sucursales</a>
-                                </li>
+                                </li> -->
                                 <?php } ?>
                                 <li>
                                     <a href="/transferencias.realizadas">Transferencias realizadas</a>
