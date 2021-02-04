@@ -61,6 +61,7 @@ class CategoriaController extends Controller
             $categoria_logs->tipo_operacion = 'Alta';    
         }
         $categoria->nombre = $request->nombre;
+        $categoria->usuario = $_COOKIE["kiosco"];
         $categoria->abreviatura = $request->abreviatura;
         $categoria->save();
         if ($accion==1)
