@@ -319,7 +319,7 @@ function getMes($numero){
                                 <a href="/reporte.presupuesto">Reporte de Presupuestos</a>
                             </li>
                             <li>
-                                <a href="/nota_credito.php">Reporte de Nota de credito</a>
+                                <a href="/reporte.notasCredito">Reporte de Nota de credito</a>
                             </li>
                             <li>
                                 <a href="/reportes_servicios.php">Reporte de Servicios</a>

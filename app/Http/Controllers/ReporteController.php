@@ -10,6 +10,7 @@ use App\Models\Venta;
 use App\Models\Stock_log;
 use App\Models\Categoria_log;
 use App\Models\Transferencia_log;
+use App\Models\NotaCredito;
 use DB;
 class ReporteController extends Controller
 {
@@ -170,6 +171,28 @@ class ReporteController extends Controller
         ->get();
 
         return view("reportes.reportePresupuestos",compact("presupuestos"));
+            }
+    }
+
+     public function reporteNotasCredito(request $request)
+    {
+        if(isset($request->reporte_desde) && $request->reporte_desde!="" && isset($request->reporte_hasta) && $request->reporte_hasta!="" )
+            {
+        $notasCredito=NotaCredito::join("sucursales","sucursales.id","=","nota_de_credito.sucursal_id")
+        ->whereBetween('nota_de_credito.fecha', [$request->reporte_desde, $request->reporte_hasta])
+        ->where("sucursales.id","=",Sucursales::getSucursal($_COOKIE["sucursal"]))
+        ->select("nota_de_credito.*","sucursales.nombre as nombre_sucursal")
+        ->OrderBy("fecha","desc")
+        ->get();
+            }
+            else
+            {   
+         $notasCredito=NotaCredito::join("sucursales","sucursales.id","=","nota_de_credito.sucursal_id")
+        ->select("nota_de_credito.*","sucursales.nombre as nombre_sucursal")
+        ->OrderBy("fecha","desc")
+        ->get();
+
+        return view("reportes.notasCredito",compact("notasCredito"));
             }
     }
 
