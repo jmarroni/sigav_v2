@@ -302,9 +302,11 @@ public function searchProducts(request $request)
         $productos = Producto::leftjoin("stock","stock.productos_id", "=", "productos.id")
         ->leftjoin("sucursales","sucursales.id", "=", "stock.sucursal_id")
         ->leftjoin("imagen_producto","imagen_producto.productos_id", "=", "productos.id")
-        ->where("productos.nombre","like", "%" . $_GET["term"]. "%","OR")
-        ->ORwhere("productos.codigo_barras","like", "%" . $_GET["term"] . "%")
-        ->where("sucursales.id",$sucursal_seleccionada)
+        ->where(function($query){
+                    $query->where("productos.nombre","like", "%" . $_GET["term"]. "%")
+                   ->orWhere("productos.codigo_barras","like", "%" . $_GET["term"] . "%");
+               })
+        ->where("stock.sucursal_id",$sucursal_seleccionada)
         ->select("productos.*","sucursales.id as idsucursal","imagen_producto.imagen_url","stock.stock AS stock_sucursal","stock.stock_minimo AS stock_sucursal")
         ->OrderBy("productos.id")
         ->get();
@@ -324,6 +326,7 @@ public function searchProducts(request $request)
                             $datos[$i]["stock"]         = $producto->stock_sucursal;
                                 $datos[$i]["stock_minimo"]  = $producto->stock_sucursal;
                             $datos[$i]["codigo_barras"] = $producto->codigo_barras;
+                             $datos[$i]["suc"]=$sucursal_seleccionada;
                                 if (isset($request->sucursal) && ($request->sucursal != ""))
                                     {
                                     $stock =Stock::where("sucursal_id =".intval($request->sucursal)." AND productos_id = ".$producto->id)

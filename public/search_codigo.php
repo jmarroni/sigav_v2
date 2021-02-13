@@ -4,7 +4,7 @@ if (!isset($_COOKIE["kiosco"])) {
 }
 require_once ("conection.php");
 
-$sql = "SELECT * FROM productos WHERE codigo_barras = '".$_GET["term"]."'";
+$sql = "SELECT * FROM productos WHERE codigo_barras like '".$_GET["term"]."'";
 $resultado = $conn->query($sql);
 $i = 0;
 if ($resultado->num_rows > 0) {

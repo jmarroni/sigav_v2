@@ -168,19 +168,60 @@
             $( "#log" ).scrollTop( 0 );
         }
 
-        jQuery( "#nombre-producto" ).autocomplete({
-            source: "search.php",
-            minLength: 2,
+        jQuery("#nombre-producto").autocomplete({
+            source: function(request, response) {
+                jQuery.get("/etiqueta.buscarProductos", {term:  $("#nombre-producto").val()
+            }, function (data) {
+                response(data);
+            });
+            },
             select: function( event, ui ) {
-                $("#nombre-producto").val(ui.item.value);
-                $("#producto_id").val(ui.item.id);
-                precio = ui.item.precio;
-                if ($("#cantidad").val() > 0 && precio > 0)
+               $("#codigo-barras").val(ui.item.codigo_barras);
+               $("#nombre-producto").val(ui.item.value);
+               $("#producto_id").val(ui.item.id);
+               precio = ui.item.precio;
+               if ($("#cantidad").val() > 0 && precio > 0)
                 $("#precio").val($("#cantidad").val() * precio);
             else
                 $("#precio").val("0.00");
-            }
-        });
+            
+        }
+    });
+        jQuery("#codigo-barras").autocomplete({
+            source: function(request, response) {
+                jQuery.get("/etiqueta.buscarProductos", {term:  $("#codigo-barras").val()
+            }, function (data) {
+                response(data);
+            });
+            },
+            select: function( event, ui ) {
+               $("#nombre-producto").val(ui.item.value);
+               $("#producto_id").val(ui.item.id);
+               precio = ui.item.precio;
+               if ($("#cantidad").val() > 0 && precio > 0)
+                $("#precio").val($("#cantidad").val() * precio);
+            else
+                $("#precio").val("0.00");
+            
+        }
+    });
+
+
+
+
+        // jQuery( "#nombre-producto" ).autocomplete({
+        //     source: "search.php?term=" + $(this).val(),
+        //     minLength: 2,
+        //     select: function( event, ui ) {
+        //         $("#nombre-producto").val(ui.item.value);
+        //         $("#producto_id").val(ui.item.id);
+        //         precio = ui.item.precio;
+        //         if ($("#cantidad").val() > 0 && precio > 0)
+        //         $("#precio").val($("#cantidad").val() * precio);
+        //     else
+        //         $("#precio").val("0.00");
+        //     }
+        // });
 
         jQuery("#nombre-cliente").autocomplete({
             source: "get_cliente.php",
@@ -203,49 +244,49 @@
             }
         });
 
-        jQuery( "#nombre-producto" ).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        // jQuery( "#nombre-producto" ).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
     
-            var $li = $('<li>'),
-                $img = $('<img>');
+        //     var $li = $('<li>'),
+        //         $img = $('<img>');
         
         
-            $img.attr({
-              src: item.imagen,
-              alt: item.label
-            });
+        //     $img.attr({
+        //       src: item.imagen,
+        //       alt: item.label
+        //     });
         
-            $li.attr('data-value', item.label);
-            $img.css('width', '50px');
-            $img.css('padding', '2px');
-            $li.append('<a href="#">');
-            $li.find('a').append($img).append(item.label);    
+        //     $li.attr('data-value', item.label);
+        //     $img.css('width', '50px');
+        //     $img.css('padding', '2px');
+        //     $li.append('<a href="#">');
+        //     $li.find('a').append($img).append(item.label);    
         
-            return $li.appendTo(ul);
-          };
+        //     return $li.appendTo(ul);
+        //   };
 
-        jQuery( "#codigo-barras" ).change(function(){
-            if ($(this).val() != ''){
-            $.ajax({
-                  url: "search_codigo.php?term=" + $(this).val(),
-                  dataType : "json"
-                }).done(function(response) {
-                    if (response.length > 0) {
-                        $("#nombre-producto").val(response[0].value);
-                        $("#producto_id").val(response[0].id);
-                        precio = response[0].precio;
-                        if ($("#cantidad").val() > 0 && precio > 0)
-                        $("#precio").val($("#cantidad").val() * precio);
-                        jQuery('#anadir_venta').click();
-                        $(this).val() = '';
-                        $(this).focus();
-                    }else{
-                        $("#nombre-devuelto-error").html("Error producto no encontrado, por favor buscalo por nombre o ingresalo.");
-                        $("#add_success_error").show('slow');
-                        setTimeout(function(){ $("#add_success_error").hide('slow');jQuery("#nombre-devuelto-error").html(''); }, 3000);                    
-                    }
-                });
-            }
-        });
+        // jQuery( "#codigo-barras" ).change(function(){
+        //     if ($(this).val() != ''){
+        //     $.ajax({
+        //           url: "search_codigo.php?term=" + $(this).val(),
+        //           dataType : "json"
+        //         }).done(function(response) {
+        //             if (response.length > 0) {
+        //                 $("#nombre-producto").val(response[0].value);
+        //                 $("#producto_id").val(response[0].id);
+        //                 precio = response[0].precio;
+        //                 if ($("#cantidad").val() > 0 && precio > 0)
+        //                 $("#precio").val($("#cantidad").val() * precio);
+        //                 jQuery('#anadir_venta').click();
+        //                 $(this).val() = '';
+        //                 $(this).focus();
+        //             }else{
+        //                 $("#nombre-devuelto-error").html("Error producto no encontrado, por favor buscalo por nombre o ingresalo.");
+        //                 $("#add_success_error").show('slow');
+        //                 setTimeout(function(){ $("#add_success_error").hide('slow');jQuery("#nombre-devuelto-error").html(''); }, 3000);                    
+        //             }
+        //         });
+        //     }
+        // });
     });
 
     function addRow(jsonData){
