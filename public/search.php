@@ -62,7 +62,7 @@ if (isset($_GET["producto"]) && (intval($_GET["producto"])) !== null){
                     ON s.`id` = st.`sucursal_id`
                         LEFT JOIN imagen_producto ip 
                         ON ip.productos_id = p.id 
-            WHERE p.nombre like '%".$_GET["term"]."%' OR p.codigo_barras like '%".$_GET["term"]."%' AND s.id = ".$sucursal_seleccionada;
+            WHERE (p.nombre like '%".$_GET["term"]."%' OR p.codigo_barras like '%".$_GET["term"]."%') AND s.id = ".$sucursal_seleccionada;
     $sql .= " GROUP BY p.id";
     //echo $sql;exit();
     $resultado = $conn->query($sql) or die('Error, en la query '.$sql);  
