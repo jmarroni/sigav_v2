@@ -52,7 +52,11 @@ class UsuarioController extends Controller
         }
         define('SEMILLA','$%Reset20122017AnnaLuca#^');
         $usuario->usuario = $request->usuario;
+        //Si la clave esta vacía se mantiene la actual al modificar un usuario
+        if($request->clave!="")
+             {
         $usuario->clave =  sha1($request->clave.SEMILLA);
+             }
         $usuario->nombre = $request->nombre;
         $usuario->apellido = $request->apellido;
         $usuario->telefono = $request->telefono;

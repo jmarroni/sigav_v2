@@ -1,12 +1,14 @@
 jQuery("document").ready(function() {
-
+var validacion=0;
     setTimeout(function () {
         $("#add_success").hide('slow');
     }, 3000);
     $("#enviar").click(function(event){
+         validacion=0;
         event.preventDefault();
-        if ($("#usuario").val()=="" || $("#clave").val()=="" || $("#rol").val()=="0" || $("#nombre").val()=="" || $("#apellido").val()=="" || $("#telefono").val()=="" || $("#sucursales").val()=="0")
+        if (($("#id_usuario").val()=="")&&($("#usuario").val()=="" || $("#clave").val()=="" || $("#rol").val()=="0" || $("#nombre").val()=="" || $("#apellido").val()=="" || $("#telefono").val()=="" || $("#sucursales").val()=="0"))
         { 
+            validacion=1;
            swal({
             "title":"Verificar",
             'icon': 'warning',
@@ -14,7 +16,17 @@ jQuery("document").ready(function() {
             'confirmButtonText': 'Listo'
         });
        }
-       else
+        if (($("#id_usuario").val()!="") && ($("#usuario").val()=="" || $("#rol").val()=="0" || $("#nombre").val()=="" || $("#apellido").val()=="" || $("#telefono").val()=="" || $("#sucursales").val()=="0"))
+        { 
+            validacion=1;
+           swal({
+            "title":"Verificar",
+            'icon': 'warning',
+            "text":"Debe completar todos los campos obligatorios (*)",
+            'confirmButtonText': 'Listo'
+        });
+       }
+       if (validacion==0)
        { 
         $(".form-horizontal").submit();
         var datos = $("#form-usuario").serialize();
