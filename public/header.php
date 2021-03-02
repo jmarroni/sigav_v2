@@ -335,7 +335,7 @@ function getMes($numero){
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                            <a href="/proveedores.php">Pago</a>
+                            <a href="/pagoProveedores">Pago</a>
                             </li>
                         </ul>
                     </li>

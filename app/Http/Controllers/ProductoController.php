@@ -322,7 +322,7 @@ public function searchProducts(request $request)
                             $datos[$i]["costo"]         = $producto->costo;
                             $datos[$i]["precio"]        = ($lista_precio == 1)?$producto->precio_unidad:$producto->precio_mayorista;
                             $datos[$i]["stock"]         = 0;
-                            $datos[$i]["imagen"]        =  (isset($producto->imagen))?str_replace('/'.$producto->id.'/','/'.$producto->id.'/thumb_300x300_',$producto->imagen):"/assets/img/photos/no-image-featured-image.png";
+                            $datos[$i]["imagen"]        =  (isset($producto->imagen))?"/assets/img/photos/no-image-featured-image.png".$producto->imagen:"/assets/img/photos/no-image-featured-image.png";
                             $datos[$i]["stock"]         = $producto->stock_sucursal;
                                 $datos[$i]["stock_minimo"]  = $producto->stock_sucursal;
                             $datos[$i]["codigo_barras"] = $producto->codigo_barras;

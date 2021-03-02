@@ -33,6 +33,9 @@ Route::get('proveedor.delete/{id}','ProveedorController@delete' );
 Route::get('proveedor.checkProducts/{id}', 'ProveedorController@checkProducts');
 Route::get('proveedor.getProveedor/{id}', 'ProveedorController@getProveedor');
 Route::get('proveedor.getCategoriasProveedor/{id}', 'ProveedorController@getCategoriasProveedor');
+Route::get('pagoProveedores', 'ProveedorController@indexPagoProveedores');
+Route::get('pagoProveedores/mensaje/{mensaje}', 'ProveedorController@indexPagoProveedores');
+Route::post('pagoProveedores.saveFactura', 'ProveedorController@saveFactura');
 //Categoría
 Route::get('categoria', 'CategoriaController@index');
 Route::post('categoria.save', 'CategoriaController@save');

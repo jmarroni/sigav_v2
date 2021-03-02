@@ -11,6 +11,9 @@ use App\Models\Imagen_producto;
 use App\Models\Stock_log;
 use App\Models\Stock;
 use App\Models\RelacionCategoriaProveedor;
+use App\Models\FacturasProveedores;
+use App\Models\DetalleFacturasProveedores;
+use App\Models\FacturasProveedoresLogs;
 use Illuminate\Support\Facades\Storage;
 use Image;
 
@@ -187,5 +190,88 @@ public function getCategoriasProveedor(Request $request, $id)
 }
 return response($idcategorias);
 }
+
+ public function indexPagoProveedores(Request $request)
+    {
+        $mensaje = $request->mensaje;
+        $proveedores = Proveedor::all();
+        $sucursales = Sucursales::all();
+        $sucursal = (isset($request->sucursal)?$request->sucursal:Sucursales::getSucursal());
+        $productos = Producto::with(['stock_' => 
+            function ($query) use ($sucursal)
+            {
+                $query->where("sucursal_id",$sucursal);
+            }])->get();
+        return view("proveedores.pagoProveedores",compact("productos","proveedores","mensaje","sucursal","sucursales"));
+    }
+public function saveFactura(Request $request)
+    {
+        $sucursal=(Sucursales::getSucursal($_COOKIE["sucursal"]) !== null)?Sucursales::getSucursal($_COOKIE["sucursal"]):0;
+        $mensaje = "Factura guardada exitosamente";
+        $facturaProveedor = new FacturasProveedores();
+        $facturaLogs=  new FacturasProveedoresLogs();
+
+        $facturaLogs->numero_factura=$request->numerofactura;
+        $facturaLogs->fecha=date("Y-m-d H:i:s");
+        $facturaLogs->id_sucursal=$sucursal;
+        $facturaLogs->usuario=$_COOKIE["kiosco"];
+        $facturaLogs->id_proveedor=$request->proveedor;
+        $facturaLogs->monto=$request->montoTotal;
+
+
+        $facturaProveedor->numero_factura=$request->numerofactura;
+        $facturaProveedor->fecha=$request->fecha;
+        $facturaProveedor->id_sucursal=$sucursal;
+        $facturaProveedor->usuario=$_COOKIE["kiosco"];
+        $facturaProveedor->id_proveedor=$request->proveedor;
+        $facturaProveedor->monto=$request->montoTotal;
+        $facturaProveedor->save();
+        $facturaLogs->save();
+        //Se guardan los productos de la factura
+        $arrayproductos = explode("||", $request->detalleProductos);
+        foreach ($arrayproductos as $producto)
+            {
+                $datosProducto= explode(",", $producto);
+                $detalleFactura=new DetalleFacturasProveedores();
+                $detalleFactura->id_factura=$facturaProveedor->id;
+                $detalleFactura->id_producto=$datosProducto[0];
+                $detalleFactura->cantidad=$datosProducto[1];
+                $detalleFactura->precio=$datosProducto[2];
+                $detalleFactura->save();
+
+                $stock = Stock::where("productos_id",$datosProducto[0])->where("sucursal_id",$sucursal)->first();
+                $stock_logs = new Stock_log();
+                $stock_logs->productos_id   = $datosProducto[0];
+                $stock_logs->sucursal_id    = $sucursal;
+                $stock_logs->stock_minimo   = $datosProducto[1];
+                $stock_logs->usuario        = $_COOKIE["kiosco"];
+                $stock_logs->tipo_operacion = 'Ingreso factura';
+                $stock_logs->updated_at = date("Y-m-d H:i:s");
+                $stock_logs->created_at = date("Y-m-d H:i:s");
+                if (!(isset($stock))){
+                    $stock = new Stock();
+                    $stock_logs->stock          = $datosProducto[1];
+                    $stock_logs->stock_anterior         = "-1";
+                    $stock_logs->stock_minimo_anterior  = "-1";
+                    $stock->stock           = $datosProducto[1];
+                    $stock->stock_minimo=1;
+                }else{
+                    $stock_logs->stock          =  $stock->stock + $datosProducto[1];
+                    $stock_logs->stock_anterior         = $stock->stock;
+                    $stock_logs->stock_minimo_anterior  = $stock->stock_minimo;
+                    $stock->stock           = $stock->stock + $datosProducto[1];
+                }
+                $stock->updated_at = date("Y-m-d H:i:s");
+                $stock->created_at = date("Y-m-d H:i:s");
+                $stock->sucursal_id     = $sucursal;
+                $stock->productos_id    = $datosProducto[0];
+                $stock->usuario         = $_COOKIE["kiosco"];
+                $stock->save();
+                $stock_logs->save();
+            }  //e
+        return redirect('pagoProveedores/mensaje/'.base64_encode($mensaje));
+
+
+    }
 
 }
