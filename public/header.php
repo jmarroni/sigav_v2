@@ -316,6 +316,9 @@ function getMes($numero){
                                 <a href="/reporte.factura">Reporte de Facturaci&oacute;n</a>
                             </li>
                             <li>
+                                <a href="/reporte.stocks">Reporte de Stock</a>
+                            </li>
+                            <li>
                                 <a href="/reporte.presupuesto">Reporte de Presupuestos</a>
                             </li>
                             <li>

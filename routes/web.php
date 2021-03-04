@@ -23,6 +23,7 @@ Route::get('signup', ['uses' =>'Api\AuthController@signup']);
 //Producto
 Route::resource('carga', 'ProductoController');
 Route::get('carga/mensaje/{mensaje}','ProductoController@index');
+Route::get('consultarStock/sucursal/{sucursal}','ProductoController@consultarStock');
 Route::get('producto.actualizar.stock/{id}/{stock}/{stock_minimo}/{sucursal}','ProductoController@update_stock' );
 Route::get('producto.eliminar.stock/{id}/{stock}/{stock_minimo}/{sucursal}','ProductoController@delete_stock' );
 //Proveedor
@@ -77,6 +78,7 @@ Route::get('logsCategorias', 'ReporteController@logCategorias');
 Route::get('logsTransferencias', 'ReporteController@logTransferencias');
 Route::get('reporte.presupuesto', 'ReporteController@reportePresupuesto');
 Route::get('reporte.notasCredito', 'ReporteController@reporteNotasCredito');
+Route::get('reporte.stocks', 'ReporteController@reporteStock');
 
 Route::get('tipo/{type}', 'SweetController@notification');
 Route::get('reporte.factura/{desde?}/{hasta?}', 'ReporteController@factura');
