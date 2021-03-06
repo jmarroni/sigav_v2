@@ -14,7 +14,7 @@ use App\Models\RelacionCategoriaProveedor;
 use App\Models\FacturasProveedores;
 use App\Models\DetalleFacturasProveedores;
 use App\Models\FacturasProveedoresLogs;
-use Illuminate\Support\Facades\Storage;
+use storage;
 use Image;
 
 
@@ -211,13 +211,6 @@ public function saveFactura(Request $request)
         $facturaProveedor = new FacturasProveedores();
         $facturaLogs=  new FacturasProveedoresLogs();
 
-        $facturaLogs->numero_factura=$request->numerofactura;
-        $facturaLogs->fecha=date("Y-m-d H:i:s");
-        $facturaLogs->id_sucursal=$sucursal;
-        $facturaLogs->usuario=$_COOKIE["kiosco"];
-        $facturaLogs->id_proveedor=$request->proveedor;
-        $facturaLogs->monto=$request->montoTotal;
-
 
         $facturaProveedor->numero_factura=$request->numerofactura;
         $facturaProveedor->fecha=$request->fecha;
@@ -225,8 +218,24 @@ public function saveFactura(Request $request)
         $facturaProveedor->usuario=$_COOKIE["kiosco"];
         $facturaProveedor->id_proveedor=$request->proveedor;
         $facturaProveedor->monto=$request->montoTotal;
+        if (isset($request->factura))
+        {  
+        $extension=$request->file('factura')->extension();
+        $date=date('Y-m-d-h-s');
+        $name='factura-Numero'.$request->numerofactura.'-'.$date.'.'.$extension;
+        $path=$request->file('factura')->storeAs('public/facturas/proveedores',$name);
+        $facturaProveedor->ruta_archivo=$path;
+        }
+
         $facturaProveedor->save();
+        $facturaLogs->numero_factura=$request->numerofactura;
+        $facturaLogs->fecha=date("Y-m-d H:i:s");
+        $facturaLogs->id_sucursal=$sucursal;
+        $facturaLogs->usuario=$_COOKIE["kiosco"];
+        $facturaLogs->id_proveedor=$request->proveedor;
+        $facturaLogs->monto=$request->montoTotal;
         $facturaLogs->save();
+
         //Se guardan los productos de la factura
         $arrayproductos = explode("||", $request->detalleProductos);
         foreach ($arrayproductos as $producto)

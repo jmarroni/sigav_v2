@@ -21,7 +21,7 @@
         </div>
     </div>
     <!-- END Section -->
- <?php if (isset($_GET["mensaje"])){ ?>
+    <?php if (isset($_GET["mensaje"])){ ?>
         <div class="block block-rounded" id="add_success" style="background-color: #46c37b !important;color:white;">
             <div class="block-header">
                 <div class="col-xs-12 bg-success" id="nombre-devuelto"><?php echo base64_decode($_GET["mensaje"]); ?></div>
@@ -29,23 +29,22 @@
         </div>
     <?php } ?>
 
-   
+
     <div class="block block-rounded" id="add_success_error" style="display: none;background-color: #d26a5c !important;color:white;">
         <div class="block-header">
             <div class="col-xs-12 bg-danger" id="nombre-devuelto-error"></div>
         </div>
     </div>
-     <form class="form-horizontal" action="/pagoProveedores.saveFactura" method="post">
-    <div class="block block-rounded">
-        <div class="block-content">
-             
+    <form class="form-horizontal" action="/pagoProveedores.saveFactura" method="post" enctype="multipart/form-data">
+        <div class="block block-rounded">
+            <div class="block-content">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
                 <input type="hidden" name="detalleProductos" id="detalleProductos"/>
                 <input type="hidden" name="montoTotal" id="montoTotal" value="0" />
                 <div class="form-group">
                     <div class="col-xs-4">
-                       <label>Proveedor (*)</label>
-                       <select class="form-control" name="proveedor" id="proveedor">
+                     <label>Proveedor (*)</label>
+                     <select class="form-control" name="proveedor" id="proveedor">
                         <option value="0" selected> Seleccione</option>
                         @foreach($proveedores as $proveedor)
                         <option value={{$proveedor->id}}>{{$proveedor->nombre}}</option>
@@ -60,13 +59,17 @@
                     <label for="bd-qsettings-name">Fecha factura (*)</label>
                     <input class="form-control" type="date" id="fecha" name="fecha" placeholder="dd/mm/yyyy" value="2021-02-23">
                 </div>
+                <div class="col-xs-4">
+                    <label for="bd-qsettings-name">Cargar Factura</label>
+                    <input type="file" class="form-control" readonly name="factura" id="factura" placeholder="Factura" />
+                </div>
             </div>
-       
+
+        </div>
     </div>
-</div>
-<div class="block block-rounded">
-   <h4 class="h4 font-w700 text-white animated fadeInDown push-5">Detalle factura</h4>
-   <div class="block-content">
+    <div class="block block-rounded">
+     <h4 class="h4 font-w700 text-white animated fadeInDown push-5">Detalle factura</h4>
+     <div class="block-content">
 
         <div class="form-group">
             <div class="col-xs-3">
@@ -77,7 +80,6 @@
                 <label for="bd-qsettings-name">Nombre</label>
                 <input class="form-control" type="text" id="nombre-producto" name="nombre-producto" placeholder="Ingrese parte del nombre" value="">
                 <input class="form-control" type="hidden" id="producto_id" name="producto_id" placeholder="" value="">
-                <input class="form-control" type="hidden" id="imagen-producto" name="imagen-producto" placeholder="" value="">
             </div>
             <div class="col-xs-1">
                 <label for="bd-qsettings-name">Cantidad</label>
@@ -97,15 +99,14 @@
                 </button>
             </div>
         </div>
- <div style="margin-left: 500px">
-        <button class="btn btn-sm btn-minw btn-rounded btn-primary" type="button" id="btnguardar" style="margin-top: 20px;margin-bottom: 20px;width: 30%;">
+        <div style="margin-left: 500px">
+            <button class="btn btn-sm btn-minw btn-rounded btn-primary" type="button" id="btnguardar" style="margin-top: 20px;margin-bottom: 20px;width: 30%;">
                 <i class="fa fa-check push-5-r"></i>Guardar factura 
             </button>
-             </div>
+        </div>
     </form>
 </div>
 </div>
-
 <!-- Products -->
 <div class="block block-rounded">
     <div class="block-header">
@@ -113,24 +114,20 @@
         </h3>
     </div>
     <div class="block-content" style="text-align: center">
-       
-           
-              
-          
-        
-    <div class="table-responsive">
-        <table class="table table-hover table-vcenter">
-            <tbody id="tablaProductos">
+        <div class="table-responsive">
+            <table class="table table-hover table-vcenter">
+                <tbody id="tablaProductos">
 
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-<!-- END Page Content -->
-@endsection
-@section("scripts")
-<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script src="/assets/js/proveedores/pagoProveedores.js?v=1.13"></script>    
-@endsection
+    <!-- END Page Content -->
+    @endsection
+    @section("scripts")
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="/assets/js/proveedores/pagoProveedores.js?v=1.13"></script>    
+    @endsection

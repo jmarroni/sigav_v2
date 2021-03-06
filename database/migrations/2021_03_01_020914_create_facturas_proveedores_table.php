@@ -21,6 +21,7 @@ class CreateFacturasProveedoresTable extends Migration
             $table->string('numero_factura');
             $table->double('monto');
             $table->string('usuario');
+            $table->string('ruta_archivo')->nullable();
         });
     }
 
