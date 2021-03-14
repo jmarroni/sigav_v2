@@ -19,6 +19,8 @@ class CreateDetalleFacturasProveedoresTable extends Migration
             $table->integer('id_producto');
             $table->integer('cantidad');
             $table->double('precio');
+            $table->double('costo');
+
      });
     }
 
