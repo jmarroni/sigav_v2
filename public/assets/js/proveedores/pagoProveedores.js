@@ -114,7 +114,7 @@
        });
     $("#btnguardar").click(function(){
       var nFilas = $("#tablaProductos tr").length;
-      if($('#proveedor').val()!=0 && $('#numerofactura').val()!="" && nFilas>0)
+      if($('#proveedor').val()!=0 && $('#numerofactura').val()!="" && nFilas>0 && $('#fecha').val()!="")
       {
 
         $("#detalleProductos").val(detalleProductos.join('||'));
@@ -137,7 +137,8 @@
             .done(function(data){
             // if (status === 'success') {
                 var res=JSON.parse(data);
-                console.log(data.proceso);
+                console.log(res.proceso);
+                console.log(res.comprobante);
                 if(res.proceso == "OK"){
                     swal({
                         "title":"Perfecto !!",
@@ -145,8 +146,9 @@
                         "text":"Factura guardada exitosamente!",
                         'confirmButtonText': 'Listo',     
                     });
-                    $("#iframeComprobante").attr("src",data.comprobante);
-                    $("#btnguardar").hide();
+                $("#iframeComprobante").attr("src",res.comprobante);
+                $("#btnguardar").hide();
+                   
                 }
             //}
         });
