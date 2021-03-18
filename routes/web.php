@@ -26,6 +26,7 @@ Route::get('carga/mensaje/{mensaje}','ProductoController@index');
 Route::get('consultarStock/sucursal/{sucursal}','ProductoController@consultarStock');
 Route::get('producto.actualizar.stock/{id}/{stock}/{stock_minimo}/{sucursal}','ProductoController@update_stock' );
 Route::get('producto.eliminar.stock/{id}/{stock}/{stock_minimo}/{sucursal}','ProductoController@delete_stock' );
+Route::get('buscarProductos', 'ProductoController@searchProductsSinStock');
 //Proveedor
 Route::get('proveedor', 'ProveedorController@index');
 Route::post('proveedor.save', 'ProveedorController@save');

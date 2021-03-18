@@ -35,7 +35,7 @@
             <div class="col-xs-12 bg-danger" id="nombre-devuelto-error"></div>
         </div>
     </div>
-    <form class="form-horizontal" action="/pagoProveedores.saveFactura" method="post" enctype="multipart/form-data">
+    <form class="form-horizontal"  method="post" enctype="multipart/form-data" id="formPago">
         <div class="block block-rounded">
             <div class="block-content">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
@@ -47,7 +47,7 @@
                      <select class="form-control" name="proveedor" id="proveedor">
                         <option value="0" selected> Seleccione</option>
                         @foreach($proveedores as $proveedor)
-                        <option value={{$proveedor->id}}>{{$proveedor->nombre}}</option>
+                        <option value={{$proveedor->id}}>{{$proveedor->nombre}} {{$proveedor->apellido}}</option>
                         @endforeach
                     </select>
                 </div>
@@ -57,7 +57,7 @@
                 </div>
                 <div class="col-xs-4">
                     <label for="bd-qsettings-name">Fecha factura (*)</label>
-                    <input class="form-control" type="date" id="fecha" name="fecha" placeholder="dd/mm/yyyy" value="2021-02-23">
+                    <input class="form-control" type="date" id="fecha" name="fecha" placeholder="dd/mm/yyyy" value="">
                 </div>
                 <div class="col-xs-4">
                     <label for="bd-qsettings-name">Cargar Factura</label>
@@ -72,26 +72,30 @@
      <div class="block-content">
 
         <div class="form-group">
-            <div class="col-xs-3">
+            <div class="col-xs-2">
                 <label for="bd-qsettings-name">Código de Barras</label>
                 <input class="form-control" type="text" id="codigo-barras" name="codigo-barras" placeholder="Lea o ingrese el codigo de barras" value="">
             </div>
-            <div class="col-xs-3">
+            <div class="col-xs-2">
                 <label for="bd-qsettings-name">Nombre</label>
-                <input class="form-control" type="text" id="nombre-producto" name="nombre-producto" placeholder="Ingrese parte del nombre" value="">
+                <input class="form-control" type="text" id="nombre-producto" name="nombre-producto" placeholder="Ingrese nombre" value="">
                 <input class="form-control" type="hidden" id="producto_id" name="producto_id" placeholder="" value="">
             </div>
             <div class="col-xs-1">
                 <label for="bd-qsettings-name">Cantidad</label>
-                <input class="form-control numbers" type="text" id="cantidad" name="cantidad" placeholder="1,2,3..." value="">
+                <input class="form-control numbers" type="text" id="cantidad" name="cantidad" placeholder="24" value="">
             </div>
             <div class="col-xs-1">
-                <label>Precio</label>
-                <input class="form-control prices" type="text" id="precio" name="precio" placeholder="0.00" value="">
+                <label>Costo</label>
+                <input class="form-control prices" type="text" id="costo" name="costo" placeholder="0.00" value="">
             </div>
             <div class="col-xs-2">
                 <label>Subtotal</label>
                 <input class="form-control" type="text" id="subtotal" name="subtotal" placeholder="0.0" disabled>
+            </div>
+            <div class="col-xs-2">
+                <label>Precio</label>
+                <input class="form-control prices" type="text" id="precio" name="precio" placeholder="0.0" >
             </div>
             <div class="col-xs-2">
                 <button class="btn btn-sm btn-minw btn-rounded btn-primary" type="button" id="anadir_producto" style="margin-top: 20px;margin-bottom: 20px;width: 30%;">
@@ -123,6 +127,23 @@
         </div>
     </div>
 </div>
+ <div class="block block-rounded">
+        <div class="block-header">
+            <h3 class="block-title">Remito Factura</h3>
+        </div>
+        <!-- <div style="text-align: center">
+            <p id="mensajeqr">Por favor seleccione un producto</p>
+            <p id="sitiowebvacio" class="hidden">Este producto no tiene c&oacute;digo QR</p>
+        </div> -->
+        <div class="block-content">
+            <div class="table-responsive">
+                <iframe src="" id="iframeComprobante" style="width:100%;height:400px;"></iframe>
+            </div>
+        </div>
+        <!-- <button class="btn btn-sm btn-minw btn-rounded btn-primary hidden" id="botonqr" onclick="printJS({ printable: 'qrcode', type: 'html', documentTitle: 'SIGAV', style: '#qrcode {display: flex; justify-content: center;}' })" style="width:98%;height:30px;margin-top:25px;" type="button">
+            Imprimir QR
+        </button> -->
+    </div>
     <!-- END Page Content -->
     @endsection
     @section("scripts")

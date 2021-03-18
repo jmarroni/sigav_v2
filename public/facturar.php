@@ -206,14 +206,18 @@ $data = array(
 	'ImpTrib' 		=> 0,   //Importe total de tributos
 	'MonId' 		=> 'PES', //Tipo de moneda usada en el comprobante (ver tipos disponibles)('PES' para pesos argentinos) 
 	'MonCotiz' 		=> 1, // Cotización de la moneda usada (1 para pesos argentinos)  
-	'Iva' 		=> array( // (Opcional) Alícuotas asociadas al comprobante
-		array(
-			'Id' 		=> 5, // Id del tipo de IVA (5 para 21%)(ver tipos disponibles) 
-			'BaseImp' 	=> $ImpNeto, // Base imponible
-			'Importe' 	=> $impuestoIVA // Importe 
-		)
-	),
+	
 );
+
+if (intval($comprobante) != 11){
+	$data['Iva'] = array( // (Opcional) Alícuotas asociadas al comprobante
+						array(
+							'Id' 		=> 5, // Id del tipo de IVA (5 para 21%)(ver tipos disponibles) 
+							'BaseImp' 	=> $ImpNeto, // Base imponible
+							'Importe' 	=> $impuestoIVA // Importe 
+						)
+					);
+}
 // Me fijo si se coloco el cliente
 if ($tipoDocumento != "" && $documento != ""){
 	$data['DocTipo'] 	= $tipoDocumento;

@@ -231,7 +231,7 @@ public function reporteStock(request $request)
         ->join("sucursales","sucursales.id", "=", "stock.sucursal_id")
         ->leftjoin("categorias","categorias.id", "=", "productos.categorias_id")
         ->leftjoin("proveedor","proveedor.id", "=", "productos.proveedores_id")
-        ->where("stock.sucursal_id","=",$sucursal)
+        //->where("stock.sucursal_id","=",$sucursal)
         ->select("productos.*","proveedor.nombre as nombreProveedor","proveedor.apellido as apellidoProveedor","sucursales.nombre as sucursal","stock.stock as stockactual","stock.stock_minimo as stockminimoActual")
         ->OrderBy("sucursales.nombre","asc")
         ->get();

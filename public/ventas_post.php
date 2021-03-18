@@ -4,7 +4,11 @@ if (!isset($_COOKIE["kiosco"])) {
 }
 header('Content-Type: application/json');
 require_once ("conection.php");
+<<<<<<< HEAD
 mysqli_set_charset($conn,"utf8"); 
+=======
+mysqli_set_charset($conn,"utf8");
+>>>>>>> e1689b23d9a16f09dc0f880f76106443c0c15757
 if (getRol() < 4 && getRol() != 1) {
     exit();
 }

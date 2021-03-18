@@ -55,7 +55,7 @@
                 <!-- END Step Tabs -->
 
                 <!-- Form -->
-                <form class="form-horizontal" action="/transferencia.save" method="post">
+                <form class="form-horizontal" action="" method="post">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
                     <input type="hidden" name="arrayproductos" id="arrayproductos"/>
                     <!-- Steps Content -->
@@ -229,6 +229,7 @@
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> 
     
 <!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="/assets/js/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>
 <script src="/assets/js/pages/base_forms_wizard.js"></script>
