@@ -12,6 +12,8 @@ use App\Models\Categoria_log;
 use App\Models\Transferencia_log;
 use App\Models\Producto;
 use App\Models\NotaCredito;
+use App\Models\FacturasProveedores;
+use App\Models\DetalleFacturasProveedores;
 use DB;
 class ReporteController extends Controller
 {
@@ -237,6 +239,37 @@ public function reporteStock(request $request)
         ->get();
     }
     return view("reportes.stocks",compact("productos","sucursales","sucursal"));
+ //return response()->json($productos);
+
+}
+
+public function reportePagoProveedores(request $request)
+{
+ $sucursales = Sucursales::all();
+ $sucursal = (isset($request->sucursal)?$request->sucursal:Sucursales::getSucursal());
+ $facturas="";
+ if ($sucursal!=0)
+ {
+     $facturas=FacturasProveedores::join("detalle_facturas_proveedores","detalle_facturas_proveedores.id_factura","facturas_proveedores.id")
+     ->join("sucursales","sucursales.id", "=", "facturas_proveedores.id_sucursal")
+     ->join("proveedor","proveedor.id", "=", "facturas_proveedores.id_proveedor")
+     ->join("remito_facturas_proveedores","remito_facturas_proveedores.id_factura_proveedor", "=", "facturas_proveedores.id")
+    ->select("facturas_proveedores.*","proveedor.nombre as nombreProveedor","proveedor.apellido as apellidoProveedor", "sucursales.nombre as sucursal","remito_facturas_proveedores.archivo")
+     ->where("facturas_proveedores.id_sucursal","=",$sucursal)
+     ->OrderBy("sucursales.nombre","asc")
+     ->get();
+ }
+ else
+     { //Muestra los productos de todas las sucursales
+       $facturas=FacturasProveedores::join("detalle_facturas_proveedores","detalle_facturas_proveedores.id_factura","facturas_proveedores.id")
+     ->join("sucursales","sucursales.id", "=", "facturas_proveedores.id_sucursal")
+     ->join("proveedor","proveedor.id", "=", "facturas_proveedores.id_proveedor")
+     ->join("remito_facturas_proveedores","remito_facturas_proveedores.id_factura_proveedor", "=", "facturas_proveedores.id")
+     ->select("facturas_proveedores.*","proveedor.nombre as nombreProveedor","proveedor.apellido as apellidoProveedor", "sucursales.nombre as sucursal","remito_facturas_proveedores.archivo")
+     ->OrderBy("sucursales.nombre","asc")
+     ->get();
+    }
+    return view("reportes.pagoProveedores",compact("facturas","sucursales","sucursal"));
  //return response()->json($productos);
 
 }
