@@ -250,8 +250,7 @@ public function reportePagoProveedores(request $request)
  $facturas="";
  if ($sucursal!=0)
  {
-     $facturas=FacturasProveedores::join("detalle_facturas_proveedores","detalle_facturas_proveedores.id_factura","facturas_proveedores.id")
-     ->join("sucursales","sucursales.id", "=", "facturas_proveedores.id_sucursal")
+     $facturas=FacturasProveedores::join("sucursales","sucursales.id", "=", "facturas_proveedores.id_sucursal")
      ->join("proveedor","proveedor.id", "=", "facturas_proveedores.id_proveedor")
      ->join("remito_facturas_proveedores","remito_facturas_proveedores.id_factura_proveedor", "=", "facturas_proveedores.id")
     ->select("facturas_proveedores.*","proveedor.nombre as nombreProveedor","proveedor.apellido as apellidoProveedor", "sucursales.nombre as sucursal","remito_facturas_proveedores.archivo")
@@ -261,8 +260,7 @@ public function reportePagoProveedores(request $request)
  }
  else
      { //Muestra los productos de todas las sucursales
-       $facturas=FacturasProveedores::join("detalle_facturas_proveedores","detalle_facturas_proveedores.id_factura","facturas_proveedores.id")
-     ->join("sucursales","sucursales.id", "=", "facturas_proveedores.id_sucursal")
+       $facturas=FacturasProveedores::join("sucursales","sucursales.id", "=", "facturas_proveedores.id_sucursal")
      ->join("proveedor","proveedor.id", "=", "facturas_proveedores.id_proveedor")
      ->join("remito_facturas_proveedores","remito_facturas_proveedores.id_factura_proveedor", "=", "facturas_proveedores.id")
      ->select("facturas_proveedores.*","proveedor.nombre as nombreProveedor","proveedor.apellido as apellidoProveedor", "sucursales.nombre as sucursal","remito_facturas_proveedores.archivo")

@@ -18,6 +18,7 @@ class CreateRemitoTransferenciastable extends Migration
             $table->integer('id_transferencia'); 
             $table->datetime('fecha_generacion');
             $table->string('usuario');
+            $table->string('archivo')->nullable();
         });
     }
 
