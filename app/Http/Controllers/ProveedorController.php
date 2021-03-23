@@ -364,7 +364,11 @@ public function saveFactura(Request $request)
             $nombre_factura="comprobante".$numRemito.".pdf";
             $html2pdf->Output(__DIR__.'/../../../public/comprobantesProveedores/'.$nombre_factura, "F");
 
-            return response()->json(array("proceso" => "OK","comprobante" => '/comprobantesProveedores/'.$nombre_factura));
+            $nombre_factura='/comprobantesProveedores/'.$nombre_factura;
+            $remito->archivo=$nombre_factura;
+            $remito->save();
+
+            return response()->json(array("proceso" => "OK","comprobante" => $nombre_factura));
 
 
 

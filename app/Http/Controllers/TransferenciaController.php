@@ -140,10 +140,13 @@ class TransferenciaController extends Controller
 
             $html2pdf->writeHTML("<page>".str_replace("DOCUMENTO","ORIGINAL",$html)."<br><br><hr style='border-style: dotted;' /><br><br></page><page>".str_replace("DOCUMENTO","DUPLICADO",$html)."<br><br><hr style='border-style: dotted;' /><br><br></page>");
 
-            $nombre_remito="comprobante".$numRemito.".pdf";
-            $html2pdf->Output(__DIR__.'/../../../public/comprobantesTransferencias/'.$nombre_remito, "F");
+            $nombre_remito="/comprobantesTransferencias/comprobante".$numRemito.".pdf";
+            $html2pdf->Output(__DIR__.'/../../../public'.$nombre_remito, "F");
+
+            $remito->archivo=$nombre_remito;
+            $remito->save();
    
-         return response()->json(array("proceso" => "OK","comprobante" => '/comprobantesTransferencias/'.$nombre_remito));
+         return response()->json(array("proceso" => "OK","comprobante" => $nombre_remito));
 
         //return redirect('transferencia/mensaje/'.base64_encode($mensaje)."/ruta/".$ruta);
     }

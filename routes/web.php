@@ -81,6 +81,7 @@ Route::get('logsTransferencias', 'ReporteController@logTransferencias');
 Route::get('reporte.presupuesto', 'ReporteController@reportePresupuesto');
 Route::get('reporte.notasCredito', 'ReporteController@reporteNotasCredito');
 Route::get('reporte.stocks', 'ReporteController@reporteStock');
+Route::get('reporte.pagoProveedores', 'ReporteController@reportePagoProveedores');
 
 Route::get('tipo/{type}', 'SweetController@notification');
 Route::get('reporte.factura/{desde?}/{hasta?}', 'ReporteController@factura');

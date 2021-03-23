@@ -327,6 +327,9 @@ function getMes($numero){
                             <li>
                                 <a href="/reportes_servicios.php">Reporte de Servicios</a>
                             </li>
+                             <li>
+                                <a href="/reporte.pagoProveedores">Reporte de Pago Proveedores</a>
+                            </li>
                         </ul>
                     </li>
                     <?php 

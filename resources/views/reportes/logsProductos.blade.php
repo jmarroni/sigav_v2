@@ -21,24 +21,26 @@
     </div>
     <!-- END Section -->
     
-     <div class="block block-rounded">
+     <div class="block block-rounded" >
         <div class="block-header">
             <h3 class="block-title">Operaciones con Productos</h3>
         </div>
         <div class="block-content">
             <div class="row text-uppercase">
                 <div class="col-sm-12">
-                    <table id="tabla_compras">
+                    <table id="tabla_compras" class="">
                         <thead>
                             <tr>
-                                <td>Id</td>
+                                <td>Nº</td>
                                 <td>Sucursal</td>
                                 <td>Usuario</td>
-                                <td>ID Producto</td>
-                                <td>Stock Anterior</td>
-                                <td>Stock Mínimo Anterior</td>
+                                <td style="display:none">ID Producto</td>
+                                <td>Barra</td>
+                                <td style="display:none">Nombre</td>
                                 <td>Stock</td>
+                                <td>Stock Anterior</td>
                                 <td>Stock Mínimo</td>
+                                <td>Stock Mínimo Anterior</td>                                                          
                                 <td>Fecha</td>
                                 <td>Tipo de Operación</td>
                             </tr>
@@ -46,21 +48,24 @@
                         <tbody>
                            
                             @if (count($productos)>0)
+                                 <?php  $i = 1; ?>
                                 @foreach($productos as $producto)
-                                <?php  $i = 1; ?>
+                           
                                     <tr style="<?php echo (($i % 2)== 0)?"background-color: #fff !important;":"background-color: #f9f9f9 !important;"; ?>">
-                                        <td><?php echo $producto->id ?></td>
-                                        <td><?php if ($producto->sucursal_id ==0) echo 'Todas'; else echo $producto->nombre; ?></td>
+                                        <td><?php echo $i ?></td>
+                                        <td><?php if ($producto->sucursal_id ==0) echo 'Todas'; else echo $producto->sucursal; ?></td>
                                         <td>{{$producto->usuario}}</td>
-                                        <td>{{$producto->productos_id}}</td>
-                                        <td>{{$producto->stock_anterior}}</td>
-                                        <td>{{$producto->stock_minimo_anterior}}</td>
+                                        <td style="display:none">{{$producto->productos_id}}</td>
+                                        <td>{{$producto->codigo_barras}}</td>
+                                        <td style="display:none">{{$producto->nombre}}</td>
                                         <td>{{$producto->stock}}</td>
+                                        <td>{{$producto->stock_anterior}}</td>                                  
                                         <td>{{$producto->stock_minimo}}</td>
+                                        <td>{{$producto->stock_minimo_anterior}}</td>  
                                         <td>{{$producto->updated_at}}</td>
                                         <td><?php echo str_replace("?","&Oacute;",$producto->tipo_operacion); ?></td>
                                     </tr>
-                                    <?php $i++; ?>
+                                    <?php $i=$i+1; ?>
                             @endforeach
                         @endif    
                             </tbody>
@@ -100,6 +105,7 @@
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ]
+
         });
         <?php }else{?>
             $('#tabla_compras').DataTable({

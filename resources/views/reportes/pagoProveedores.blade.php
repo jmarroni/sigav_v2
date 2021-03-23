@@ -12,7 +12,7 @@
             <div class="content">
                 <div class="block block-transparent block-themed text-center">
                     <div class="block-content">
-                        <h1 class="h1 font-w700 text-white animated fadeInDown push-5" style="color:white">Reporte de stock</h1>
+                        <h1 class="h1 font-w700 text-white animated fadeInDown push-5" style="color:white">Reporte de Pagos de Proveedores</h1>
                         <h2 class="h4 font-w400 text-white-op animated fadeInUp"></h2>
                     </div>
                 </div>
@@ -23,7 +23,7 @@
     
     <div class="block block-rounded">
         <div class="block-header">
-            <h3 class="block-title">Reporte de stock</h3>
+            <h3 class="block-title">Reporte de Pagos de Proveedores</h3>
         </div>
         <div class="block-content">
            <div class="row text-uppercase">
@@ -58,30 +58,33 @@
                                 <tr>
                                     <td>Nº</td>
                                     <td>Sucursal</td>
-                                    <td>Barra</td>
-                                    <td>Nombre Producto</td>
-                                    <td>Precio</td>
-                                    <td>Costo</td>
-                                    <td>Proveedor</td>
-                                    <td>Stock </td>
-                                    <td>Stock Mínimo</td>                              
+                                    <td>Nombre Proveedor</td>
+                                    <td>Fecha</td>
+                                    <td>Nº Factura</td>
+                                    <td>Monto</td>
+                                    <td>Usuario</td> 
+                                    <td>Factura</td>        
+                                    <td>Remito</td>                      
                                 </tr>
                             </thead>
                             <tbody id="tbody">
-                                  @if (count($productos)>0)
+                                  @if (count($facturas)>0)
                                 <?php  $i = 1; ?>
-                                @foreach($productos as $producto)
+                                @foreach($facturas as $factura)
                                 <tr style="<?php echo (($i % 2)== 0)?"background-color: #fff !important;":"background-color: #f9f9f9 !important;"; ?>">
                                     <td><?php echo $i ?></td>
-                                    <!-- <td><?php echo $producto->id ?></td> -->
-                                    <td>{{$producto->sucursal}}</td>
-                                    <td>{{$producto->codigo_barras}}</td>
-                                    <td>{{$producto->nombre}}</td>
-                                    <td>{{$producto->precio_unidad}}</td>
-                                    <td>{{$producto->costo}}</td>
-                                    <td>{{$producto->nombreProveedor}} {{$producto->apellidoProveedor}}</td>
-                                    <td>{{$producto->stockactual}}</td>
-                                    <td>{{$producto->stockminimoActual}}</td>
+                                    <td>{{$factura->sucursal}}</td>
+                                    <td>{{$factura->nombreProveedor}} {{$factura->apellidoProveedor}}</td>
+                                    <td>{{$factura->fecha}}</td>
+                                    <td>{{$factura->numero_factura}}</td>
+                                    <td>{{$factura->monto}}</td>
+                                    <td>{{$factura->usuario}}</td>
+                                    @if ($factura->ruta_archivo!=null)
+                                    <td><a href="<?php echo Storage::url($factura->ruta_archivo)?>" target="blank">Ver</a></td>
+                                    @else
+                                    <td>No cargada</td>
+                                    @endif
+                                    <td><a href="{{$factura->archivo}}" target="blank">Ver</a></td>
                                 </tr>
                                 <?php $i++; ?>
                                 @endforeach
@@ -111,7 +114,7 @@
     <script type="text/javascript" src="/assets/js/core/vfs_fonts0.1.24.js"></script>
     <script type="text/javascript" src="/assets/js/core/buttons.html5.min1.2.4.js"></script>
     <script type="text/javascript" src="/assets/js/core/buttons.print.min1.2.4.js"></script>
-    <script type="text/javascript" src="/assets/js/reportes/reporteStocks.js"></script>
+    <script type="text/javascript" src="/assets/js/reportes/reportePagoProveedores.js?v=1"></script>
     <script type="text/javascript">
         $(document).ready(function(){
 

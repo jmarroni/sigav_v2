@@ -18,6 +18,7 @@ class CreateRemitoFacturaProveedorestable extends Migration
             $table->integer('id_factura_proveedor'); 
             $table->datetime('fecha_generacion');
             $table->string('usuario');
+            $table->string('archivo')->nullable();
         });
     }
 
