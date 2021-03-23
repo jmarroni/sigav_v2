@@ -170,7 +170,7 @@
 
         jQuery("#nombre-producto").autocomplete({
             source: function(request, response) {
-                jQuery.get("/etiqueta.buscarProductos", {term:  $("#nombre-producto").val()
+                jQuery.get("/etiqueta.buscarProductos", {producto:  $("#nombre-producto").val(), tipoBusqueda:1
             }, function (data) {
                 response(data);
             });
@@ -189,7 +189,7 @@
     });
         jQuery("#codigo-barras").autocomplete({
             source: function(request, response) {
-                jQuery.get("/etiqueta.buscarProductos", {term:  $("#codigo-barras").val()
+                jQuery.get("/etiqueta.buscarProductos", {producto:  $("#codigo-barras").val(), tipoBusqueda:1
             }, function (data) {
                 response(data);
             });
