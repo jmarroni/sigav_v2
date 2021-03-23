@@ -10,7 +10,9 @@ ini_set('display_startup_errors', 0);
 require_once ("conection.php");
 require 'vendor/autoload.php';
 use Spipu\Html2Pdf\Html2Pdf;
-
+$stockfinal=0;
+$stockanterior=0;
+$stockminimo=0;
 $arrSucursal = array(); 
 
 if (isset($_COOKIE["sucursal"])){
@@ -123,11 +125,32 @@ if ($resultados_productos_en_carrito->num_rows > 0) {
 	while ($producto_en_carrito  = $resultados_productos_en_carrito->fetch_assoc()) {
 		if ($descontar_stock==1)
 		{
+			$consultar_stock="select stock, stock_minimo from stock WHERE productos_id = ".$producto_en_carrito["producto_id"]." AND sucursal_id = ".getSucursal($_COOKIE["sucursal"]);
+
+			$resultadoquery=$conn->query($consultar_stock);
+			$resultadoquery=($resultadoquery!=null && $resultadoquery!=false)?$resultadoquery->fetch_assoc():null;
+			$stockanterior=$resultadoquery["stock"]!=null?$resultadoquery["stock"]:0;
+			$stockminimo=$resultadoquery["stock_minimo"]!=null?$resultadoquery["stock_minimo"]:0;
+			$stockfinal=$stockanterior-$producto_en_carrito["cantidad"];
+
 			$sql_descontar_stock = "UPDATE stock SET stock = (stock - {$producto_en_carrito["cantidad"]}) WHERE productos_id = ".$producto_en_carrito["producto_id"]." AND sucursal_id = ".getSucursal($_COOKIE["sucursal"]);
 
 			if ($conn->query($sql_descontar_stock) === FALSE) {
 				echo "Error en UPDATE: " . $sql_descontar_stock . "<br>" . $conn->error;
 			}
+			else
+			{
+			$date=date("Y-m-d");
+			
+			$queryLog = "Insert into stock_logs
+			 (stock_anterior, stock_minimo_anterior, stock, stock_minimo, sucursal_id, usuario,
+			 productos_id, updated_at, created_at, tipo_operacion) 
+			 VALUES (".$stockanterior.",".$stockminimo.",".$stockfinal.",".$stockminimo.",".getSucursal($_COOKIE["sucursal"]).",'".$_COOKIE["kiosco"]."',".$producto_en_carrito["producto_id"].",'".$date."','".$date."','VENTA')";
+			 if ($conn->query($queryLog) === FALSE) {
+				echo "Error guardando log: " . $queryLog . "<br>" . $conn->error;
+			    }
+			}
+
 		}//End if de condición descontar stock
 
 	$sql_insertar_venta = 

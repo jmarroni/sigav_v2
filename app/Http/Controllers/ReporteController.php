@@ -126,7 +126,8 @@ return redirect('cierreCajaReporte/mensaje/'.base64_encode($mensaje));
 public function logProductos(request $request)
 {
     $productos=Stock_log::leftjoin("sucursales","sucursales.id","=","stock_logs.sucursal_id")
-    ->select("stock_logs.*","sucursales.nombre")
+    ->join("productos","productos.id","=","stock_logs.productos_id")
+    ->select("stock_logs.*","sucursales.nombre as sucursal","productos.nombre","productos.codigo_barras")
     ->OrderBy("stock_logs.id","desc")
     ->get();
     return view("reportes.logsProductos",compact("productos"));

@@ -58,6 +58,7 @@
                                 <tr>
                                     <td>Nº</td>
                                     <td>Sucursal</td>
+                                    <td>Barra</td>
                                     <td>Nombre Producto</td>
                                     <td>Precio</td>
                                     <td>Costo</td>
@@ -74,6 +75,7 @@
                                     <td><?php echo $i ?></td>
                                     <!-- <td><?php echo $producto->id ?></td> -->
                                     <td>{{$producto->sucursal}}</td>
+                                    <td>{{$producto->codigo_barras}}</td>
                                     <td>{{$producto->nombre}}</td>
                                     <td>{{$producto->precio_unidad}}</td>
                                     <td>{{$producto->costo}}</td>
