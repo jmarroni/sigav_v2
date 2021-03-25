@@ -36,6 +36,7 @@ Route::get('proveedor.checkProducts/{id}', 'ProveedorController@checkProducts');
 Route::get('proveedor.getProveedor/{id}', 'ProveedorController@getProveedor');
 Route::get('proveedor.getCategoriasProveedor/{id}', 'ProveedorController@getCategoriasProveedor');
 Route::get('pagoProveedores', 'ProveedorController@indexPagoProveedores');
+Route::post('pagoProveedores', 'ProveedorController@indexPagoProveedores');
 Route::get('pagoProveedores/mensaje/{mensaje}', 'ProveedorController@indexPagoProveedores');
 Route::post('pagoProveedores.saveFactura', 'ProveedorController@saveFactura');
 //Categoría
