@@ -9,6 +9,7 @@ use App\Models\Sucursales;
 use App\Models\Venta;
 use App\Models\Stock_log;
 use App\Models\Categoria_log;
+use App\Models\Transferencia;
 use App\Models\Transferencia_log;
 use App\Models\Producto;
 use App\Models\NotaCredito;
@@ -269,6 +270,36 @@ public function reportePagoProveedores(request $request)
      ->get();
     }
     return view("reportes.pagoProveedores",compact("facturas","sucursales","sucursal"));
+ //return response()->json($productos);
+
+}
+public function reporteTransferencias(request $request)
+{
+ $sucursales = Sucursales::all();
+ $sucursal = (isset($request->sucursal)?$request->sucursal:Sucursales::getSucursal());
+ $transferencias="";
+ if ($sucursal!=0)
+ {
+     $transferencias=Transferencia::join("sucursales as so","so.id","=","transferencias.sucursal_origen_id")
+     ->join("sucursales as sd","sd.id","=","transferencias.sucursal_destino_id")
+     ->join("estado_transferencia","estado_transferencia.id","=","transferencias.estado_id")
+     ->leftjoin("remito_transferencias","remito_transferencias.id_transferencia", "=", "transferencias.id")
+     ->select("transferencias.*","so.nombre as origen","sd.nombre as destino","remito_transferencias.archivo","estado_transferencia.nombre as estado")
+     ->where("transferencias.sucursal_origen_id","=",$sucursal)
+     ->OrderBy("transferencias.fecha","desc")
+     ->get();
+ }
+ else
+     { //Muestra las transferencias de todas las sucursales
+      $transferencias=Transferencia::join("sucursales as so","so.id","=","transferencias.sucursal_origen_id")
+     ->join("sucursales as sd","sd.id","=","transferencias.sucursal_destino_id")
+     ->join("estado_transferencia","estado_transferencia.id","=","transferencias.estado_id")
+     ->leftjoin("remito_transferencias","remito_transferencias.id_transferencia", "=", "transferencias.id")
+     ->select("transferencias.*","so.nombre as origen","sd.nombre as destino","remito_transferencias.archivo","estado_transferencia.nombre as estado")
+     ->OrderBy("transferencias.fecha","desc")
+     ->get();
+    }
+    return view("reportes.transferencias",compact("transferencias","sucursales","sucursal"));
  //return response()->json($productos);
 
 }

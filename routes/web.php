@@ -36,7 +36,6 @@ Route::get('proveedor.checkProducts/{id}', 'ProveedorController@checkProducts');
 Route::get('proveedor.getProveedor/{id}', 'ProveedorController@getProveedor');
 Route::get('proveedor.getCategoriasProveedor/{id}', 'ProveedorController@getCategoriasProveedor');
 Route::get('pagoProveedores', 'ProveedorController@indexPagoProveedores');
-Route::post('pagoProveedores', 'ProveedorController@indexPagoProveedores');
 Route::get('pagoProveedores/mensaje/{mensaje}', 'ProveedorController@indexPagoProveedores');
 Route::post('pagoProveedores.saveFactura', 'ProveedorController@saveFactura');
 //Categoría
@@ -82,6 +81,9 @@ Route::get('reporte.presupuesto', 'ReporteController@reportePresupuesto');
 Route::get('reporte.notasCredito', 'ReporteController@reporteNotasCredito');
 Route::get('reporte.stocks', 'ReporteController@reporteStock');
 Route::get('reporte.pagoProveedores', 'ReporteController@reportePagoProveedores');
-
+Route::get('reporte.transferencias', 'ReporteController@reporteTransferencias');
+//Clientes
+Route::get('cliente', 'ClienteController@index');
+Route::get('cliente/mensaje/{mensaje}', 'ClienteController@index');
 Route::get('tipo/{type}', 'SweetController@notification');
 Route::get('reporte.factura/{desde?}/{hasta?}', 'ReporteController@factura');
