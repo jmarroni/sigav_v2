@@ -257,6 +257,7 @@ class ProductoController extends Controller
 
 public function searchProducts(request $request)
 {
+    if (isset($_GET["tipoBusqueda"]))$_GET["sucursal"]=(isset($_GET["sucursal"]))?intval($_GET["sucursal"]):Sucursales::getSucursal($_COOKIE["sucursal"]);
 
  if (isset($_GET["producto"]) && intval($_GET["producto"]) !== null && isset($_GET["sucursal"]))
  { 

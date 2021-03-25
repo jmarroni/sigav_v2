@@ -42,7 +42,6 @@ class TransferenciaController extends Controller
     {
         $numProductos=0;
         $numRemito=0;
-        $idTransferencia;
         $htmlProductos="";
         $fecha=date("Y-m-d H:i:s");
         $usuario=strtoupper($_COOKIE["kiosco"]);
@@ -58,7 +57,7 @@ class TransferenciaController extends Controller
         $transferencia->estado_id=1;
         //$transferencia->comentario=$request->comentario;
         $transferencia->usuario=$_COOKIE["kiosco"];
-         $idTransferencia = $transferencia->save();
+        $transferencia->save();
         $arrayproductos = explode("||", $request->arrayproductos);
         foreach ($arrayproductos as $producto)
             {
@@ -92,7 +91,7 @@ class TransferenciaController extends Controller
         $transferenciaLog->save();
 
         $remito = new RemitoTransferencias();
-        $remito->id_transferencia =$idTransferencia;
+        $remito->id_transferencia =$transferencia->id;
         $remito->fecha_generacion = date('Y-m-d-h-s');
         $remito->usuario = $_COOKIE["kiosco"];
         $remito->save();
