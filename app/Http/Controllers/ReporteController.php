@@ -26,18 +26,27 @@ class ReporteController extends Controller
     }
 
     public function factura(Request $request,$reporte_desde = null,$reporte_hasta = null){
-        \DB::connection()->enableQueryLog();
-        
-        if ((isset($request->reporte_desde))&&(isset($request->reporte_hasta)))
-            $facturas = Factura::where("presupuesto","=",0)->where(\DB::raw("SUBSTRING(fecha,0,10)"), ">=",$request->reporte_desde)->where(\DB::raw("SUBSTRING(fecha,0,10)"), "<=",$request->reporte_hasta)->where("cae","<>","''")->where("cae","<>","1111")->get();
-        elseif (isset($request->reporte_hasta))
-            $facturas = Factura::where("presupuesto","=",0)->where(\DB::raw("SUBSTRING(fecha,0,10)"), "<=",$request->reporte_hasta)->where("cae","<>","''")->where("cae","<>","1111")->get();
-        elseif (isset($request->reporte_desde))
-            $facturas = Factura::where("presupuesto","=",0)->where(\DB::raw("SUBSTRING(fecha,0,10)"),">=",$request->reporte_desde)->where("cae","<>","''")->where("cae","<>","1111")->get();
-        else $facturas = Factura::where("presupuesto","=",0)->where("cae","<>","''")->where("cae","<>","1111")->get();
-        $queries = DB::getQueryLog();
-        $last_query = end($queries);
-        dd($last_query);
+        if(isset($request->reporte_desde) && $request->reporte_desde!="" && isset($request->reporte_hasta) && $request->reporte_hasta!="" )
+    {
+        $facturas=Factura::join("sucursales","sucursales.id","=","factura.sucursal_id")
+        ->where("factura.cae","<>","")
+        ->where("factura.fechacae","<>","")
+        ->whereBetween('factura.fecha', [$request->reporte_desde, $request->reporte_hasta])
+        ->where("sucursales.id","=",Sucursales::getSucursal($_COOKIE["sucursal"]))
+        ->select("factura.*","sucursales.nombre as nombre_sucursal")
+        ->OrderBy("fecha","desc")
+        ->get();
+    }
+    else
+    {   
+       $facturas=Factura::join("sucursales","sucursales.id","=","factura.sucursal_id")
+       ->where("factura.cae","<>","")
+       ->where("factura.fechacae","<>","")
+       ->select("factura.*","sucursales.nombre as nombre_sucursal")
+       ->OrderBy("fecha","desc")
+       ->get();
+
+           }
         return view("reportes.factura",compact("facturas","reporte_desde","reporte_hasta"));
     }
 
