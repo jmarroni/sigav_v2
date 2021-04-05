@@ -82,8 +82,16 @@ Route::get('reporte.notasCredito', 'ReporteController@reporteNotasCredito');
 Route::get('reporte.stocks', 'ReporteController@reporteStock');
 Route::get('reporte.pagoProveedores', 'ReporteController@reportePagoProveedores');
 Route::get('reporte.transferencias', 'ReporteController@reporteTransferencias');
+Route::get('reporte.factura/{desde?}/{hasta?}', 'ReporteController@factura');
+Route::get('reporte.pedidos', 'ReporteController@reportePedidos');
 //Clientes
 Route::get('cliente', 'ClienteController@index');
 Route::get('cliente/mensaje/{mensaje}', 'ClienteController@index');
+Route::post('cliente.save', 'ClienteController@save');
+Route::get('cliente.delete/{id}','ClienteController@delete' );
+Route::get('cliente.getCliente/{id}', 'ClienteController@getCliente');
+Route::get('pedido', 'PedidoController@index');
+Route::post('pedido.save', 'PedidoController@save');
+
+
 Route::get('tipo/{type}', 'SweetController@notification');
-Route::get('reporte.factura/{desde?}/{hasta?}', 'ReporteController@factura');

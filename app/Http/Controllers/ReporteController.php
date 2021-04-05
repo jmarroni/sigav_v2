@@ -12,6 +12,7 @@ use App\Models\Categoria_log;
 use App\Models\Transferencia;
 use App\Models\Transferencia_log;
 use App\Models\Producto;
+use App\Models\PedidosOptica;
 use App\Models\NotaCredito;
 use App\Models\FacturasProveedores;
 use App\Models\DetalleFacturasProveedores;
@@ -312,5 +313,30 @@ public function reporteTransferencias(request $request)
  //return response()->json($productos);
 
 }
+public function reportePedidos(request $request)
+{
+ $sucursales = Sucursales::all();
+ $sucursal = (isset($request->sucursal)?$request->sucursal:Sucursales::getSucursal());
+ $transferencias="";
+ if ($sucursal!=0)
+ {
+     $pedidos=PedidosOptica::join("sucursales","sucursales.id","=","pedidos_optica.id_sucursal")
+     ->join("pedidos_optica_remito","pedidos_optica_remito.id_pedido","=","pedidos_optica.id")
+     ->select("pedidos_optica.*","sucursales.nombre as sucursal","pedidos_optica_remito.*")
+     ->where("pedidos_optica.id_sucursal","=",$sucursal)
+     ->OrderBy("pedidos_optica.fecha","desc")
+     ->get();
+ }
+ else
+     { //Muestra los pedidos de todas las sucursales
+      $pedidos=PedidosOptica::join("sucursales","sucursales.id","=","pedidos_optica.id_sucursal")
+     ->join("pedidos_optica_remito","pedidos_optica_remito.id_pedido","=","pedidos_optica.id")
+     ->select("pedidos_optica.*","sucursales.nombre as sucursal","pedidos_optica_remito.*")
+     ->OrderBy("pedidos_optica.fecha","desc")
+     ->get();
+    }
+    return view("reportes.pedidos",compact("pedidos","sucursales","sucursal"));
+ //return response()->json($productos);
 
+}
 }

@@ -330,6 +330,12 @@ function getMes($numero){
                              <li>
                                 <a href="/reporte.pagoProveedores">Reporte de Pago Proveedores</a>
                             </li>
+                            <li>
+                                <a href="/reporte.transferencias">Reporte de Transferencias</a>
+                            </li>
+                            <li>
+                                <a href="/reporte.pedidos">Reporte de Pedidos</a>
+                            </li>
                         </ul>
                     </li>
                     <?php 
@@ -420,10 +426,10 @@ function getMes($numero){
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="/cliente.php" >Alta/Baja/Modificaci&oacute;n</a>
+                                <a href="/cliente" >Alta/Baja/Modificaci&oacute;n</a>
                             </li>
                             <li>
-                                <a href="/pedidos.php">Pedidos</a>
+                                <a href="/pedido">Pedidos</a>
                             </li>
                             <li>
                                 <a href="/relacion_cliente_servicios.php">Servicios Relacionados</a>
