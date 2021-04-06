@@ -75,6 +75,7 @@ if (getRol() < 4) {
                                 </tr>
                             </thead>
                             <tbody>
+                                @if (count($facturas)>0)
                                 @foreach($facturas as $factura)
                                 <tr>
                                     <td>{{$factura->numero}}</td>
@@ -88,6 +89,7 @@ if (getRol() < 4) {
                                     <td><a id="reenvio_mail_{{$factura->numero}}" href="#">REENVIAR MAIL</a></td>
                                 </tr>
                                 @endforeach
+                                @endif
                             </tbody>
                         </table>
                     </div>
