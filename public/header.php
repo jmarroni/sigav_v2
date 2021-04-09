@@ -300,47 +300,66 @@ function getMes($numero){
                             </a>
                         </li>
                     <?php } ?>
-                    <?php if (getRol() > 4) { ?>
+                   
                     <li class="dropdown">
                         <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-area-chart push-5-r"></i>Reportes <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
+                            <?php if (getRol() > 4) { ?>
                             <li>
                                 <a href="/reportes.php">Reporte de Ventas</a>
                             </li>
+                            <?php } ?>
+                            <?php if (getRol() > 4) { ?>
                             <li>
                                 <a href="/reportes_proveedores.php">Reporte de Proveedores</a>
                             </li>
+                            <?php } ?>
+                            <?php if (getRol()==1 || getRol()==4 || getRol()==5) { ?>
                             <li>
                                 <a href="/reporte.factura">Reporte de Facturaci&oacute;n</a>
                             </li>
+                            <?php } ?>
+                            <?php if (getRol() > 4) { ?>
                             <li>
                                 <a href="/reporte.stocks">Reporte de Stock</a>
                             </li>
+                            <?php } ?>
+                            <?php if (getRol() > 4) { ?>
                             <li>
                                 <a href="/reporte.presupuesto">Reporte de Presupuestos</a>
                             </li>
+                            <?php } ?>
+                            <?php if (getRol() > 4) { ?>
                             <li>
                                 <a href="/reporte.notasCredito">Reporte de Nota de credito</a>
                             </li>
+                            <?php } ?>
+                            <?php if (getRol() > 4) { ?>
                             <li>
                                 <a href="/reportes_servicios.php">Reporte de Servicios</a>
                             </li>
+                            <?php } ?>
+                            <?php if (getRol() > 4) { ?>
                              <li>
                                 <a href="/reporte.pagoProveedores">Reporte de Pago Proveedores</a>
                             </li>
+                            <?php } ?>
+                            <?php if (getRol() > 4) { ?>
                             <li>
                                 <a href="/reporte.transferencias">Reporte de Transferencias</a>
                             </li>
+                            <?php } ?>
+                              <?php if (getRol() > 4) { ?>
                             <li>
                                 <a href="/reporte.pedidos">Reporte de Pedidos</a>
                             </li>
+                            <?php } ?>
                         </ul>
                     </li>
-                    <?php 
-                    }
-                    if (getRol() > 2) { ?>
+                   
+                   <?php  if (getRol() > 2) { ?>
                     <li class="dropdown <?php echo (isset($menu["proveedores"]))?$menu["proveedores"]:""; ?>">
                         <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-product-hunt push-5-r"></i>Proveedores<span class="caret"></span>

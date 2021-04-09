@@ -55,8 +55,8 @@
          var url = "/pedido.save/";
         $.post(url,datos, function(data, status){  
             //var res=JSON.parse(data);
-             console.log(data.proceso);
-                console.log(data.comprobante);
+             //console.log(data.proceso);
+                //console.log(data.comprobante);
             // if (status === 'success') {
                 if(data.proceso == "OK"){
                     swal({
