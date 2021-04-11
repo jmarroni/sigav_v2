@@ -6,7 +6,7 @@ $proveedor_id = 0;
 require_once ("conection.php");
 require ('header.php');
 
-if (getRol() < 4) {
+if (getRol()!=1 && getRol()!=4 && getRol()!=5) {
     exit();
 }
 ?>
