@@ -234,6 +234,6 @@
 <script src="/assets/js/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>
 <script src="/assets/js/pages/base_forms_wizard.js"></script>
 <script src="/assets/js/plugins/jquery-validation/jquery.validate.min.js"></script>
-<script src="/assets/js/transferencias/transferencias_accion.js"></script>
+<script src="/assets/js/transferencias/transferencias_accion.js?v=<?php echo rand(); ?>"></script>
 
 	@endsection

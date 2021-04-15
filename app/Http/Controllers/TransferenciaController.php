@@ -146,8 +146,6 @@ class TransferenciaController extends Controller
             $remito->save();
    
          return response()->json(array("proceso" => "OK","comprobante" => $nombre_remito));
-
-        //return redirect('transferencia/mensaje/'.base64_encode($mensaje)."/ruta/".$ruta);
     }
 
     public function list(Request $request)

@@ -146,7 +146,7 @@ function getMes($numero){
                                 <div class="row">
                                     <div class="col-xs-10">
                                     <a href="configuracion_afip.php" style="color:black;"><div class="font-s13 font-w600">AFIP</div></a>
-                                        <div class="font-s13 font-w400 text-muted">Configuracion facturaci&oacute;n electronica</div>
+                                        <div class="font-s13 font-w400 text-muted">Configuracion facturaci&oacute;n electr&oacute;n ica</div>
                                     </div>
                                 </div>
                             </div>
@@ -161,7 +161,7 @@ function getMes($numero){
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-xs-10">
-                                    <a href="configuracion_racks.php" style="color:black;"><div class="font-s13 font-w600">Deposito</div></a>
+                                    <a href="configuracion_racks.php" style="color:black;"><div class="font-s13 font-w600">Dep&oacute;sito</div></a>
                                         <div class="font-s13 font-w400 text-muted">Configuraci&oacute;n de Racks</div>
                                     </div>
                                 </div>
@@ -185,7 +185,7 @@ function getMes($numero){
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-xs-10">
-                                    <a href="#" id="cerrar_session" style="color:black;"><div class="font-s13 font-w600">Cerrar Session</div></a>
+                                    <a href="#" id="cerrar_session" style="color:black;"><div class="font-s13 font-w600">Cerrar Sesi&oacute;n </div></a>
                                         <div class="font-s13 font-w400 text-muted">Salir del sistema.</div>
                                     </div>
                                 </div>
@@ -520,7 +520,7 @@ $("#lista_precios").change(function(){
 });
 
 $("#cerrar_session").click(function(){
-    document.location.href = "cerrar_session.php";
+    document.location.href = "/cerrar_session.php";
 })
 </script>
  
