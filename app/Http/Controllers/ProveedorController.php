@@ -293,7 +293,7 @@ public function saveFactura(Request $request)
       $productos->costo=floatval($datosProducto[2]);
       $cambia=1;
     }
-    if(isset($productos) && floatval($productos->precio_unidad)< floatval($datosProducto[3]))
+    if(isset($productos) && floatval($productos->precio_unidad)!= floatval($datosProducto[3]))
     {
       $productos->precio_unidad=floatval($datosProducto[3]);
       $cambia=1;
