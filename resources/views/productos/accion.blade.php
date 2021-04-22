@@ -158,11 +158,9 @@
                                     <!-- Slider with dots -->
                                     <div class="js-slider" data-slider-dots="true" style="width:150px;">
                                         @for($i = 0;$i < 6;$i ++)
-                                            @if (isset($producto->imagenes[$i]))
-                                                <div style="width:50px;height:50px;float:left;"><img id="{{$producto->id}}_{{$i}}" onclick="viewImage('{{$producto->id}}_{{$i}}')" style="float:left;" class="img-responsive" src="{{str_replace('/'.$producto->id.'/','/'.$producto->id.'/thumb_300x300_',$producto->imagenes[$i]->imagen_url)}}" /></div>
-                                            @else
+                                         
                                                 <div style="width:50px;height:50px;float:left;"><img style="float:left;" class="img-responsive" src="/assets/img/photos/no-image-featured-image.png" /></div>
-                                            @endif
+                                          
                                         @endfor
                                     </div>
                                     <!-- END Slider with dots -->

@@ -1,7 +1,10 @@
-exception 'Exception' with message '(502) Error interno de base de datos -  Autorizador CAE - TransacciÃ³n Activa' in /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php:363
+exception 'Exception' with message 'SOAP Fault: soap:Sender
+Server was unable to read request. ---> There is an error in XML document (2, 1527). ---> Input string was not in a correct format.
+' in /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Afip.php:401
 Stack trace:
-#0 /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(307): ElectronicBilling->_CheckErrors('FECAESolicitar', Object(stdClass))
-#1 /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(92): ElectronicBilling->ExecuteRequest('FECAESolicitar', Array)
-#2 /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(129): ElectronicBilling->CreateVoucher(Array)
-#3 /var/www/virtual/mercado-artesanal.com.ar/public/facturar.php(257): ElectronicBilling->CreateNextVoucher(Array)
-#4 {main}
+#0 /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Afip.php(381): AfipWebService->_CheckErrors('FECAESolicitar', Object(SoapFault))
+#1 /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(305): AfipWebService->ExecuteRequest('FECAESolicitar', Array)
+#2 /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(92): ElectronicBilling->ExecuteRequest('FECAESolicitar', Array)
+#3 /var/www/virtual/mercado-artesanal.com.ar/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(129): ElectronicBilling->CreateVoucher(Array)
+#4 /var/www/virtual/mercado-artesanal.com.ar/public/nota_de_debito.php(114): ElectronicBilling->CreateNextVoucher(Array)
+#5 {main}

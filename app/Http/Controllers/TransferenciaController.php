@@ -38,8 +38,9 @@ class TransferenciaController extends Controller
     }
 
 
-    public function save(Request $request)
+    public function saving(Request $request)
     {
+    	
         $numProductos=0;
         $numRemito=0;
         $htmlProductos="";
@@ -147,10 +148,9 @@ class TransferenciaController extends Controller
    
          return response()->json(array("proceso" => "OK","comprobante" => $nombre_remito));
 
-        //return redirect('transferencia/mensaje/'.base64_encode($mensaje)."/ruta/".$ruta);
     }
 
-    public function list(Request $request)
+    public function listar(Request $request)
     {
         $sucursal_activa = (Sucursales::getSucursal($_COOKIE["sucursal"]) !== null)?Sucursales::getSucursal($_COOKIE["sucursal"]):"";
         $transferenciasRealizadas=Transferencia::join("estado_transferencia as e","e.id","=","transferencias.estado_id")

@@ -69,9 +69,9 @@
                                             <option value="">Seleccione la sucursal de Origen</option>
                                             @if (count($sucursales)>0)
                                              @foreach($sucursales as $sucursal)
-                          						  <option value="{{$sucursal->id}}">{{$sucursal->nombre}}</option>
-                           					 @endforeach
-                           					 @endif
+                                                  <option value="{{$sucursal->id}}">{{$sucursal->nombre}}</option>
+                                             @endforeach
+                                             @endif
                                         </select>
                                         <label for="sucursal_origen">Sucursal de Origen</label>
 
@@ -89,9 +89,9 @@
                                                 <option value="">Seleccione la sucursal de Destino</option>
                                              @if (count($sucursales)>0)
                                              @foreach($sucursales as $sucursal)
-                          						  <option value="{{$sucursal->id}}">{{$sucursal->nombre}}</option>
-                           					 @endforeach
-                           					 @endif
+                                                  <option value="{{$sucursal->id}}">{{$sucursal->nombre}}</option>
+                                             @endforeach
+                                             @endif
                                         </select>
                                         <label for="sucursal_destino">Sucursal de Destino</label>
                                         <div id="3"> </div>
@@ -223,9 +223,9 @@
     </div>
     <!-- END Products -->
 </div>
-	@endsection
-	@section("scripts")
-	<!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
+    @endsection
+    @section("scripts")
+    <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> 
     
 <!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
@@ -234,6 +234,6 @@
 <script src="/assets/js/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>
 <script src="/assets/js/pages/base_forms_wizard.js"></script>
 <script src="/assets/js/plugins/jquery-validation/jquery.validate.min.js"></script>
-<script src="/assets/js/transferencias/transferencias_accion.js"></script>
+<script src="/assets/js/transferencias/transferencias_accion.js?v=<?php echo rand(); ?>"></script>
 
-	@endsection
+    @endsection

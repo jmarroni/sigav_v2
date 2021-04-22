@@ -82,8 +82,9 @@
                                                           <th class="text-center">Cantidad</th>
                                                        </thead>
                                                         <tbody>
+                                                            <?php $cantProductos=0;?>
                                                      @if (count($productos)>0)
-                                                      <?php $cantProductos=0;?>
+                                                      
                                                          @foreach ($productos as $producto)
                                                              <?php $cantProductos=$cantProductos+$producto->cantidad;?>
                                                             @if ($producto->tranferencia_id==$transferencia->id)
