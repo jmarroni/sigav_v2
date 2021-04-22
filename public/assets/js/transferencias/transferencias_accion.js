@@ -155,7 +155,7 @@ if(informacionValida==1)
     $("#arrayproductos").val(datos_a_transferir.join('||'));
     var datos= $(".form-horizontal").serialize();
     if (confirm('¿Seguro desea realizar la transferencia de mercadería?')&& informacionValida==1){
-        var url = "/transferencia.save/";
+        var url = "/transferencia-saving/";
         $.post(url,datos, function(data, status){  
             if (status === 'success') {
                 if(data.proceso == "OK"){

@@ -8,6 +8,7 @@ use App\Models\Producto;
 use App\Models\Sucursales;
 use App\Models\Imagen_producto;
 use App\Models\Stock_log;
+use App\Models\LogsCostosPrecios;
 use App\Models\Stock;
 use Illuminate\Support\Facades\Storage;
 use Image;
@@ -32,6 +33,8 @@ class ProductoController extends Controller
         $proveedores = Proveedor::all();
         $sucursales = Sucursales::all();
         $sucursal = (isset($request->sucursal)?$request->sucursal:Sucursales::getSucursal());
+        $imagenes=Imagen_producto::all();
+        $imagen=array();
         $productos =//Producto::leftjoin("stock","stock.productos_id", "=", "productos.id")
         //                     ->leftjoin("categorias","categorias.id", "=", "productos.categorias_id")
         //                     ->leftjoin("proveedor","proveedor.id", "=", "productos.proveedores_id")
@@ -46,11 +49,12 @@ class ProductoController extends Controller
             }])
         ->leftjoin("categorias","categorias.id", "=", "productos.categorias_id")
         ->leftjoin("proveedor","proveedor.id", "=", "productos.proveedores_id")
+        //->leftjoin("imagen_producto","imagen_producto.productos_id","=","productos.id")
         ->select("productos.*","proveedor.nombre as nombreProveedor","proveedor.apellido as apellidoProveedor","categorias.nombre as nombreCategoria")
         ->get();
 
          //get();
-        return view("productos.accion",compact("productos","proveedores","mensaje","sucursal","sucursales"));
+        return view("productos.accion",compact("productos","proveedores","mensaje","sucursal","sucursales","imagenes","imagen"));
     }
 
 
@@ -99,6 +103,7 @@ class ProductoController extends Controller
     public function store(Request $request)
     {
         $id=0;
+        $sucursal=Sucursales::getSucursal();
         $stock_logs = new Stock_log();
         if ($request->id != ""){
             $productos = Producto::find($request->id);
@@ -110,12 +115,28 @@ class ProductoController extends Controller
             $stock->usuario         = $_COOKIE["kiosco"];
             $stock->save();
             $stock_logs->productos_id   = $request->id;
-            $stock_logs->sucursal_id    = Sucursales::getSucursal();;
+            $stock_logs->sucursal_id    = $sucursal;
             $stock_logs->stock          = 0;
             $stock_logs->stock_minimo   = 0;
             $stock_logs->usuario        = $_COOKIE["kiosco"];
             $stock_logs->tipo_operacion = 'Actualización';
             $stock_logs->save();
+            //Guardar auditoría de cambios de costos y precios
+            if(($productos->costo!=$request->costo)||($productos->precio_unidad!=$request->precio_unidad))
+            {
+                $stockCostoPrecioLog= new LogsCostosPrecios();
+                $stockCostoPrecioLog->updated_at = date("Y-m-d H:i:s");
+                $stockCostoPrecioLog->created_at = date("Y-m-d H:i:s");
+                $stockCostoPrecioLog->sucursal_id     = $sucursal;
+                $stockCostoPrecioLog->productos_id    = $request->id;
+                $stockCostoPrecioLog->usuario         = $_COOKIE["kiosco"];
+                $stockCostoPrecioLog->costo_anterior=$productos->costo;
+                $stockCostoPrecioLog->costo=$request->costo;
+                $stockCostoPrecioLog->precio_anterior=$productos->precio_unidad;
+                $stockCostoPrecioLog->precio=$request->precio_unidad;
+                $stockCostoPrecioLog->operacion="Cambio de costo y/o precio desde módulo de carga";
+                $stockCostoPrecioLog->save();
+            }
             $mensaje = "Actualizaci&oacute;n realizada exitosamente";
         }else{
             $productos = new Producto();
@@ -225,7 +246,7 @@ class ProductoController extends Controller
     }
     public function delete_stock(Request $request,$id,$_stock,$stock_minimo,$sucursal)
     {
-       if (!isset($_COOKIE["kiosco"])) {
+     if (!isset($_COOKIE["kiosco"])) {
         if (!isset($_GET["apiKey"]) || $_GET["apiKey"] != "a0a035dc5213448bb1a130c27f2494c5")
             header('Location: /');
         else{
@@ -259,35 +280,35 @@ public function searchProducts(request $request)
 {
     if (isset($_GET["tipoBusqueda"]))$_GET["sucursal"]=(isset($_GET["sucursal"]))?intval($_GET["sucursal"]):Sucursales::getSucursal($_COOKIE["sucursal"]);
 
- if (isset($_GET["producto"]) && intval($_GET["producto"]) !== null && isset($_GET["sucursal"]))
- { 
-    $lista_precio = (isset($_COOKIE["lista_precio"]))?$_COOKIE["lista_precio"]:1;
-    $productos =    Producto::join("stock","stock.productos_id", "=", "productos.id")
-    ->join("sucursales","sucursales.id", "=", "stock.sucursal_id")
-    ->leftjoin("imagen_producto","imagen_producto.productos_id", "=", "productos.id")
-    ->where("stock.sucursal_id",$_GET["sucursal"])
-    ->where(function($q) {
-        $q->where("productos.nombre","like", "%" . $_GET["producto"]. "%","OR")
-        ->orWhere("productos.codigo_barras","like", "%" . $_GET["producto"] . "%");
-    })
-    ->select("productos.*","sucursales.id as idsucursal","imagen_producto.imagen_url","stock.stock","stock.stock_minimo")
-    ->OrderBy("productos.nombre")
-    ->get();
-    $i=0; 
-    if (count($productos)>0)
+    if (isset($_GET["producto"]) && intval($_GET["producto"]) !== null && isset($_GET["sucursal"]))
     { 
-       foreach($productos as $producto)
-       {
-        $datos[$i]["value"]         = $producto->nombre." (".$producto->codigo_barras.")";
-        $datos[$i]["label"]         = $producto->nombre." (".$producto->codigo_barras.")";
-        $datos[$i]["id"]            = $producto->id;
-        $datos[$i]["costo"]         = $producto->costo;
-        $datos[$i]["precio"]        = ($lista_precio == 1)?$producto->precio_unidad:$producto->precio_mayorista;
-        $datos[$i]["stock"]         = $producto->stock;
-        $datos[$i]["imagen"]         = ($producto->imagen!=NULL)?$producto->imagen:"http://mercado-artesanal.com.ar/assets/img/photos/no-image-featured-image.png";
-        $datos[$i]["stock_minimo"]  = $producto->stock_minimo;
-        $datos[$i]["codigo_barras"] = $producto->codigo_barras;
-        $i++;
+        $lista_precio = (isset($_COOKIE["lista_precio"]))?$_COOKIE["lista_precio"]:1;
+        $productos =    Producto::join("stock","stock.productos_id", "=", "productos.id")
+        ->join("sucursales","sucursales.id", "=", "stock.sucursal_id")
+        ->leftjoin("imagen_producto","imagen_producto.productos_id", "=", "productos.id")
+        ->where("stock.sucursal_id",$_GET["sucursal"])
+        ->where(function($q) {
+            $q->where("productos.nombre","like", "%" . $_GET["producto"]. "%","OR")
+            ->orWhere("productos.codigo_barras","like", "%" . $_GET["producto"] . "%");
+        })
+        ->select("productos.*","sucursales.id as idsucursal","imagen_producto.imagen_url","stock.stock","stock.stock_minimo")
+        ->OrderBy("productos.nombre")
+        ->get();
+        $i=0; 
+        if (count($productos)>0)
+        { 
+         foreach($productos as $producto)
+         {
+            $datos[$i]["value"]         = $producto->nombre." (".$producto->codigo_barras.")";
+            $datos[$i]["label"]         = $producto->nombre." (".$producto->codigo_barras.")";
+            $datos[$i]["id"]            = $producto->id;
+            $datos[$i]["costo"]         = $producto->costo;
+            $datos[$i]["precio"]        = ($lista_precio == 1)?$producto->precio_unidad:$producto->precio_mayorista;
+            $datos[$i]["stock"]         = $producto->stock;
+            $datos[$i]["imagen"]         = ($producto->imagen!=NULL)?$producto->imagen:"http://mercado-artesanal.com.ar/assets/img/photos/no-image-featured-image.png";
+            $datos[$i]["stock_minimo"]  = $producto->stock_minimo;
+            $datos[$i]["codigo_barras"] = $producto->codigo_barras;
+            $i++;
                         }//endforeach
                     }
                     else
@@ -362,7 +383,7 @@ public function searchProducts(request $request)
     if (isset($_GET["term"]))
     {
         $productos = Producto::where("productos.nombre","like", "%" . $_GET["term"]. "%")
-            ->orWhere("productos.codigo_barras","like", "%" . $_GET["term"] . "%")
+        ->orWhere("productos.codigo_barras","like", "%" . $_GET["term"] . "%")
         ->select("productos.*")
         ->OrderBy("productos.id")
         ->get();
@@ -394,48 +415,48 @@ public function searchProducts(request $request)
  }
  public function consultarStock(request $request)
  {
-   $sucursales = Sucursales::all();
-   $sucursal = (isset($request->sucursal)?$request->sucursal:Sucursales::getSucursal());
-   $productos="";
-   if ($sucursal!=0)
-   { 
-       $productos=Producto::with(['stock_' => 
+     $sucursales = Sucursales::all();
+     $sucursal = (isset($request->sucursal)?$request->sucursal:Sucursales::getSucursal());
+     $productos="";
+     if ($sucursal!=0)
+     { 
+         $productos=Producto::with(['stock_' => 
           function ($query) use ($sucursal)
           {
         //$query->where("sucursal_id","<>",0);
             $query->where("sucursal_id",$sucursal);
         }])
-       ->leftjoin("stock","stock.productos_id", "=", "productos.id")
-       ->join("sucursales","sucursales.id", "=", "stock.sucursal_id")
-       ->leftjoin("categorias","categorias.id", "=", "productos.categorias_id")
-       ->leftjoin("proveedor","proveedor.id", "=", "productos.proveedores_id")
-       ->where("stock.sucursal_id","=",$sucursal)
+         ->leftjoin("stock","stock.productos_id", "=", "productos.id")
+         ->join("sucursales","sucursales.id", "=", "stock.sucursal_id")
+         ->leftjoin("categorias","categorias.id", "=", "productos.categorias_id")
+         ->leftjoin("proveedor","proveedor.id", "=", "productos.proveedores_id")
+         ->where("stock.sucursal_id","=",$sucursal)
        // ->select("productos.*","proveedor.nombre as nombreProveedor","proveedor.apellido as apellidoProveedor","sucursales.nombre as sucursal")
-       ->select("sucursales.nombre as sucursal","productos.nombre as nombre","productos.precio_unidad","productos.costo","proveedor.nombre AS nombreProveedor","stock.stock","stock.stock_minimo")
-       ->OrderBy("sucursales.nombre","asc")
-       ->OrderBy("sucursales.nombre","asc")
-       ->get();
-   }
-   else
+         ->select("sucursales.nombre as sucursal","productos.nombre as nombre","productos.precio_unidad","productos.costo","proveedor.nombre AS nombreProveedor","stock.stock","stock.stock_minimo")
+         ->OrderBy("sucursales.nombre","asc")
+         ->OrderBy("sucursales.nombre","asc")
+         ->get();
+     }
+     else
      { //Muestra los productos de todas las sucursales
-       $productos=Producto::with(['stock_' => 
+         $productos=Producto::with(['stock_' => 
           function ($query) use ($sucursal)
           {
         //$query->where("sucursal_id","<>",0);
             $query->where("sucursal_id",$sucursal);
         }])
-       ->leftjoin("stock","stock.productos_id", "=", "productos.id")
-       ->join("sucursales","sucursales.id", "=", "stock.sucursal_id")
-       ->leftjoin("categorias","categorias.id", "=", "productos.categorias_id")
-       ->leftjoin("proveedor","proveedor.id", "=", "productos.proveedores_id")
-       ->select("sucursales.nombre as sucursal","productos.nombre as nombre","productos.precio_unidad","productos.costo","proveedor.nombre AS nombreProveedor","stock.stock","stock.stock_minimo")
-       ->OrderBy("sucursales.nombre","asc")
-       ->get();
-   }
+         ->leftjoin("stock","stock.productos_id", "=", "productos.id")
+         ->join("sucursales","sucursales.id", "=", "stock.sucursal_id")
+         ->leftjoin("categorias","categorias.id", "=", "productos.categorias_id")
+         ->leftjoin("proveedor","proveedor.id", "=", "productos.proveedores_id")
+         ->select("sucursales.nombre as sucursal","productos.nombre as nombre","productos.precio_unidad","productos.costo","proveedor.nombre AS nombreProveedor","stock.stock","stock.stock_minimo")
+         ->OrderBy("sucursales.nombre","asc")
+         ->get();
+     }
 
-   return response()->json($productos);
+     return response()->json($productos);
 
-}
+ }
 
 
 }

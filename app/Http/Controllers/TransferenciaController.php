@@ -38,7 +38,7 @@ class TransferenciaController extends Controller
     }
 
 
-    public function save(Request $request)
+    public function saving(Request $request)
     {
         $numProductos=0;
         $numRemito=0;

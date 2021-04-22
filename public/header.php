@@ -321,7 +321,7 @@ function getMes($numero){
                                 <a href="/reporte.factura">Reporte de Facturaci&oacute;n</a>
                             </li>
                             <?php } ?>
-                            <?php if (getRol() > 4) { ?>
+                            <?php if (getRol() > 4 || getRol()==3) { ?>
                             <li>
                                 <a href="/reporte.stocks">Reporte de Stock</a>
                             </li>
@@ -341,12 +341,12 @@ function getMes($numero){
                                 <a href="/reportes_servicios.php">Reporte de Servicios</a>
                             </li>
                             <?php } ?>
-                            <?php if (getRol() > 4) { ?>
+                            <?php if (getRol() > 4 || getRol()==3) { ?>
                              <li>
                                 <a href="/reporte.pagoProveedores">Reporte de Pago Proveedores</a>
                             </li>
                             <?php } ?>
-                            <?php if (getRol() > 4) { ?>
+                            <?php if (getRol() > 4 || getRol()==3) { ?>
                             <li>
                                 <a href="/reporte.transferencias">Reporte de Transferencias</a>
                             </li>
@@ -478,8 +478,11 @@ function getMes($numero){
                                 <a href="/usuarios_api.php">Api</a>
                             </li>   
                                <li>
-                                <a href="/logsProductos">Logs Productos</a>
-                            </li>  
+                                <a href="/logsProductos">Logs Productos stock</a>
+                            </li>
+                             <li>
+                                <a href="/logsProductosCostosPrecios">Logs Productos Costos y Precios</a>
+                            </li>   
                              </li>   
                                <li>
                                 <a href="/logsCategorias">Logs Categor&iacute;as</a>
