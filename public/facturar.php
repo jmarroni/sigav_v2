@@ -427,7 +427,7 @@ if($voucher_info === NULL){
 		<b>CUIT</b>&nbsp;$cuit<br />
 		<b>Fecha de Emisi&oacute;n</b>&nbsp;".$fecha[2]."-".$fecha[1]."-".$fecha[0]."<br />
 		<b>Ing.&nbsp;Bruto</b>&nbsp;$ingresos_brutos<br />
-		<b>IVA</b>&nbsp;$texto_iva<br />
+		<b>IVA</b>&nbsp;$condicion_iva <br />
 
 		</td>
 		</tr>
