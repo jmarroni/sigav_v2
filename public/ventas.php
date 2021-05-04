@@ -215,7 +215,7 @@ $conn->query($sql_update);
                     </div>
                        <div class="col-xs-2">
                         <label class="css-input switch switch-success">
-                            <input type="checkbox" id="descontar_stock"><span></span> Descontar stock
+                            <input type="checkbox" id="descontar_stock" checked="true"><span></span> Descontar stock
                         </label>
                     </div>
                     <?php
