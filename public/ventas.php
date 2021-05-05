@@ -6,6 +6,7 @@
 $menu["ventas"] = "active";
 $menu["cargas"] = "";
 $menu["reportes"] = "";
+if (!isset($_COOKIE["descontarstock"])) $_COOKIE["descontarstock"]=0;
 require_once ("conection.php");
 require 'vendor/autoload.php';
 require ('header.php');
@@ -215,7 +216,7 @@ $conn->query($sql_update);
                     </div>
                        <div class="col-xs-2">
                         <label class="css-input switch switch-success">
-                            <input type="checkbox" id="descontar_stock" checked="true"><span></span> Descontar stock
+                            <input type="checkbox" id="descontar_stock" <?php echo ($_COOKIE["descontarstock"]== 1)?"checked=''":""; ?> ><span></span> Descontar stock
                         </label>
                     </div>
                     <?php
