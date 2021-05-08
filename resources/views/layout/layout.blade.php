@@ -4,9 +4,9 @@ if (!isset($_COOKIE["kiosco"])) {
     header('Location: /');
 }
 require_once (public_path()."/conection.php");
-if (getRol() < 2) {
-    exit();
-}
+// if (getRol() < 2) {
+//     exit();
+// }
 //Productos vendidos hoy por el usuario
 $sql = "SELECT * FROM `productos`";
 $resultado = $conn->query($sql);

@@ -146,7 +146,7 @@ function getMes($numero){
                                 <div class="row">
                                     <div class="col-xs-10">
                                     <a href="configuracion_afip.php" style="color:black;"><div class="font-s13 font-w600">AFIP</div></a>
-                                        <div class="font-s13 font-w400 text-muted">Configuracion facturaci&oacute;n electronica</div>
+                                        <div class="font-s13 font-w400 text-muted">Configuracion facturaci&oacute;n electr&oacute;n ica</div>
                                     </div>
                                 </div>
                             </div>
@@ -161,7 +161,7 @@ function getMes($numero){
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-xs-10">
-                                    <a href="configuracion_racks.php" style="color:black;"><div class="font-s13 font-w600">Deposito</div></a>
+                                    <a href="configuracion_racks.php" style="color:black;"><div class="font-s13 font-w600">Dep&oacute;sito</div></a>
                                         <div class="font-s13 font-w400 text-muted">Configuraci&oacute;n de Racks</div>
                                     </div>
                                 </div>
@@ -185,7 +185,7 @@ function getMes($numero){
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-xs-10">
-                                    <a href="#" id="cerrar_session" style="color:black;"><div class="font-s13 font-w600">Cerrar Session</div></a>
+                                    <a href="#" id="cerrar_session" style="color:black;"><div class="font-s13 font-w600">Cerrar Sesi&oacute;n </div></a>
                                         <div class="font-s13 font-w400 text-muted">Salir del sistema.</div>
                                     </div>
                                 </div>
@@ -321,7 +321,7 @@ function getMes($numero){
                                 <a href="/reporte.factura">Reporte de Facturaci&oacute;n</a>
                             </li>
                             <?php } ?>
-                            <?php if (getRol() > 4) { ?>
+                            <?php if (getRol() > 4 || getRol()==3) { ?>
                             <li>
                                 <a href="/reporte.stocks">Reporte de Stock</a>
                             </li>
@@ -341,12 +341,12 @@ function getMes($numero){
                                 <a href="/reportes_servicios.php">Reporte de Servicios</a>
                             </li>
                             <?php } ?>
-                            <?php if (getRol() > 4) { ?>
+                            <?php if (getRol() > 4 || getRol()==3) { ?>
                              <li>
                                 <a href="/reporte.pagoProveedores">Reporte de Pago Proveedores</a>
                             </li>
                             <?php } ?>
-                            <?php if (getRol() > 4) { ?>
+                            <?php if (getRol() > 4 || getRol()==3) { ?>
                             <li>
                                 <a href="/reporte.transferencias">Reporte de Transferencias</a>
                             </li>
@@ -393,8 +393,7 @@ function getMes($numero){
                                 </ul>
                             </li>
                     <?php } ?>
-                    <?php if (getRol() > 1) { ?>
-                        <li class="dropdown <?php echo (isset($menu["stock_sucursales"]))?$menu["stock_sucursales"]:""; ?>">
+                    <li class="dropdown <?php echo (isset($menu["stock_sucursales"]))?$menu["stock_sucursales"]:""; ?>">
                             <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa fa-address-card-o push-5-r"></i>Sucursales<span class="caret"></span>
                             </a>
@@ -408,16 +407,12 @@ function getMes($numero){
                                 <li>
                                     <a href="/transferencia">Transferencias</a>
                                 </li>
-                               <!--  <li>
-                                    <a href="/stock_por_sucursal.php">Stock por sucursales</a>
-                                </li> -->
                                 <?php } ?>
                                 <li>
                                     <a href="/transferencias.realizadas">Transferencias realizadas</a>
                                 </li>
                             </ul>
                         </li>
-                    <?php } ?>
                     <?php if (getRol() > 4) { ?>
                     <li class="dropdown <?php echo (isset($menu["usuario"]))?$menu["usuario"]:""; ?>">
                         <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -478,8 +473,11 @@ function getMes($numero){
                                 <a href="/usuarios_api.php">Api</a>
                             </li>   
                                <li>
-                                <a href="/logsProductos">Logs Productos</a>
-                            </li>  
+                                <a href="/logsProductos">Logs Productos stock</a>
+                            </li>
+                             <li>
+                                <a href="/logsProductosCostosPrecios">Logs Productos Costos y Precios</a>
+                            </li>   
                              </li>   
                                <li>
                                 <a href="/logsCategorias">Logs Categor&iacute;as</a>
@@ -520,7 +518,7 @@ $("#lista_precios").change(function(){
 });
 
 $("#cerrar_session").click(function(){
-    document.location.href = "cerrar_session.php";
+    document.location.href = "/cerrar_session.php";
 })
 </script>
  
