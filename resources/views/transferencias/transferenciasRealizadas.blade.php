@@ -86,8 +86,9 @@
                                                      @if (count($productos)>0)
                                                       
                                                          @foreach ($productos as $producto)
-                                                             <?php $cantProductos=$cantProductos+$producto->cantidad;?>
+                                                            
                                                             @if ($producto->tranferencia_id==$transferencia->id)
+                                                             <?php $cantProductos=$cantProductos+$producto->cantidad;?>
                                                             <div class="row">
                                                                 @if(count($imagenes)>0)
                                                                    @foreach ($imagenes as $imagen)

@@ -426,7 +426,8 @@ if($voucher_info === NULL){
 		<b>@@FACTURANRO@@</b>&nbsp;".substr("00000".$ptovta,-6)."&nbsp;-&nbsp;".substr("000000".$res["voucher_number"],-6)."<br />
 		<b>CUIT</b>&nbsp;$cuit<br />
 		<b>Fecha de Emisi&oacute;n</b>&nbsp;".$fecha[2]."-".$fecha[1]."-".$fecha[0]."<br />
-		<b>Ing.&nbsp;Bruto</b>&nbsp;$cuit<br />
+		<b>Ing.&nbsp;Bruto</b>&nbsp;$ingresos_brutos<br />
+		<b>IVA</b>&nbsp;$condicion_iva <br />
 
 		</td>
 		</tr>

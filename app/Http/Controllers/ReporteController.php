@@ -9,6 +9,7 @@ use App\Models\Sucursales;
 use App\Models\Venta;
 use App\Models\Stock_log;
 use App\Models\Categoria_log;
+use App\Models\LogsCostosPrecios;
 use App\Models\Rol;
 use App\Models\Transferencia;
 use App\Models\Transferencia_log;
@@ -376,4 +377,14 @@ public function reporteStock(request $request)
  //return response()->json($productos);
 
   }
+  public function logProductosCostosPrecios(request $request)
+{
+  $productos=LogsCostosPrecios::leftjoin("sucursales","sucursales.id","=","logs_costos_precios.sucursal_id")
+  ->join("productos","productos.id","=","logs_costos_precios.productos_id")
+  ->select("logs_costos_precios.*","sucursales.nombre as sucursal","productos.nombre","productos.codigo_barras")
+  ->OrderBy("logs_costos_precios.created_at","desc")
+  ->get();
+  return view("reportes.logsProductosCostosPrecios",compact("productos"));
+
+}
 }

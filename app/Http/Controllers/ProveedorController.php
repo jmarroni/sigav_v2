@@ -9,6 +9,7 @@ use App\Models\Sucursales;
 use App\Models\Categoria;
 use App\Models\Imagen_producto;
 use App\Models\Stock_log;
+use App\Models\LogsCostosPrecios;
 use App\Models\Stock;
 use App\Models\RelacionCategoriaProveedor;
 use App\Models\FacturasProveedores;
@@ -283,31 +284,52 @@ public function saveFactura(Request $request)
     $stock->sucursal_id     = $sucursal;
     $stock->productos_id    = $datosProducto[0];
     $stock->usuario         = $_COOKIE["kiosco"];
+    //Guardar auditoría de cambio de costos o precios
+    $stockCostoPrecioLog= new LogsCostosPrecios();
+    $stockCostoPrecioLog->updated_at = date("Y-m-d H:i:s");
+    $stockCostoPrecioLog->created_at = date("Y-m-d H:i:s");
+    $stockCostoPrecioLog->sucursal_id     = $sucursal;
+    $stockCostoPrecioLog->productos_id    = $datosProducto[0];
+    $stockCostoPrecioLog->usuario         = $_COOKIE["kiosco"];
+    $stockCostoPrecioLog->operacion="Ingreso de factura Nº ".$request->numerofactura;
     $stock->save();
     $stock_logs->save();
 
     $cambia=0;
     $productos=Producto::where("id",$datosProducto[0])->first();
+    $stockCostoPrecioLog->costo_anterior=$productos->costo;
+    $stockCostoPrecioLog->costo=$productos->costo;
+    $stockCostoPrecioLog->precio_anterior=$productos->precio_unidad;
+    $stockCostoPrecioLog->precio=$productos->precio_unidad;
     if(isset($productos) && floatval($productos->costo)< floatval($datosProducto[2]))
     {
-      $productos->costo=floatval($datosProducto[2]);
+      $stockCostoPrecioLog->costo_anterior=$productos->costo;
+      $stockCostoPrecioLog->costo=floatval($datosProducto[2]);
+      $productos->costo=floatval($datosProducto[2]);     
       $cambia=1;
     }
-    if(isset($productos) && floatval($productos->precio_unidad)< floatval($datosProducto[3]))
+    if(isset($productos) && floatval($productos->precio_unidad)!= floatval($datosProducto[3]))
     {
+      $stockCostoPrecioLog->precio_anterior=$productos->precio_unidad;
+      $stockCostoPrecioLog->precio=floatval($datosProducto[3]);
       $productos->precio_unidad=floatval($datosProducto[3]);
       $cambia=1;
     }
     if(isset($productos)  && $cambia==1)
+       {
       $productos->save();
+      $stockCostoPrecioLog->save();
+       }
 
     $htmlProductos .= utf8_encode("<tr>
       <td style='border-bottom: 1px solid #000;width: 20px'><i>$numProductos</i></td>
       <td style='border-bottom: 1px solid #000;width: 150px'><i>$productos->codigo_barras</i></td>
       <td style='border-bottom: 1px solid #000;width: 150px'><i>$productos->nombre</i></td>
-      <td style='border-bottom: 1px solid #000;width: 100px'>".$datosProducto[1]."</td>
-      <td style='border-bottom: 1px solid #000;width: 100px'>".number_format(floatval($datosProducto[2]),2,",",".")."</td>
+      <td style='border-bottom: 1px solid #000;width: 65px'>".$datosProducto[1]."</td>
+      <td style='border-bottom: 1px solid #000;width: 80px'>".number_format(floatval($datosProducto[2]),2,",",".")."</td>
+       <td style='border-bottom: 1px solid #000;width: 80px'>".number_format(floatval($datosProducto[3]),2,",",".")."</td>
       <td style='border-bottom: 1px solid #000;width: 150px'>".number_format(floatval($datosProducto[2])*floatval($datosProducto[1]),2,",",".")."</td>
+      
       </tr>
       ");
             }  //e
@@ -317,6 +339,7 @@ public function saveFactura(Request $request)
             $remito->usuario = $_COOKIE["kiosco"];
             $remito->save();
             $numRemito=$remito->id;
+            $TotalFactura=number_format(floatval($request->montoTotal),2,",",".");
             $html = utf8_encode("
               <style>
               h3{
@@ -330,14 +353,14 @@ public function saveFactura(Request $request)
               </td>
               </tr>
               <tr>
-              <td style='border: 2px solid #000;height: 100px;font-size: 14px;width: 700px;text-align: left;'>
+              <td style='border: 2px solid #000;height: 100px;font-size: 14px;width: 720px;text-align: left;'>
               <b style='margin-left:420'>COMPROBANTE NRO:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$numRemito<br />
               <b>DOCUMENTO</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
               <br/>
               <b>PROVEEDOR</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$proveedor->nombre &nbsp;$proveedor->apellido<br />
               <b>FECHA DE EMISI&Oacute;N</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$date<br />
               <b>N&Uacute;MERO DE ITEMS</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$numProductos<br />
-              <b>TOTAL $</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $request->montoTotal<br />
+              <b>TOTAL $</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $TotalFactura<br />
 
               </td>
               </tr> </table>");
@@ -346,8 +369,9 @@ public function saveFactura(Request $request)
             <td style='border-bottom: 1px solid #000;width: 20px'><b>Nº</b></td>
             <td style='border-bottom: 1px solid #000;width: 150px'><b>Barra</b></td>
             <td style='border-bottom: 1px solid #000;width: 150px'><b>Nombre</b></td>
-            <td style='border-bottom: 1px solid #000;width: 100px'><b>Cantidad</b></td>
-            <td style='border-bottom: 1px solid #000;width: 100px'><b>Costo</b></td>
+            <td style='border-bottom: 1px solid #000;width: 65px'><b>Cantidad</b></td>
+            <td style='border-bottom: 1px solid #000;width: 80px'><b>Costo</b></td>
+            <td style='border-bottom: 1px solid #000;width: 80px'><b>Precio</b></td>
             <td style='border-bottom: 1px solid #000;width: 150px'><b>Subtotal</b></td>
             </tr>
             ";

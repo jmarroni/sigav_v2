@@ -37,7 +37,7 @@
                     <select class="form-control" id="proveedor" name="proveedor">
                         <option value="0">Seleccione un proveedor</option>
                         @foreach($proveedores as $provedor)
-                            <option value="{{$provedor->id}}">{{$provedor->nombre}}</option>
+                        <option value="{{$provedor->id}}">{{$provedor->nombre}}</option>
                         @endforeach
                     </select>
                 </div>
@@ -53,7 +53,7 @@
                 </div>
             </div>
             <div class="form-group">
-                
+
                 <div class="col-xs-4">
                     <label>Precio Minorista (*)</label>
                     <input type="text" class="form-control prices" name="precio_unidad" id="precio_unidad" value="" placeholder="Precio unidad (. para decimales 5.5)" />
@@ -127,85 +127,97 @@
             <label>Sucursal</label>
             <select class="form-control" name="sucursal" id="sucursal" >
                 <option value="0">Seleccione una Sucursal</option> 
-                    @foreach($sucursales as $sucu)
-                        <option @if($sucursal == $sucu->id) selected="selected" @endif value="{{$sucu->id}}">{{utf8_decode($sucu->nombre)}}</option>
-                    @endforeach
-                </select>
+                @foreach($sucursales as $sucu)
+                <option @if($sucursal == $sucu->id) selected="selected" @endif value="{{$sucu->id}}">{{utf8_decode($sucu->nombre)}}</option>
+                @endforeach
+            </select>
         </div>
     </div>
     <div class="block-content">
-            <table id="tabla_productos">
-                <thead>
-                    <tr>
-                        <th>Imagen</th>
-                        <th>Producto</th>
-                        <th>Proveedor</th>
-                        <th>Categor&iacute;a</th>
-                        <th>Stock Actual</th>
-                        <th>Stock M&iacute;nimo</th>
-                        <th>Precio al P&uacute;blico</th>
-                        <th>Precio Reposici&oacute;n</th>
-                        <th>Costo</th>
-                        <th style="width:100px">Acci&oacute;n</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($productos as $producto)
-                    <tr id="<?php echo $producto->id; ?>">
-                        <td style="text-align:center">
-                            <div class="block">
-                                <div class="block-content">
-                                    <!-- Slider with dots -->
-                                    <div class="js-slider" data-slider-dots="true" style="width:150px;">
-                                        @for($i = 0;$i < 6;$i ++)
-                                         
-                                                <div style="width:50px;height:50px;float:left;"><img style="float:left;" class="img-responsive" src="/assets/img/photos/no-image-featured-image.png" /></div>
-                                          
-                                        @endfor
-                                    </div>
-                                    <!-- END Slider with dots -->
+        <table id="tabla_productos">
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Producto</th>
+                    <th>Proveedor</th>
+                    <th>Categor&iacute;a</th>
+                    <th>Stock Actual</th>
+                    <th>Stock M&iacute;nimo</th>
+                    <th>Precio al P&uacute;blico</th>
+                    <th>Precio Reposici&oacute;n</th>
+                    <th>Costo</th>
+                    <th style="width:100px">Acci&oacute;n</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($productos as $producto)
+                <?php $i=0; ?>
+                @foreach($imagenes as $imagenp)  
+                @if ($producto->id==$imagenp->productos_id)
+                <?php $imagen[$i]=$imagenp->imagen_url;?>
+                @endif
+                <?php $i=$i+1; ?>
+                @endforeach
+
+                <tr id="<?php echo $producto->id; ?>">
+                    <td style="text-align:center">
+                        <div class="block">
+                            <div class="block-content">
+                                <!-- Slider with dots -->
+                                <div class="js-slider" data-slider-dots="true" style="width:150px;">
+                                    @for($i = 0;$i < 6;$i ++)
+
+                                    @if (isset($imagen[$i]))
+                                    <div style="width:50px;height:50px;float:left;"><img id="{{$producto->id}}_{{$i}}" onclick="viewImage('{{$producto->id}}_{{$i}}')" style="float:left;" class="img-responsive" src="{{str_replace('/'.$producto->id.'/','/'.$producto->id.'/thumb_300x300_'
+                                        ,$imagen[$i])}}" /></div>
+                                    @else
+                                    <div style="width:50px;height:50px;float:left;"><img style="float:left;" class="img-responsive" src="/assets/img/photos/no-image-featured-image.png" /></div>
+                                    @endif
+                                    @endfor
                                 </div>
+                                <!-- END Slider with dots -->
                             </div>
-                        </td>
-                        <td>{{$producto->nombre}}</td>
-                        @if ($producto->nombreProveedor!=null && $producto->nombreProveedor!="")
-                        <td>{{$producto->nombreProveedor}} {{$producto->apellidoProveedor}}</td>
-                        @else
-                        <td>NO TIENE PROVEEDOR ASOCIADO</td>
-                        @endif
-                        @if ($producto->nombreCategoria!=null && $producto->nombreCategoria!="")
-                        <td>{{$producto->nombreCategoria}}</td>
-                        @else
-                        <td>NO TIENE CATEGOR&Iacute;A ASOCIADA</td>
-                        @endif
-                        @if (isset($producto->stock_->stock))
-                            <td style="text-align:center"><input style="width:50px" type="text" value="{{$producto->stock_->stock}}" name="stock_{{$producto->id}}" class="numbers" id="stock_{{$producto->id}}" /></td>
-                        @else
-                            <td style="text-align:center"><input style="width:50px" type="text" value="0" name="stock_{{$producto->id}}" class="numbers" id="stock_{{$producto->id}}" /></td>
-                        @endif
-                        @if (isset($producto->stock_->stock_minimo))
-                            <td style="text-align:center"><input style="width:50px" type="text" value="{{$producto->stock_->stock_minimo}}" name="stock_minimo_{{$producto->id}}" id="stock_minimo_{{$producto->id}}" /></td>
-                        @else
-                        <td style="text-align:center"><input style="width:50px" type="text" value="0" name="stock_minimo_{{$producto->id}}" class="numbers" id="stock_minimo_{{$producto->id}}" /></td>
-                        @endif
-                        <td>{{$producto->precio_unidad}}</td>
-                        <td>{{$producto->precio_reposicion}}</td>
-                        <td>{{$producto->costo}}</td>
-                        <td class="text-right">
-                            <button id="editar_{{$producto->id}}" title="Editar" class="btn btn-xs btn-default" type="button">
-                                <i class="fa fa-pencil text-success"></i>
-                            </button>
-                            <button id="eliminar_{{$producto->id}}" title="Eliminar" class="btn btn-xs btn-default" type="button">
-                                <i class="fa fa-times text-danger"></i>
-                            </button>
-                            <button id="actualizar_{{$producto->id}}" title="Actualizar" class="btn btn-xs btn-default" type="button">
-                                <i class="fa fa-check text-primary"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                        </div>
+                    </td>
+                    <td>{{$producto->nombre}}</td>
+                    @if ($producto->nombreProveedor!=null && $producto->nombreProveedor!="")
+                    <td>{{$producto->nombreProveedor}} {{$producto->apellidoProveedor}}</td>
+                    @else
+                    <td>NO TIENE PROVEEDOR ASOCIADO</td>
+                    @endif
+                    @if ($producto->nombreCategoria!=null && $producto->nombreCategoria!="")
+                    <td>{{$producto->nombreCategoria}}</td>
+                    @else
+                    <td>NO TIENE CATEGOR&Iacute;A ASOCIADA</td>
+                    @endif
+                    @if (isset($producto->stock_->stock))
+                    <td style="text-align:center"><input style="width:50px" type="text" value="{{$producto->stock_->stock}}" name="stock_{{$producto->id}}" class="numbers" id="stock_{{$producto->id}}" /></td>
+                    @else
+                    <td style="text-align:center"><input style="width:50px" type="text" value="0" name="stock_{{$producto->id}}" class="numbers" id="stock_{{$producto->id}}" /></td>
+                    @endif
+                    @if (isset($producto->stock_->stock_minimo))
+                    <td style="text-align:center"><input style="width:50px" type="text" value="{{$producto->stock_->stock_minimo}}" name="stock_minimo_{{$producto->id}}" id="stock_minimo_{{$producto->id}}" /></td>
+                    @else
+                    <td style="text-align:center"><input style="width:50px" type="text" value="0" name="stock_minimo_{{$producto->id}}" class="numbers" id="stock_minimo_{{$producto->id}}" /></td>
+                    @endif
+                    <td>{{$producto->precio_unidad}}</td>
+                    <td>{{$producto->precio_reposicion}}</td>
+                    <td>{{$producto->costo}}</td>
+                    <td class="text-right">
+                        <button id="editar_{{$producto->id}}" title="Editar" class="btn btn-xs btn-default" type="button">
+                            <i class="fa fa-pencil text-success"></i>
+                        </button>
+                        <button id="eliminar_{{$producto->id}}" title="Eliminar" class="btn btn-xs btn-default" type="button">
+                            <i class="fa fa-times text-danger"></i>
+                        </button>
+                        <button id="actualizar_{{$producto->id}}" title="Actualizar" class="btn btn-xs btn-default" type="button">
+                            <i class="fa fa-check text-primary"></i>
+                        </button>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -244,18 +256,18 @@
 <script type="text/javascript">
     $(document).ready(function(){
         $('#tabla_productos').DataTable({
-             "language": {
-                "url": "/assets/language/Spanish.json"
-            },
-            dom: 'Bfrtip',
-            "order": [[1, 'asc']],
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ],
-            columnDefs: [
-                { targets: [0,2,3,7], "orderable": false,}
-            ]
-        });
+         "language": {
+            "url": "/assets/language/Spanish.json"
+        },
+        dom: 'Bfrtip',
+        "order": [[1, 'asc']],
+        buttons: [
+        'copy', 'csv', 'excel', 'pdf', 'print'
+        ],
+        columnDefs: [
+        { targets: [0,2,3,7], "orderable": false,}
+        ]
+    });
 
         $(".close").click(function(){
             $("#myModal").hide();
@@ -349,7 +361,7 @@
 @media only screen and (max-width: 700px){
   .modal-content {
     width: 100%;
-  }
+}
 } 
 </style>
 @endsection

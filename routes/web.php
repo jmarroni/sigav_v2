@@ -65,6 +65,7 @@ Route::get('usuario.delete/{id}','UsuarioController@delete' );
 Route::get('usuario.getUsuario/{id}', 'UsuarioController@getUsuario');
 //Transferencias sucursales
 Route::get('transferencia', 'TransferenciaController@index');
+//Route::post('transferencia.save', 'TransferenciaController@save');
 Route::post('transferencia-saving', 'TransferenciaController@saving');
 Route::get('transferencia/mensaje/{mensaje}','TransferenciaController@index');
 Route::get('transferencia.cambiarstatus', 'TransferenciaController@changeStatus');
@@ -84,6 +85,7 @@ Route::get('reporte.pagoProveedores', 'ReporteController@reportePagoProveedores'
 Route::get('reporte.transferencias', 'ReporteController@reporteTransferencias');
 Route::get('reporte.factura/{desde?}/{hasta?}', 'ReporteController@factura');
 Route::get('reporte.pedidos', 'ReporteController@reportePedidos');
+Route::get('logsProductosCostosPrecios', 'ReporteController@logProductosCostosPrecios');
 //Clientes
 Route::get('cliente', 'ClienteController@index');
 Route::get('cliente/mensaje/{mensaje}', 'ClienteController@index');

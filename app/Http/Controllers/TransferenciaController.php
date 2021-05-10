@@ -9,7 +9,7 @@ use App\Models\Sucursales;
 use App\Models\Transferencia;
 use App\Models\EstadoTransferencia;
 use App\Models\Transferencia_log;
-use App\Models\imagen_producto;
+use App\Models\Imagen_producto;
 use App\Models\RelacionTransferenciaProductos;
 use Illuminate\Support\Facades\Storage;
 use App\Models\RemitoTransferencias;
@@ -40,7 +40,6 @@ class TransferenciaController extends Controller
 
     public function saving(Request $request)
     {
-    	
         $numProductos=0;
         $numRemito=0;
         $htmlProductos="";
@@ -147,7 +146,6 @@ class TransferenciaController extends Controller
             $remito->save();
    
          return response()->json(array("proceso" => "OK","comprobante" => $nombre_remito));
-
     }
 
     public function listar(Request $request)

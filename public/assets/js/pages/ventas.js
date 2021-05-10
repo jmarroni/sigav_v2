@@ -10,8 +10,8 @@
             if(e.keyCode == 8){
                 $("#clientes_id").val("");
             }
-          });
-  
+        });
+
         $( "#codigo-barras" ).focus();
 
         jQuery("#concretar_venta").click(function(){    
@@ -29,35 +29,35 @@
             $.ajax({
                 method: "GET",
                 url: "facturar.php?tipo=" + medio_de_pago + 
-                        "&presupuesto=0&nombre=" + $("#nombre-cliente").val() + 
-                        '&documento='  + $("#documento-cliente").val() + 
-                        '&tipo-documento='  + $("#tipo").val() +
-                        '&fecha-facturacion='  + $("#fecha").val() + 
-                        '&iva=' + iva +
-                        '&venta_id=' + venta_id +
-                        '&clientes_id=' + $("#clientes_id").val() + 
-                        '&direccion=' + $("#direccion-cliente").val(),                  
+                "&presupuesto=0&nombre=" + $("#nombre-cliente").val() + 
+                '&documento='  + $("#documento-cliente").val() + 
+                '&tipo-documento='  + $("#tipo").val() +
+                '&fecha-facturacion='  + $("#fecha").val() + 
+                '&iva=' + iva +
+                '&venta_id=' + venta_id +
+                '&clientes_id=' + $("#clientes_id").val() + 
+                '&direccion=' + $("#direccion-cliente").val(),                  
                 datatype: 'json'
             })
-                .done(function (msg) {
-                    if (msg.factura){
-                        $("#factura_iframe").show();
-                        $("#iframe").attr("src",msg.factura);
-                        venta_id = '';
-                        setTimeout(function(){
-                            $("#tablaProductos").html("");
-                            $("#total_ventas").html(0);
+            .done(function (msg) {
+                if (msg.factura){
+                    $("#factura_iframe").show();
+                    $("#iframe").attr("src",msg.factura);
+                    venta_id = '';
+                    setTimeout(function(){
+                        $("#tablaProductos").html("");
+                        $("#total_ventas").html(0);
 
-                            $("#iframe")[0].contentWindow.print();
-                        }, 2000);
-                    }else{
-                        var error = '';
-                        if (msg.error) error = msg.error;
-                        else error = msg; 
-                        alert('Sucedio un error en la facturación, no se emitió factura, por favor comuníquese con el administrador o verifique el error que nos indica AFIP, : ' + msg.mensaje + '. Recargaremos la web .-');
-                        document.location.reload();
-                    } 
-                });
+                        $("#iframe")[0].contentWindow.print();
+                    }, 2000);
+                }else{
+                    var error = '';
+                    if (msg.error) error = msg.error;
+                    else error = msg; 
+                    alert('Sucedio un error en la facturación, no se emitió factura, por favor comuníquese con el administrador o verifique el error que nos indica AFIP, : ' + msg.mensaje + '. Recargaremos la web .-');
+                    document.location.reload();
+                } 
+            });
         });
 
 
@@ -101,58 +101,58 @@
 
             $.ajax({
                 url: "facturar.php?tipo=" + medio_de_pago + 
-                        "&presupuesto=1&nombre=" + $("#nombre-cliente").val() + 
-                        '&documento='  + $("#documento-cliente").val() + 
-                        '&tipo-documento='  + $("#tipo").val() +
-                        '&fecha-facturacion='  + $("#fecha").val() + 
-                        '&iva=' + iva +
-                        '&clientes_id=' + $("#clientes_id").val() +
-                        "&direccion=" + $("#direccion-cliente").val() +
-                        '&venta_id=' + venta_id+
-                        '&descontar_stock=' + descontar_stock,
+                "&presupuesto=1&nombre=" + $("#nombre-cliente").val() + 
+                '&documento='  + $("#documento-cliente").val() + 
+                '&tipo-documento='  + $("#tipo").val() +
+                '&fecha-facturacion='  + $("#fecha").val() + 
+                '&iva=' + iva +
+                '&clientes_id=' + $("#clientes_id").val() +
+                "&direccion=" + $("#direccion-cliente").val() +
+                '&venta_id=' + venta_id+
+                '&descontar_stock=' + descontar_stock,
                 datatype: 'json'
             })
-                .done(function (msg) {
-                    if (msg.factura){
-                        $("#espere_venta_activa").hide();
-                        $("#presupuesto").show();
-                        venta_id = '';
-                        $("#factura_iframe").show();
-                        $("#iframe").attr("src",msg.factura);
-                        setTimeout(function(){
-                            $("#tablaProductos").html("");
-                            $("#total_ventas").html(0);
-                        },1000);
-                    }  
-                });
+            .done(function (msg) {
+                if (msg.factura){
+                    $("#espere_venta_activa").hide();
+                    $("#presupuesto").show();
+                    venta_id = '';
+                    $("#factura_iframe").show();
+                    $("#iframe").attr("src",msg.factura);
+                    setTimeout(function(){
+                        $("#tablaProductos").html("");
+                        $("#total_ventas").html(0);
+                    },1000);
+                }  
+            });
         });
 
         
         jQuery('#anadir_venta').click(function(){
-                if($("#cantidad").val() != "") {
-                    $.ajax({
-                        method: "POST",
-                        url: "ventas_post.php",
-                        datatype: 'json',
-                        data: {id: $("#producto_id").val(), venta_id: venta_id, cantidad: $("#cantidad").val(), nombreproducto: $("#nombre-producto").val(), precio: $("#precio").val() }
-                    })
-                        .done(function (msg) {
-                            devolucion = msg;
-                            venta_id = msg.ventas_id;
-                            jQuery("#nombre-devuelto").html('Venta del producto ' + msg.nombre + ' ingresada correctamente');
-                            $("#add_success").show('slow');
-                            setTimeout(function(){ $("#add_success").hide('slow');jQuery("#nombre-devuelto").html(''); }, 3000);
-                            addRow(devolucion);
-                            $("#codigo-barras").val('');
-                            $("#nombre-producto").val('');
-                            $("#producto_id").val('');
-                            $("#precio").html("0.00");
-                            $("#cantidad").val('1');
-                            $("#codigo-barras").focus();
-                        });
-                } else {
-                    alert('Verifica la cantidad ingresada es incorrecta');
-                }
+            if($("#cantidad").val() != "") {
+                $.ajax({
+                    method: "POST",
+                    url: "ventas_post.php",
+                    datatype: 'json',
+                    data: {id: $("#producto_id").val(), venta_id: venta_id, cantidad: $("#cantidad").val(), nombreproducto: $("#nombre-producto").val(), precio: $("#precio").val() }
+                })
+                .done(function (msg) {
+                    devolucion = msg;
+                    venta_id = msg.ventas_id;
+                    jQuery("#nombre-devuelto").html('Venta del producto ' + msg.nombre + ' ingresada correctamente');
+                    $("#add_success").show('slow');
+                    setTimeout(function(){ $("#add_success").hide('slow');jQuery("#nombre-devuelto").html(''); }, 3000);
+                    addRow(devolucion);
+                    $("#codigo-barras").val('');
+                    $("#nombre-producto").val('');
+                    $("#producto_id").val('');
+                    $("#precio").html("0.00");
+                    $("#cantidad").val('1');
+                    $("#codigo-barras").focus();
+                });
+            } else {
+                alert('Verifica la cantidad ingresada es incorrecta');
+            }
         });
 
         jQuery("#cantidad").keyup(function(){
@@ -238,14 +238,14 @@
                     case '3': $("#excento").prop("checked","true");break;
                     case '4': $("#final").prop("checked","true");break;
                     default:
-                        $("#final").prop("checked","true");
-                        break;
+                    $("#final").prop("checked","true");
+                    break;
                 }
             }
         });
 
         // jQuery( "#nombre-producto" ).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-    
+
         //     var $li = $('<li>'),
         //         $img = $('<img>');
         
@@ -291,27 +291,27 @@
 
     function addRow(jsonData){
        var rowAdd =  '<tr id="' + jsonData.ventas_id + '">' +
-        '<td class="text-center">' +
-        '   <div style="width: 180px;">' +
-        '   <img class="img-responsive" src="' + jsonData.imagen + '" alt="">' +
-        '   </div>' +
-        '   </td>' +
-        '   <td>' +
-        '   <h4>' + jsonData.nombre + '</h4>' +
-        '<p class="remove-margin-b">Producto Vendido a las ' + jsonData.fecha + '</p>' +
-        '<a class="font-w600" href="javascript:void(0)">Por ' + jsonData.usuario + '</a>' +
-        '    </td>' +
-        '    <td>' +
-        '    <p class="remove-margin-b">Precio: <span class="text-gray-dark">$ ' + jsonData.precio_unidad + '</span></p>' +
-        '    <p>Quedan en Stock: <span class="text-gray-dark">' + jsonData.stock_sucursal + '</span></p>' +
-        '    <button onclick="eliminar(' + jsonData.ventas_id + ',' + jQuery("#cantidad").val() + ',' + jsonData.id + ')">Eliminar</button>' +
-        '<button class="btn btn-xs btn-default" type="button">' +
-        '    </td>' +
-        '    <td class="text-center">' +
-        '    <span class="h1 font-w700 text-success">$ ' + (jsonData.precio_unidad * jQuery("#cantidad").val()) + '</span>' +
-        '</td>' +
-        '</tr>';
-        $("#tablaProductos").append(rowAdd);
+       '<td class="text-center">' +
+       '   <div style="width: 180px;">' +
+       '   <img class="img-responsive" src="' + jsonData.imagen + '" alt="">' +
+       '   </div>' +
+       '   </td>' +
+       '   <td>' +
+       '   <h4>' + jsonData.nombre + '</h4>' +
+       '<p class="remove-margin-b">Producto Vendido a las ' + jsonData.fecha + '</p>' +
+       '<a class="font-w600" href="javascript:void(0)">Por ' + jsonData.usuario + '</a>' +
+       '    </td>' +
+       '    <td>' +
+       '    <p class="remove-margin-b">Precio: <span class="text-gray-dark">$ ' + jsonData.precio_unidad + '</span></p>' +
+       '    <p>Quedan en Stock: <span class="text-gray-dark">' + jsonData.stock_sucursal + '</span></p>' +
+       '    <button onclick="eliminar(' + jsonData.ventas_id + ',' + jQuery("#cantidad").val() + ',' + jsonData.id + ')">Eliminar</button>' +
+       '<button class="btn btn-xs btn-default" type="button">' +
+       '    </td>' +
+       '    <td class="text-center">' +
+       '    <span class="h1 font-w700 text-success">$ ' + (jsonData.precio_unidad * jQuery("#cantidad").val()) + '</span>' +
+       '</td>' +
+       '</tr>';
+       $("#tablaProductos").append(rowAdd);
         //Actualizo el total
         total_ventas = total_ventas + (jsonData.precio_unidad * jQuery("#cantidad").val());
         $("#total_ventas").html(total_ventas);
@@ -319,17 +319,17 @@
 
     function eliminar(ventas,cantidad,producto_id){
         if (confirm("Seguro de eliminar el producto? Preguntate porque no lo vendiste primero ;)")) {
-                    $.ajax({
-                        method: "POST",
-                        url: "eliminar_venta.php",
-                        data: {id: venta_id, cantidad: cantidad, producto_id: producto_id}
-                    })
-                    .done(function (msg) {
-                        $("#" + ventas).hide("slow");
+            $.ajax({
+                method: "POST",
+                url: "eliminar_venta.php",
+                data: {id: venta_id, cantidad: cantidad, producto_id: producto_id}
+            })
+            .done(function (msg) {
+                $("#" + ventas).hide("slow");
 
-                    }).fail(function() { 
-                        $("#" + ventas).hide("slow");
-                    });
+            }).fail(function() { 
+                $("#" + ventas).hide("slow");
+            });
         }
     }
 
@@ -342,19 +342,30 @@
             method: "POST",
             url: "/emitir_online.php",
             data: { emitir_online:emitir}
-            })
-            .done(function( msg ) {
-                if (emitir){
-                    $("#presupuesto").hide();
-                    $("#emitir_online").show();
-                    $("#concretar_venta").show();
-                }else{
-                    $("#presupuesto").show();
-                    $("#emitir_online").hide();
-                    $("#concretar_venta").hide();
-                }
-            })
-            .fail(function(error){
-                console.log(error);
+        })
+        .done(function( msg ) {
+            if (emitir){
+                $("#presupuesto").hide();
+                $("#emitir_online").show();
+                $("#concretar_venta").show();
+            }else{
+                $("#presupuesto").show();
+                $("#emitir_online").hide();
+                $("#concretar_venta").hide();
+            }
+        })
+        .fail(function(error){
+            console.log(error);
         });
     });
+
+    $("#descontar_stock").change(function(){
+        if ($(this).prop("checked")){
+           document.cookie = "descontarstock=1";
+       } 
+       else
+       {
+          document.cookie = "descontarstock=0";
+       }
+
+  });

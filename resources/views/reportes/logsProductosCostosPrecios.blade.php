@@ -12,7 +12,7 @@
             <div class="content">
                 <div class="block block-transparent block-themed text-center">
                     <div class="block-content">
-                        <h1 class="h1 font-w700 text-white animated fadeInDown push-5" style="color:white">Logs Productos Stock</h1>
+                        <h1 class="h1 font-w700 text-white animated fadeInDown push-5" style="color:white">Logs Productos Costos y Precios</h1>
                         <h2 class="h4 font-w400 text-white-op animated fadeInUp"></h2>
                     </div>
                 </div>
@@ -37,12 +37,12 @@
                                 <td>ID Producto</td>
                                 <td>Barra</td>
                                 <td>Nombre</td>
-                                <td>Stock</td>
-                                <td>Stock Anterior</td>
-                                <td>Stock Mínimo</td>
-                                <td>Stock Mínimo Anterior</td>
+                                <td>Costo Anterior</td>
+                                <td>Costo</td>
+                                <td>Precio Anterior</td>
+                                <td>Precio</td>
                                 <td>Fecha</td>
-                                <td>Tipo de Operación</td>
+                                <td>Operación</td>
                             </tr>
                         </thead>
                         <tbody>
@@ -58,12 +58,12 @@
                                         <td>{{$producto->productos_id}}</td>
                                         <td>{{$producto->codigo_barras}}</td>
                                         <td>{{$producto->nombre}}</td>
-                                        <td>{{$producto->stock}}</td>
-                                        <td>{{$producto->stock_anterior}}</td>
-                                        <td>{{$producto->stock_minimo}}</td>
-                                        <td>{{$producto->stock_minimo_anterior}}</td>
-                                        <td>{{$producto->updated_at}}</td>
-                                        <td><?php echo str_replace("?","&Oacute;",$producto->tipo_operacion); ?></td>
+                                        <td>{{$producto->costo_anterior}}</td>
+                                        <td>{{$producto->costo}}</td>
+                                        <td>{{$producto->precio_anterior}}</td>
+                                        <td>{{$producto->precio}}</td>
+                                        <td>{{$producto->created_at}}</td>
+                                        <td><?php echo str_replace("?","&Oacute;",$producto->operacion); ?></td>
                                     </tr>
                                     <?php $i=$i+1; ?>
                             @endforeach
