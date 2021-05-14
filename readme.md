@@ -1,66 +1,78 @@
-## Laravel Passport: Instalación
+<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
 
-1) Poner en la linea de comandos: 'composer require laravel/passport'
+<p align="center">
+<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
+</p>
 
-2) Agregar a config/app.php: 'Laravel\Passport\PassportServiceProvider::class,'.
+## About Laravel
 
-3) Poner en la linea de comandos 'php artisan migrate'.
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-Opcional:
-	Si el anterior paso no funciona hacer: php artisan migrate --path=vendor/laravel/passport/database/migrations
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-4) Agregar "Laravel\Passport\HasApiTokens" y "use Notifiable, HasApiTokens;" al modelo "App\User".
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-5) Agregar "use Laravel\Passport\Passport;" a AuthServiceProvider.php y "Passport::routes();" a la funcion boot.
+## Learning Laravel
 
-6) Agregar a config/auth.php: 'driver' => 'passport'
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-7) Crear claves de cifrado necesarias para generar tokens de acceso seguro: 'php artisan passport:install'.
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-8) Agregar a routes/api.php:
-Route::group([
-    'prefix' => 'auth' 
-], function () { 
-    Route::post('login', 'Api\AuthController@login');
-    Route::post('signup', 'Api\AuthController@signup');
+## Laravel Sponsors
 
-    Route::group([
-      'middleware' => 'auth: api'
-    ], function() {
-        Route::get('logout', 'Api\AuthController@logout');
-        Route::get('user', 'Api\AuthController@user');
-    });
-});
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
 
-9) En Http/Kernel, en la parte web: \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
+- **[Vehikl](https://vehikl.com/)**
+- **[Tighten Co.](https://tighten.co)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Cubet Techno Labs](https://cubettech.com)**
+- **[Cyber-Duck](https://cyber-duck.co.uk)**
+- **[British Software Development](https://www.britishsoftware.co)**
+- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
+- **[DevSquad](https://devsquad.com)**
+- [UserInsights](https://userinsights.com)
+- [Fragrantica](https://www.fragrantica.com)
+- [SOFTonSOFA](https://softonsofa.com/)
+- [User10](https://user10.com)
+- [Soumettre.fr](https://soumettre.fr/)
+- [CodeBrisk](https://codebrisk.com)
+- [1Forge](https://1forge.com)
+- [TECPRESSO](https://tecpresso.co.jp/)
+- [Runtime Converter](http://runtimeconverter.com/)
+- [WebL'Agence](https://weblagence.com/)
+- [Invoice Ninja](https://www.invoiceninja.com)
+- [iMi digital](https://www.imi-digital.de/)
+- [Earthlink](https://www.earthlink.ro/)
+- [Steadfast Collective](https://steadfastcollective.com/)
+- [We Are The Robots Inc.](https://watr.mx/)
+- [Understand.io](https://www.understand.io/)
+- [Abdel Elrafa](https://abdelelrafa.com)
+- [Hyper Host](https://hyper.host)
+- [Appoly](https://www.appoly.co.uk)
+- [OP.GG](https://op.gg)
 
-10) Crear carpeta 'api' en controllers y generar controlador 'php artisan make:Controlller AuthController' y poner los datos que se encuentran en el archivo de esta aplicación.
+## Contributing
 
-11) Despliegue, generar llaves: php artisan passport:keys
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Api SIGAV
+## Code of Conduct
 
-Obtención de token:
-    0001 - Token de acceso:
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-		Para poder utilizar la aplicación es necesario un token (el cual es válido por un dia) que se le pedira para todas las futuras peticiones que realizará a la api.
-	Para obtenerlo debera ingresar a la URL:
-		http://mercado-artesanal.com/api/auth/login?email=ejemplo@hotmail.com&password=123
-	Donde el email y el password seran la informacion que usted nos proporciono con anterioridad.
-	Como resultado obtendrá:
-		{"access_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImUzNjhiN2U0MzM5OTU3YjNhYTNkZTQ5MDUxMjJjM2","token_type":"Bearer","expires_at":"2019-11-05 11:30:32"}
-	Su token será el "access_token" por ello copielo, por otro lado tiene el tipo de token y la fecha de expiración del mismo.
+## Security Vulnerabilities
 
-Obtención de productos:
-	0002 - Token de acceso:
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-	Para obtenerlo deberá ingresar a la URL:
-		http://mercado-artesanal.com/api/auth/productos?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImUzNjhiN2U0MzM5OTU3YjNhYTNkZTQ5MDUxMjJjM2
-	En su aplicación deberá enviar el siguiente header (Ejemplo realizado con jquery AJAX):
-		headers: {
-			        "Accept": "application/json",
-			        "Authorization": "Bearer " + token
-			    }
-	Como resultado obtendra un JSON con todos los datos de los productos, su categoria, su proveedor e imagenes, como se muestra a continuación:
-		[{0: apellido_proveedor: "apellido", categoria: "categoria", codigo_barras: "123", costo: "0", es_comodato: 0, fecha: "2019-01-09 11:48:01", imagen: "http://mercado-artesanal.com.ar/imagen/1438.jpg", nombre: "producto", nombre_proveedor: "ejemplo", precio_mayorista: "0", precio_unidad: "10", stock: 2, stock_minimo: 0, usuario: "pepe"}
-		{1: apellido_proveedor: "apellido", categoria: "categoria", codigo_barras: "123", costo: "0", es_comodato: 0, fecha: "2019-01-09 11:48:01", imagen: "http://mercado-artesanal.com.ar/imagen/1439.jpg", nombre: "producto", nombre_proveedor: "ejemplo", precio_mayorista: "0", precio_unidad: "10", stock: 2, stock_minimo: 0, usuario: "pepe"}]
+## License
+
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
