@@ -13,8 +13,6 @@ var precio = 0;
                 data: {id: $("#factura").val(), observaciones: $("#observacion").val()}
             })
             .done(function (msg) {
-                console.log(msg);
-                /*
                     if (msg.factura){
                         $("#factura_iframe").show();
                         $("#iframe").attr("src",msg.factura);
@@ -30,7 +28,6 @@ var precio = 0;
                         else error = msg; 
                         alert('Sucedio un error en la facturacion, no se emitio factura, por favor comuniquese con el administrador o verifique el error que nos indica AFIP, : ' + msg.mensaje + '. Recargaremos la web .-');
                     } 
-                */
                 });
         });
 

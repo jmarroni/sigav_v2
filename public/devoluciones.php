@@ -103,14 +103,14 @@ $conn->query($sql_update);
                                 <select  class="form-control" name="factura" id="factura">
                                     <option id="0">Seleccione una Factura</option>
                                     <?php 
-                                        $sql_facturas = "SELECT *
-                                                        FROM `factura`
+                                        $sql_facturas = "SELECT f.*,s.nombre as sucursal
+                                                        FROM `factura` f inner join sucursales s on f.sucursal_id = s.id
                                                         WHERE cae <> '' AND fechacae <> '' ORDER BY fecha DESC";
                                         $resultado = $conn->query($sql_facturas);
                                         if ($resultado->num_rows > 0) {
                                             // output data of each row
                                             while($row = $resultado->fetch_assoc()) { ?>
-                                            <option value="<?php echo $row["id"]; ?>" >Numero: <?php echo $row["numero"]; ?>, Fecha: <?php echo substr($row["fecha"],0,10); ?>  </option>
+                                            <option value="<?php echo $row["id"]; ?>" >Numero: <?php echo $row["numero"]; ?>, Fecha: <?php echo substr($row["fecha"],0,10); ?>, Sucursal <?php echo $row["sucursal"]; ?>  </option>
                                         <?php }
                                         }
                                     ?>
