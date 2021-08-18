@@ -6,7 +6,10 @@ Route::group([
     'prefix' => 'auth'
 ], function() {
 
-    Route::post('login', ['uses' => 'Api\AuthController@login']); 
+    Route::get('login', ['uses' => 'Api\AuthController@index']); 
+    Route::post('validaracceso', ['uses' => 'Api\AuthController@login']); 
+    Route::post('signup', ['uses' => 'Api\AuthController@signup']); 
+
 
     Route::group([ 
       'middleware' => ['auth:api', 'cors']

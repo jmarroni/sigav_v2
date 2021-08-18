@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Lcobucci\JWT\Parser;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\User;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -19,6 +19,11 @@ class AuthController extends Controller
      * @param  [string] password_confirmation
      * @return [string] message
      */
+       public function index(Request $request)
+    {   
+
+        return view("login.login");
+    }
     public function signup(Request $request)
     {
         $this->validate($request, [
@@ -55,8 +60,9 @@ class AuthController extends Controller
 
             $user->save();
         }
-
-        return redirect("/usuarios_api.php?mensaje=".base64_encode("Se agrego el usuario ok"));
+        $mensaje="Usuario creado con éxito";
+         return response()->json([
+            'mensaje' => $mensaje]);
     }
   
     /**
