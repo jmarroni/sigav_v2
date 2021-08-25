@@ -61,81 +61,82 @@ class ProductoController extends Controller
             {
                 $arrayErrores=array();
                 $sucursal=$request->sucursal_id;
-                $productos = $request->arrayProductos;
                 $usuario=$request->usuario_id;
-                $error=0;
                 $stockActual=0;
-                $productos = explode("||", $request->arrayProductos);
+                $error="";
+                $productos = json_decode($request->arrayProductos, true);
                 //Se validan que existan productos a actualizar
                 if(count($productos)>0)
                 {
-                 foreach($productos as $producto)
-                 {
-                    $datosProducto= explode(",", $producto);
-                    $idproducto= $datosProducto[0];
-                    $cantidad=$datosProducto[1];
+                    $i=0;
+                    foreach($productos as $producto)
+                    {
+                    //print_r($producto);
+                        $idproducto= $producto['id'];
+                        $cantidad=$producto['cantidad'];
                     //Se valida si existe registro en la tabla stock para ese producto
-                    $stock = Stock::where("productos_id",'=',$idproducto)->where("sucursal_id",'=',$sucursal)->first();
-                    if ($stock=="")
-                    {
-                        array_push($arrayErrores, $idproducto,"No existe registro en la tabla stock para este producto");
-                    }
-                    else
-                    {
-                        $stockActual=$this->consultarStockProducto($idproducto,$sucursal);
-                        $stockActual=$stockActual[0]->stock;
-                        if ($stockActual>= $cantidad)
+                        $stock = Stock::where("productos_id",'=',$idproducto)->where("sucursal_id",'=',$sucursal)->first();
+                        if ($stock=="")
                         {
-                            $stock_logs = new Stock_log();
-                            $stock_logs->stock_anterior         = $stock->stock;
-                            $stock_logs->stock_minimo_anterior  = $stock->stock_minimo;
-                            $stock->stock= $stock->stock- $cantidad;
-                            $stock->save();
-                            $stock_logs->productos_id   = $idproducto;
-                            $stock_logs->sucursal_id    = $sucursal;
-                            $stock_logs->stock=$stock->stock;                          
-                            $stock_logs->stock_minimo   = $stock->stock_minimo;
-                            $stock_logs->usuario        = $usuario;
-                            $stock_logs->tipo_operacion = 'Venta móvil';
-                            $stock_logs->updated_at = date("Y-m-d H:i:s");
-                            $stock_logs->created_at = date("Y-m-d H:i:s");
-                            $stock_logs->save();
-                        }/*End if*/
-                        else/*Error porque no se puede descontar mas inventario que el disponible*/
+                            $arrayErrores[$i]['id']=$idproducto;
+                            $arrayErrores[$i]['error']="No existe registro en la tabla stock para este producto";
+                        }
+                        else
                         {
-                            array_push($arrayErrores,$idproducto,"Cantidad a actualizar mayor a inventario");
-                        }/*End else*/
-                    }/*End else*/
+                            $stockActual=$this->consultarStockProducto($idproducto,$sucursal);
+                            $stockActual=$stockActual[0]->stock;
+                            if ($stockActual>= $cantidad)
+                            {
+                                $stock_logs = new Stock_log();
+                                $stock_logs->stock_anterior         = $stock->stock;
+                                $stock_logs->stock_minimo_anterior  = $stock->stock_minimo;
+                                $stock->stock= $stock->stock- $cantidad;
+                                $stock->save();
+                                $stock_logs->productos_id   = $idproducto;
+                                $stock_logs->sucursal_id    = $sucursal;
+                                $stock_logs->stock=$stock->stock;                          
+                                $stock_logs->stock_minimo   = $stock->stock_minimo;
+                                $stock_logs->usuario        = $usuario;
+                                $stock_logs->tipo_operacion = 'Venta móvil';
+                                $stock_logs->updated_at = date("Y-m-d H:i:s");
+                                $stock_logs->created_at = date("Y-m-d H:i:s");
+                                $stock_logs->save();
+                            }/*End if*/
+                            else/*Error porque no se puede descontar mas inventario que el disponible*/
+                            {
+                               $arrayErrores[$i]['id']=$idproducto;
+                               $arrayErrores[$i]['error']="Cantidad a descontar mayor a stock disponible";
+                           }/*End else*/
+                       }/*End else*/
 
-
-                }/*end foreach*/
-            }/*End if*/
-            // print_r($arrayErrores);
-            if(count($arrayErrores)>0)
-            {
+                       $i=$i+1;
+                   }/*end foreach*/
+               }/*End if*/
+               if(count($arrayErrores)>0)
+               {
                 return response()->json(array("resultado" => $arrayErrores));
             }
             else
             {
-               return response()->json(array("resultado" => "OK"));
-            }
+             return response()->json(array("resultado" => "OK"));
+         }
 
              //return response()->json($arrayErrores, 201);
-       }/*End function*/
+     }/*End function*/
 
          //Función para consultar stock de un producto
-       public function consultarStockProducto($producto_id,$sucursal_id)
-       {
-         $sucursal = $sucursal_id;
-         $producto=$producto_id;
-         $stock=Producto::join("stock","stock.productos_id", "=", "productos.id")
-         ->join("sucursales","sucursales.id", "=", "stock.sucursal_id")
-         ->where("stock.sucursal_id","=",$sucursal)
-         ->where("stock.productos_id","=",$producto)
-         ->select("stock.stock")
-         ->get();
-         return $stock;
+     public function consultarStockProducto($producto_id,$sucursal_id)
+     {
+       $sucursal = $sucursal_id;
+       $producto=$producto_id;
+       $stock=Producto::join("stock","stock.productos_id", "=", "productos.id")
+       ->join("sucursales","sucursales.id", "=", "stock.sucursal_id")
+       ->where("stock.sucursal_id","=",$sucursal)
+       ->where("stock.productos_id","=",$producto)
+       ->select("stock.stock")
+       ->get();
+       return $stock;
 
-     }
+   }
 
- }
+}
