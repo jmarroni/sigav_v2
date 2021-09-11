@@ -84,6 +84,7 @@ class ProductoController extends Controller
                         else
                         {
                             $stockActual=$this->consultarStockProducto($idproducto,$sucursal);
+
                             $stockActual=$stockActual[0]->stock;
                             if ($stockActual>= $cantidad)
                             {
@@ -125,6 +126,7 @@ class ProductoController extends Controller
      }/*End function*/
 
          //Función para consultar stock de un producto
+
      public function consultarStockProducto($producto_id,$sucursal_id)
      {
        $sucursal = $sucursal_id;
@@ -138,5 +140,6 @@ class ProductoController extends Controller
        return $stock;
 
    }
+
 
 }

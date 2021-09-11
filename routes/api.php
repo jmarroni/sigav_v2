@@ -19,5 +19,9 @@ Route::group([
         Route::post('sucursales', ['uses' => 'Api\SucursalesController@sucursales']);
         Route::post('productosPorSucursal', ['uses' => 'Api\ProductoController@getProductosPorSucursal']);
         Route::post('actualizarStock', ['uses' => 'Api\ProductoController@updateStock']);
+
+        Route::post('consultarClientes', ['uses' => 'Api\ClienteController@consultarClientes']);
+        Route::post('guardarPedido', ['uses' => 'Api\PedidoController@savePedido']);
+
     });
 });
