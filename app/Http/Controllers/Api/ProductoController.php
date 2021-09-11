@@ -8,6 +8,7 @@ use Lcobucci\JWT\Parser;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\Producto;
+
 use App\Models\Stock;
 use App\Models\Stock_log;
 
@@ -82,8 +83,8 @@ class ProductoController extends Controller
                         }
                         else
                         {
-                            $objProductoStock= new Producto();
-                            $stockActual=$objProductoStock->consultarStockProducto($idproducto,$sucursal);
+                            $stockActual=$this->consultarStockProducto($idproducto,$sucursal);
+
                             $stockActual=$stockActual[0]->stock;
                             if ($stockActual>= $cantidad)
                             {
@@ -125,5 +126,20 @@ class ProductoController extends Controller
      }/*End function*/
 
          //Función para consultar stock de un producto
-    
+
+     public function consultarStockProducto($producto_id,$sucursal_id)
+     {
+       $sucursal = $sucursal_id;
+       $producto=$producto_id;
+       $stock=Producto::join("stock","stock.productos_id", "=", "productos.id")
+       ->join("sucursales","sucursales.id", "=", "stock.sucursal_id")
+       ->where("stock.sucursal_id","=",$sucursal)
+       ->where("stock.productos_id","=",$producto)
+       ->select("stock.stock")
+       ->get();
+       return $stock;
+
+   }
+
+
 }
