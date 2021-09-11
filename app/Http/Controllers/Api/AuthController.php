@@ -35,7 +35,7 @@ class AuthController extends Controller
              'name.string' => 'El nombre debe ser de caracteres',
              'email.required' => 'Ingrese un email',
              'email.string' => 'El email debe ser de caracteres',
-             'email.email' => 'Ingrese un email valido',
+             'email.email' => 'Ingrese un email válido',
              'email.unique' => 'El email ya esta en uso',
              'password.required' => 'Ingrese una clave/contraseña',
              'password.string' => 'La contraseña debe ser de caracteres'
