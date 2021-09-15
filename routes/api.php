@@ -10,7 +10,7 @@ Route::group([
     Route::post('validaracceso', ['uses' => 'Api\AuthController@login']); 
     Route::post('signup', ['uses' => 'Api\AuthController@signup']); 
 
-    //Ruta acceso servidor/api/auth/nombre
+
     Route::group([ 
       'middleware' => ['auth:api', 'cors']
     ], function() {
@@ -18,6 +18,9 @@ Route::group([
         Route::post('productos', ['uses' => 'Api\ProductoController@productos']);
         Route::post('sucursales', ['uses' => 'Api\SucursalesController@sucursales']);
         Route::post('productosPorSucursal', ['uses' => 'Api\ProductoController@getProductosPorSucursal']);
-
+        Route::post('actualizarStock', ['uses' => 'Api\ProductoController@updateStock']);
+        Route::post('consultarClientes', ['uses' => 'Api\ClienteController@consultarClientes']);
+        Route::post('altaCliente', ['uses' => 'Api\ClienteController@altaCliente']);
+        Route::post('guardarPedido', ['uses' => 'Api\PedidoController@savePedido']);
     });
 });

@@ -61,10 +61,9 @@ class ClienteController extends Controller
         $cliente->responsable_pagos = $request->responsable_pagos;    
         $cliente->email_pagos = $request->email_pagos;   
         $cliente->consulta_proveedores = $request->consulta_proveedores;   
-        $cliente->entrega_retiros= $request->entrega_retiros;  
-        $cliente->localidad = $request->localidad;   
+        $cliente->entrega_retiros= $request->entrega_retiros;    
         $cliente->fecha_alta = date("Y-m-d H:i:s");  
-        $cliente->deshabilitado = $request->localidad;     
+        $cliente->deshabilitado = 0;    
         $cliente->save();
        
        return redirect('cliente/mensaje/'.base64_encode($mensaje));
@@ -95,6 +94,16 @@ public function getCliente($id)
         $sucursal = (isset($request->sucursal)?$request->sucursal:Sucursales::getSucursal());
         $clientes=Cliente::all();
         return view("clientes.pedidos",compact("sucursal","clientes","mensaje"));
+    }
+
+    public function consultarClientexCuit($cuit)
+    {
+        $cliente = Cliente::where("clientes.cuit","=",$cuit)->first();
+        if ($cliente!=null )
+            return 1;//Existe
+        else
+            return 0;//No existe
+        
     }
 
 }

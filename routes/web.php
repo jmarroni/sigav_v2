@@ -94,6 +94,7 @@ Route::get('cliente.delete/{id}','ClienteController@delete' );
 Route::get('cliente.getCliente/{id}', 'ClienteController@getCliente');
 Route::get('pedido', 'PedidoController@index');
 Route::post('pedido.save', 'PedidoController@save');
+Route::get('cliente.consultarClientexCuit/{cuit}', 'ClienteController@consultarClientexCuit');
 
 
 Route::get('tipo/{type}', 'SweetController@notification');
