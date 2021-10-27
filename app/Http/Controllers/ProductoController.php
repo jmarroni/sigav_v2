@@ -10,8 +10,10 @@ use App\Models\Imagen_producto;
 use App\Models\Stock_log;
 use App\Models\LogsCostosPrecios;
 use App\Models\Stock;
+use App\Models\SitesSucursalesOpencart;
 use Illuminate\Support\Facades\Storage;
-use Image;
+use Intervention\Image\Facades\Image;
+use GuzzleHttp\Client;
 
 
 class ProductoController extends Controller
@@ -60,6 +62,7 @@ class ProductoController extends Controller
 
     public function update_stock(Request $request,$id,$_stock,$stock_minimo,$sucursal)
     {
+        $token="";
         $stock = Stock::where("productos_id",$id)->where("sucursal_id",$sucursal)->first();
         $stock_logs = new Stock_log();
         $stock_logs->productos_id   = $id;
@@ -68,6 +71,8 @@ class ProductoController extends Controller
         $stock_logs->stock_minimo   = $stock_minimo;
         $stock_logs->usuario        = $_COOKIE["kiosco"];
         $stock_logs->tipo_operacion = 'Actualización';
+        $stock_logs->created_at=date("Y-m-d H:i:s");
+        $stock_logs->updated_at=date("Y-m-d H:i:s");
         if (!(isset($stock))){
             $stock = new Stock();
             $stock_logs->stock_anterior         = "-1";
@@ -83,6 +88,19 @@ class ProductoController extends Controller
         $stock->usuario         = $_COOKIE["kiosco"];
         $stock->save();
         $stock_logs->save();
+
+
+        // $token=$this->loginTiendaOpencart($sucursal);
+        // if ($token!=-1 && $token!=-2)
+        // { 
+
+        //  $resultado=$this->actualizarStockOpencart($token,$id,$_stock,$sucursal);
+        //     if ($resultado==-1)
+        //         {
+        //             $mensaje='Producto guardado en Sigav pero falló la sincronización con opencart';
+        //         }
+        // }
+
         return response()->json(array("proceso" => "OK"));
     }
     /**
@@ -102,6 +120,7 @@ class ProductoController extends Controller
      */
     public function store(Request $request)
     {
+        $productoApi=array();
         $id=0;
         $sucursal=Sucursales::getSucursal();
         $stock_logs = new Stock_log();
@@ -120,6 +139,8 @@ class ProductoController extends Controller
             $stock_logs->stock_minimo   = 0;
             $stock_logs->usuario        = $_COOKIE["kiosco"];
             $stock_logs->tipo_operacion = 'Actualización';
+            $stock_logs->created_at=date("Y-m-d H:i:s");
+            $stock_logs->updated_at=date("Y-m-d H:i:s");
             $stock_logs->save();
             //Guardar auditoría de cambios de costos y precios
             if(($productos->costo!=$request->costo)||($productos->precio_unidad!=$request->precio_unidad))
@@ -145,14 +166,21 @@ class ProductoController extends Controller
         // ALTA DEL PRODUCTO
         if ($request->codigo_de_barras != ""){ 
             $codigo_barras =  $request->codigo_de_barras;
+            $productoApi[0]['codigo_barras']=$request->codigo_de_barras;
         }else 
         $codigo_barras = $request->categoria.substr("000000".$request->proveedor,-5).rand(111111,999999);
+        $productoApi[0]['codigo_barras']=$request->categoria.substr("000000".$request->proveedor,-5).rand(111111,999999);
         $productos->codigo_barras       = $codigo_barras;
         $productos->nombre              = $request->producto;
+        $productoApi[0]['nombre']       = $request->producto;
         $productos->precio_unidad       = $request->precio_unidad;
+        $productoApi[0]['precio_unidad']= $request->precio_unidad;
         $productos->costo               = $request->costo;
+        $productoApi[0]['costo']        = $request->costo;
         $productos->stock               = $request->stock;
+        $productoApi[0]['stock']        = $request->stock;
         $productos->stock_minimo        = $request->stock_minimo;
+        $productoApi[0]['stock_minimo'] = $request->stock_minimo;
         $productos->proveedores_id      = $request->proveedor;
         $productos->categorias_id       = ($request->categoria == "")?"---":$request->categoria;
         $productos->usuario             = $_COOKIE["kiosco"];
@@ -160,11 +188,13 @@ class ProductoController extends Controller
         $productos->precio_mayorista    = $request->precio_mayorista;
         $productos->es_comodato         = 1;
         $productos->descripcion         = $request->descripcion;
+        $productoApi[0]['descripcion']  = $request->descripcion;
         $productos->descripcion_pr      = $request->descripcion_pr;
         $productos->descripcion_en      = $request->descripcion_en;
         $productos->material            = $request->material;
         $productos->precio_reposicion   = ($request->precio_reposicion == "")?0:$request->precio_reposicion;
         $productos->save();
+        $productoApi[0]['id']=$productos->id;
        // $id=Producto::latest('id')->first()->id;
         $stock_logs->productos_id   = $productos->id;
         $stock_logs->sucursal_id    = 0;
@@ -174,6 +204,8 @@ class ProductoController extends Controller
         $stock_logs->stock_minimo_anterior=0;
         $stock_logs->stock_anterior=0;
         $stock_logs->tipo_operacion = 'Alta';
+        $stock_logs->created_at=date("Y-m-d H:i:s");
+        $stock_logs->updated_at=date("Y-m-d H:i:s");
         $stock_logs->save();
         $imagenes = array();
         for($i = 0;$i < 7; $i ++){
@@ -183,8 +215,13 @@ class ProductoController extends Controller
                 $image_resize->fit(300, 300);
                 $image_resize->save(str_replace("/".$productos->id."/","/".$productos->id."/thumb_300x300_",storage_path('app')."/".$path));
                 $imagenes[] = $path;
+                if ($i==0)
+                {
+                    $productoApi[0]['imagen']=$request->{"imagen".$i};
+                }
             }
         }
+        
         if (count($imagenes) > 0){
             Imagen_producto::where("productos_id",$productos->id)->delete();
             foreach($imagenes as $imagen){
@@ -194,7 +231,16 @@ class ProductoController extends Controller
                 $imagen_producto->save();
             }
         }
+        // $token=$this->loginTiendaOpencart($sucursal);
+        // if ($token!=-1 && $token!=-2)
+        // { 
 
+        //  $resultado=$this->guardarProductoTiendaOpencart($token,$productoApi,$sucursal);
+        //     if ($resultado==-1)
+        //         {
+        //             $mensaje='Producto guardado en Sigav pero falló la sincronización con opencart';
+        //         }
+        // }
         return redirect('carga/mensaje/'.base64_encode($mensaje));
     }
 
@@ -265,6 +311,8 @@ class ProductoController extends Controller
     $stock_logs->tipo_operacion = 'Baja';
     $stock_logs->stock_anterior         = $producto->stock;
     $stock_logs->stock_minimo_anterior  = $producto->stock_minimo;
+    $stock_logs->created_at=date("Y-m-d H:i:s");
+    $stock_logs->updated_at=date("Y-m-d H:i:s");
         //Elimina el producto
     Producto::destroy($id);
         //Elimina los stocks de las diferentes sucursales asociados a ese producto
@@ -457,6 +505,102 @@ public function searchProducts(request $request)
      return response()->json($productos);
 
  }
+ public function loginTiendaOpencart($sucursal)
+ {
+    $site=SitesSucursalesOpencart::where("id_sucursal",$sucursal)->first();
+    if ($site!=null && $site!="" )
+    { 
+        $client = new \GuzzleHttp\Client();
+        $res = $client->request('POST', $site->url.'index.php?route=api/login/index', [
+            'form_params' => [
+                'username' => $site->user,
+                'key' => $site->password
+            ]
+        ]);
 
+        $respuesta=$res->getBody();
+        $respuesta=json_decode($respuesta, true);
+        //var_dump($productoApi);
+        if (isset($respuesta['success']) && isset($respuesta['api_token']))
+        { 
+            return $respuesta['api_token'];
+        }
+        else
+            { //Falló la autenticación
+                return -1;
+            }
+        }
+        else
+    { //No existe información de opencart para esa sucursal
+        return -2;
+    }
 
+}
+public function guardarProductoTiendaOpencart($token, $datosProducto,$sucursal)
+{
+   $site=SitesSucursalesOpencart::where("id_sucursal",$sucursal)->first();
+   if ($site!=null && $site!="" )
+   { 
+    $client = new \GuzzleHttp\Client();
+    $res = $client->request('POST', $site->url.'index.php?route=api/product/saveProducto', [
+        'form_params' => [
+            'route'=> 'api/product/saveProducto',
+            'producto' => $datosProducto,
+            'api_token'=> $token
+
+        ],
+    ]);
+    $respuesta=$res->getBody();
+    $respuesta=json_decode($respuesta, true);
+    if (isset($respuesta['success']))
+         {//Éxito
+
+            return 1;
+        }
+        else
+        {//Éxito
+
+            return -1;
+        }
+
+    }
+    else
+        { //No existe información de opencart para esa sucursal
+            return -2;
+        } 
+    }
+    public function actualizarStockOpencart($token, $id,$cantidad,$sucursal)
+    {
+       $site=SitesSucursalesOpencart::where("id_sucursal",$sucursal)->first();
+       if ($site!=null && $site!="" )
+       { 
+        $client = new \GuzzleHttp\Client();
+        $res = $client->request('POST', $site->url.'index.php?route=api/product/actualizarStock', [
+            'form_params' => [
+                'route'=> 'api/product/actualizarStock',
+                'id' => $id,
+                'cantidad'=>$cantidad,
+                'api_token'=> $token
+
+            ],
+        ]);
+        $respuesta=$res->getBody();
+        $respuesta=json_decode($respuesta, true);
+        if (isset($respuesta['success']))
+         {//Éxito
+
+            return 1;
+        }
+        else
+        {//Éxito
+
+            return -1;
+        }
+
+    }
+    else
+        { //No existe información de opencart para esa sucursal
+            return -2;
+        } 
+    }
 }

@@ -1,8 +1,8 @@
 @extends('layout.layout');
 <style>
-    .ui-autocomplete-loading {
-        background: white url("/assets/img/favicons/ui-anim_basic_16x16.gif") right center no-repeat;
-    }
+.ui-autocomplete-loading {
+    background: white url("/assets/img/favicons/ui-anim_basic_16x16.gif") right center no-repeat;
+}
 </style>
 @section("body")
 <div class="content content-boxed">
@@ -28,7 +28,7 @@
             </div>
         </div>
     <?php } ?>
-        <div class="block block-rounded">
+    <div class="block block-rounded">
         <div class="block-header"> 
             <h3 class="block-title">Transferencias </h3>
         </div>
@@ -47,197 +47,241 @@
                     </thead>
                     <tbody>
                         @if (count($transferenciasRealizadas)>0)
-                            @foreach ($transferenciasRealizadas as $transferencia) 
-                                <tr>
-                                    <td>
-                                        {{$transferencia->sucursal_origen_nombre}}
-                                    </td>
-                                    <td>
-                                         {{$transferencia->sucursal_destino_nombre}}
-                                    </td>
-                                    <td>
-                                        <?php echo date("d/m/Y h:m:s", strtotime($transferencia->fecha))?>
-                                    </td>
-                                    <td>
-                                         {{$transferencia->usuario}}
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="<?php echo "#modal$transferencia->id";?>">
-                                          Mostrar productos
-                                        </button>
+                        @foreach ($transferenciasRealizadas as $transferencia) 
+                        <tr>
+                            <td>
+                                {{$transferencia->sucursal_origen_nombre}}
+                            </td>
+                            <td>
+                             {{$transferencia->sucursal_destino_nombre}}
+                         </td>
+                         <td>
+                            <?php echo date("d/m/Y h:m:s", strtotime($transferencia->fecha))?>
+                        </td>
+                        <td>
+                         {{$transferencia->usuario}}
+                     </td>
+                     <td>
+                         <div class="row" style="display:block;">
+                           <button type="button" class="btn btn-primary" data-toggle="modal" data-target="<?php echo "#modal$transferencia->id";?>">
+                              <i class="fa fa-eye push-7-r"></i>
+                          </button>
+                          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="<?php echo "#print$transferencia->id";?>" id="printEtiquetas"  onclick="printEtiqueta(<?php echo $transferencia->id;?>);">
+                           <i class="fa fa-print push-7-r"></i>
+                       </button>
+                   </div>
 
-                                        <div class="modal fade" id="<?php echo "modal$transferencia->id"?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-                                          <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                              <div class="modal-header">
-                                                <h4 class="modal-title" id="exampleModalLongTitle">Productos</h4>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                  <span aria-hidden="true">&times;</span>
-                                                </button>
-                                              </div>  <!-- end header -->
-                                              <div class="modal-body">
-                                                <table class="table table-hover table-center text-center">
-                                                        <thead>
-                                                          <th class="text-center">Producto</th>
-                                                          <th class="text-center">Cantidad</th>
-                                                       </thead>
-                                                        <tbody>
-                                                            <?php $cantProductos=0;?>
-                                                     @if (count($productos)>0)
-                                                      
-                                                         @foreach ($productos as $producto)
-                                                            
-                                                            @if ($producto->tranferencia_id==$transferencia->id)
-                                                             <?php $cantProductos=$cantProductos+$producto->cantidad;?>
-                                                            <div class="row">
-                                                                @if(count($imagenes)>0)
-                                                                   @foreach ($imagenes as $imagen)
-                                                                     @if ($imagen->producto_id==$producto->id)
 
-                                                            
+
+
+                   <div class="modal fade" id="<?php echo "modal$transferencia->id"?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h4 class="modal-title" id="exampleModalLongTitle">Productos</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                          </button>
+                      </div>  <!-- end header -->
+                      <div class="modal-body">
+                        <table class="table table-hover table-center text-center">
+                            <thead>
+                              <th class="text-center">Cód Barra</th>
+                              <th class="text-center">Producto</th>
+                              <th class="text-center">Cantidad</th>
+                          </thead>
+                          <tbody>
+                            <?php $cantProductos=0;?>
+                            @if (count($productos)>0)
+
+                            @foreach ($productos as $producto)
+
+                            @if ($producto->tranferencia_id==$transferencia->id)
+                            <?php $cantProductos=$cantProductos+$producto->cantidad;?>
+                            <div class="row">
+                                @if(count($imagenes)>0)
+                                @foreach ($imagenes as $imagen)
+                                @if ($imagen->producto_id==$producto->id)
+
+
                                                                 <!-- <div style="float: left; width: 48%;">
                                                                     <img style="width: 50px; margin-top: 5px;" src="<?php echo $imagen->imagen_url; ?>" >
                                                                 </div> -->
-                                                                     @endif
+                                                                @endif
+                                                                @endforeach
+                                                                @endif
+                                                                <tr>
+                                                                    <td>{{$producto->codigo_barras}} </td>
+                                                                    <td>{{$producto->nombre}} </td>
+                                                                    <td>{{$producto->cantidad}} </td>
+                                                                    <tr>
+                                                                    </div>
+                                                                    @endif
                                                                     @endforeach
-                                                                 @endif
-                                                                <tr>
-                                                                <td>{{$producto->nombre}} </td>
-                                                                <td>{{$producto->cantidad}} </td>
-                                                                <tr>
+                                                                </tbody>
+                                                                @endif
+                                                            </table>
+                                                            <div class="panel panel-default">
+                                                                <div class="panel-body">
+                                                                    <strong>Total productos:</strong><span class="label label-primary"><?php echo $cantProductos?></span>  
+                                                                </div>
                                                             </div>
-                                                               @endif
-                                                        @endforeach
-                                                        </tbody>
-                                                    @endif
-                                                    </table>
-                                                    <div class="panel panel-default">
-                                                        <div class="panel-body">
-                                                        <strong>Total productos:</strong><span class="label label-primary"><?php echo $cantProductos?></span>  
+
+
+                                                        </ul>
                                                     </div>
-                                                     </div>
-
-
-                                                </ul>
-                                              </div>
-                                              <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Atras</button>
-                                              </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Atras</button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                          </div>
                                         </div>
-                                    </td>
+                                        <div class="modal fade" id="<?php echo "print$transferencia->id"?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                                          <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                              <div class="modal-header">
+                                                <h4 class="modal-title" id="exampleModalLongTitle">Vista Previa de impresión</h4>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                  <span aria-hidden="true">&times;</span>
+                                              </button>
+                                          </div>  <!-- end header -->
+                                          <div class="modal-body">
+                                              <div class="block-content">
+                                                <div class="table-responsive">
+                                                    <iframe src="" id="<?php echo "iframe_etiquetas$transferencia->id"?>" style="width:100%;height:300px;">
 
-                                    <td>
-                                        @if ($transferencia->sucursal_destino_id == $sucursal_activa)
-                                            <textarea id="comentario{{$transferencia->id}}" name="comentario">{{$transferencia->comentario}}</textarea>
-                                        @else
-                                            <p>{{$transferencia->comentario}}</p>
-                                        @endif
-                                    </td>
-                                    <td class="
-                                            <?php
-                                                switch ($transferencia->estado_id) {
-                                                    case 1:
-                                                        echo "active";
-                                                        break;
-                                                    case 2:
-                                                        echo "info";
-                                                        break;
-                                                    case 3:
-                                                        echo "warning";
-                                                        break;
-                                                    case 4:
-                                                        echo "success";
-                                                        break;
-                                                    case 5:
-                                                        echo "danger";
-                                                        break;
-                                                }
-                                            ?>
-                                        ">
-                                       
-                                             @if ($transferencia->sucursal_destino_id == $sucursal_activa)
-                                        
-                                            <select name="estado" id="estado{{$transferencia->id}}">
-                                                @if(count($estados)>0)
-                                                    @foreach ($estados as $estado)
-                                                        @if ($transferencia->estado_id==$estado->id)
-                                                            <option value="<?php echo $estado->id; ?>" selected > {{$estado->nombre}} </option>
-                                                        @else
-                                                             @if ($estado->id !=2 && $estado->id !=1)
-                                                        <option value="<?php echo $estado->id; ?>"> {{$estado->nombre}} </option>
-                                                             @endif
-                                                        @endif
-                                                    @endforeach
+                                                    </iframe>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>   
+                        </td>
 
-                                                @endif
-                                            </select>
-                                                
-                                            @endif
-                                            @if ($transferencia->sucursal_origen_id == $sucursal_activa)
-                                                    <select name="estado" id="estado{{$transferencia->id}}">
-                                                @if(count($estados)>0)
-                                                    @foreach ($estados as $estado)
-                                                        @if ($transferencia->estado_id==$estado->id)
-                                                            <option value="<?php echo $estado->id; ?>" selected > {{$estado->nombre}} </option>
-                                                        @else
-                                                             @if (($transferencia->estado_id==1 || $transferencia->estado_id==2) && ($estado->id ==2 || $estado->id ==6))
-                                                        <option value="<?php echo $estado->id; ?>"> {{$estado->nombre}} </option>
-                                                             @endif
-                                                        @endif
-                                                    @endforeach
+                        <td>
+                            @if ($transferencia->sucursal_destino_id == $sucursal_activa)
+                            <textarea id="comentario{{$transferencia->id}}" name="comentario">{{$transferencia->comentario}}</textarea>
+                            @else
+                            <p>{{$transferencia->comentario}}</p>
+                            @endif
+                        </td>
+                        <td class="
+                        <?php
+                        switch ($transferencia->estado_id) {
+                            case 1:
+                            echo "active";
+                            break;
+                            case 2:
+                            echo "info";
+                            break;
+                            case 3:
+                            echo "warning";
+                            break;
+                            case 4:
+                            echo "success";
+                            break;
+                            case 5:
+                            echo "danger";
+                            break;
+                        }
+                        ?>
+                        ">
 
-                                                @endif
-                                            </select>
-                                            @endif
-                                    </td>
-                                  
-                                       @if ($transferencia->sucursal_destino_id == $sucursal_activa)
-                                    
-                                        <td>
-                                          
-                                            <button onclick="cambiarEstado('<?php echo $transferencia->id; ?>')" class="btn btn-sm btn-minw btn-rounded btn-primary" style="width: 100%;" type="submit"
-                                                <?php if ( $transferencia->id_estado == '4' || $transferencia->id_estado == '5' || $transferencia->id_estado == '6') {?>
-                                                    disabled
-                                                <?php } ?>
-                                                >
-                                                Cambiar estado
-                                            </button>
-                                       
-                                        </td>
-                                         @endif
-                                          @if ($transferencia->sucursal_origen_id == $sucursal_activa)
-                                        <td>
-                                            <button onclick="cambiarEstado('<?php echo $transferencia->id; ?>')" class="btn btn-sm btn-minw btn-rounded btn-primary" style="width: 100%;" type="submit"
-                                                 <?php if ($transferencia->id_estado == '3' || $transferencia->id_estado == '4' || $transferencia->id_estado == '5' || $transferencia->id_estado == '6') {?>
-                                                    disabled
-                                                <?php } ?>
-                                                >
-                                                Cambiar estado
-                                            </button>
-                                       
-                                        </td>
-                                         @endif 
-                                </tr>
-                        @endforeach
-                        @else
-                            <div class="alert alert-info">
-                                <p>No ha realizado ninguna transferencia</p>
-                            </div>
+                        @if ($transferencia->sucursal_destino_id == $sucursal_activa)
+
+                        <select name="estado" id="estado{{$transferencia->id}}">
+                            @if(count($estados)>0)
+                            @foreach ($estados as $estado)
+                            @if ($transferencia->estado_id==$estado->id)
+                            <option value="<?php echo $estado->id; ?>" selected > {{$estado->nombre}} </option>
+                            @else
+                            @if ($estado->id !=2 && $estado->id !=1)
+                            <option value="<?php echo $estado->id; ?>"> {{$estado->nombre}} </option>
+                            @endif
+                            @endif
+                            @endforeach
+
+                            @endif
+                        </select>
+
                         @endif
-                    </tbody>
-                </table>
+                        @if ($transferencia->sucursal_origen_id == $sucursal_activa)
+                        <select name="estado" id="estado{{$transferencia->id}}">
+                            @if(count($estados)>0)
+                            @foreach ($estados as $estado)
+                            @if ($transferencia->estado_id==$estado->id)
+                            <option value="<?php echo $estado->id; ?>" selected > {{$estado->nombre}} </option>
+                            @else
+                            @if (($transferencia->estado_id==1 || $transferencia->estado_id==2) && ($estado->id ==2 || $estado->id ==6))
+                            <option value="<?php echo $estado->id; ?>"> {{$estado->nombre}} </option>
+                            @endif
+                            @endif
+                            @endforeach
+
+                            @endif
+                        </select>
+                        @endif
+                    </td>
+
+                    @if ($transferencia->sucursal_destino_id == $sucursal_activa)
+
+                    <td>
+
+                        <button onclick="cambiarEstado('<?php echo $transferencia->id; ?>')" class="btn btn-sm btn-minw btn-rounded btn-primary" style="width: 100%;" type="submit"
+                            <?php if ( $transferencia->id_estado == '4' || $transferencia->id_estado == '5' || $transferencia->id_estado == '6') {?>
+                                disabled
+                            <?php } ?>
+                            >
+                            Cambiar estado
+                        </button>
+
+                    </td>
+                    @endif
+                    @if ($transferencia->sucursal_origen_id == $sucursal_activa)
+                    <td>
+                        <button onclick="cambiarEstado('<?php echo $transferencia->id; ?>')" class="btn btn-sm btn-minw btn-rounded btn-primary" style="width: 100%;" type="submit"
+                         <?php if ($transferencia->id_estado == '3' || $transferencia->id_estado == '4' || $transferencia->id_estado == '5' || $transferencia->id_estado == '6') {?>
+                            disabled
+                        <?php } ?>
+                        >
+                        Cambiar estado
+                    </button>
+
+                </td>
+                @endif 
+            </tr>
+            @endforeach
+            @else
+            <div class="alert alert-info">
+                <p>No ha realizado ninguna transferencia</p>
             </div>
-            <!-- END Main Content -->
-        </div>
-    </div>
-    <!-- END Products -->
-</div>    
+            @endif
+        </tbody>
+    </table>
+</div>
+<!-- END Main Content -->
+</div>
+</div>
+<!-- END Products -->
+</div> 
+
 @endsection
 @section("scripts")
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="/assets/js/transferencias/transferencias_accion.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+         
+    });
+    function printEtiqueta(id){
+            $("#iframe_etiquetas"+id).attr("src","/etiqueta.imprimirEtiquetasTransferencias/" + id);
+        }
+</script>
+
 @endsection

@@ -79,8 +79,6 @@
 <script type="text/javascript" src="/assets/js/core/buttons.print.min1.2.4.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-
-        <?php if ($_COOKIE["kiosco"] == "jmarroni"){ ?>
         $('#tabla_compras').DataTable({
              "language": {
                 "url": "/assets/language/Spanish.json"
@@ -90,13 +88,6 @@
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ]
         });
-        <?php }else{?>
-            $('#tabla_compras').DataTable({
-             "language": {
-                "url": "/assets/language/Spanish.json"
-            }
-        });
-        <?php } ?>
     });
 </script>
 

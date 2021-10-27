@@ -51,7 +51,7 @@
         "&c_i_eje="+$("#c_i_eje").text()+
         "&c_i_dip="+$("#c_i_dip").text();
         //console.log(datos);
-       // console.log(detalleProductos[0][0]);
+       console.log(detalleProductos);
          var url = "/pedido.save/";
         $.post(url,datos, function(data, status){  
             //var res=JSON.parse(data);

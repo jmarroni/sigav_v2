@@ -13,6 +13,7 @@ use App\Models\Imagen_producto;
 use App\Models\RelacionTransferenciaProductos;
 use Illuminate\Support\Facades\Storage;
 use App\Models\RemitoTransferencias;
+use App\Models\Stock_log;
 use Spipu\Html2Pdf\Html2Pdf;
 use Image;
 
@@ -157,10 +158,11 @@ class TransferenciaController extends Controller
         ->where("transferencias.sucursal_origen_id","=",$sucursal_activa,"OR")
         ->ORwhere("transferencias.sucursal_destino_id","=", $sucursal_activa)
         ->addselect("transferencias.*","e.nombre AS nombre_estado","e.id AS id_estado","so.nombre AS sucursal_origen_nombre","sd.nombre AS sucursal_destino_nombre","transferencias.fecha","transferencias.usuario")
-        ->OrderBy("transferencias.id")
+        ->OrderBy("transferencias.fecha","desc")
         ->get();
         $productos=RelacionTransferenciaProductos::join("productos as p","p.id","=","relacion_transferencias_productos.producto_id")
         ->select("relacion_transferencias_productos.*","p.*")
+        ->OrderBy("p.nombre","asc")
         ->get();
         $imagenes=Imagen_producto::all();
         $estados=EstadoTransferencia::all();
@@ -173,8 +175,9 @@ public function getTransferencia(Request $request, $id)
 }
 public function changeStatus(Request $request)
 { 
-
+    $estadoAnterior=0;
     $transferencia= Transferencia::find($request->id_transferencia);
+    $estadoAnterior=$transferencia->estado_id;
     $transferencia->estado_id=$request->id_estado;
     if (isset($request->comentario) && $request->comentario!=null && $request->comentario!="")
        { 
@@ -192,7 +195,7 @@ public function changeStatus(Request $request)
     $transferenciaLog->updated_at=date("Y-m-d H:i:s");
     $transferenciaLog->save();
     //Se modifica el stock solo si la transferencia es recibida
-    if ($request->id_estado==3)
+    if ($request->id_estado==3 && $estadoAnterior!=3)
          { 
     $productos=Transferencia::join("relacion_transferencias_productos as rtp","rtp.tranferencia_id","=","transferencias.id")
     ->join("productos as p","p.id","=","rtp.producto_id")
@@ -209,16 +212,44 @@ public function changeStatus(Request $request)
                         ->first();
                 //echo $stockorigen;
                 //exit();
+                $stockOrigenAnterior=0;
+                $stockOrigenAnterior=$stockorigen->stock;
+                $stockDestinoAnterior=0;
                 $stockorigen->stock=$stockorigen->stock-$producto->cantidad;
                 $stockorigen->save();
+                $stock_logsorigen = new Stock_log();
+                $stock_logsorigen->productos_id   = $producto->id;
+                $stock_logsorigen->sucursal_id    = $producto->sucursal_origen_id;
+                $stock_logsorigen->stock_anterior = $stockOrigenAnterior;
+                $stock_logsorigen->stock_minimo = $stockorigen->stock_minimo;
+                $stock_logsorigen->stock_minimo_anterior = $stockorigen->stock_minimo;
+                $stock_logsorigen->stock   = $stockorigen->stock;
+                $stock_logsorigen->usuario        = $_COOKIE["kiosco"];
+                $stock_logsorigen->tipo_operacion = 'Envío transferencia';
+                $stock_logsorigen->created_at=date("Y-m-d H:i:s");
+                $stock_logsorigen->updated_at=date("Y-m-d H:i:s");
+                $stock_logsorigen->save();
                  //Actualizar stock en destino
                 $stockdestino=Stock::where('productos_id', '=', $producto->id)
                         ->where("sucursal_id","=",$producto->sucursal_destino_id)
                         ->first();
                     if($stockdestino!="" && $stockdestino!=null)
                         {
+                            $stockDestinoAnterior=$stockdestino->stock;
                             $stockdestino->stock=$stockdestino->stock+$producto->cantidad;
                             $stockdestino->save();
+                            $stock_logsDestino = new Stock_log();
+                            $stock_logsDestino->productos_id   = $producto->id;
+                            $stock_logsDestino->sucursal_id    = $producto->sucursal_destino_id;
+                            $stock_logsDestino->stock_anterior = $stockDestinoAnterior;
+                            $stock_logsDestino->stock_minimo = $stockdestino->stock_minimo;
+                            $stock_logsDestino->stock_minimo_anterior = $stockdestino->stock_minimo;
+                            $stock_logsDestino->stock   = $stockdestino->stock;
+                            $stock_logsDestino->usuario        = $_COOKIE["kiosco"];
+                            $stock_logsDestino->tipo_operacion = 'Recep. transferencia';
+                            $stock_logsDestino->created_at=date("Y-m-d H:i:s");
+                            $stock_logsDestino->updated_at=date("Y-m-d H:i:s");
+                            $stock_logsDestino->save();
                         }
                     else
                         {
@@ -231,12 +262,25 @@ public function changeStatus(Request $request)
                             $stockdestino->created_at      = date("Y-m-d H:i:s");    
                             $stockdestino->updated_at      = date("Y-m-d H:i:s");           
                             $stockdestino->save();
+
+                            $stock_logsorigen = new Stock_log();
+                            $stock_logsDestino->productos_id   = $producto->id;
+                            $stock_logsDestino->sucursal_id    = $producto->sucursal_destino_id;
+                            $stock_logsDestino->stock_anterior = 0;
+                            $stock_logsDestino->stock_minimo = 1;
+                            $stock_logsDestino->stock_minimo_anterior = 0;
+                            $stock_logsDestino->stock   = $producto->cantidad;
+                            $stock_logsDestino->usuario        = $_COOKIE["kiosco"];
+                            $stock_logsDestino->tipo_operacion = 'Recep. transferencia';
+                            $stock_logsDestino->created_at=date("Y-m-d H:i:s");
+                            $stock_logsDestino->updated_at=date("Y-m-d H:i:s");
+                            $stock_logsDestino->save();
                         }
             }
     } 
 
 }
-$mensaje = 'Estatus cambiando con éxito';
+$mensaje = 'Estatus cambiado con éxito';
 return response()->json(array("proceso" => "OK"));
 }
 

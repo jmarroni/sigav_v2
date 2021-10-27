@@ -331,7 +331,7 @@ function getMes($numero){
                                 <a href="/reporte.presupuesto">Reporte de Presupuestos</a>
                             </li>
                             <?php } ?>
-                            <?php if (getRol() > 4) { ?>
+                            <?php if (getRol()==1 || getRol()==4 || getRol()==5) { ?>
                             <li>
                                 <a href="/reporte.notasCredito">Reporte de Nota de credito</a>
                             </li>
@@ -346,7 +346,7 @@ function getMes($numero){
                                 <a href="/reporte.pagoProveedores">Reporte de Pago Proveedores</a>
                             </li>
                             <?php } ?>
-                            <?php if (getRol() > 4 || getRol()==3) { ?>
+                            <?php if (getRol()==1 || getRol() ==3 || getRol()==4 || getRol()==5) { ?>
                             <li>
                                 <a href="/reporte.transferencias">Reporte de Transferencias</a>
                             </li>

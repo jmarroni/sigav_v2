@@ -33,8 +33,8 @@ class CreateLogsCostosPreciosTable extends Migration
      *
      * @return void
      */
-    public function down()
+     public function down()
     {
-        //
+        Schema::dropIfExists('logs_costos_precios');
     }
 }
