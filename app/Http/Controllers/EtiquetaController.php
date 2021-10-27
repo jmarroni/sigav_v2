@@ -9,6 +9,7 @@ use App\Models\Sucursales;
 use App\Models\Categoria;
 use App\Models\Categoria_log;
 use App\Models\RelacionCategoriaProveedor;
+use App\Models\RelacionTransferenciaProductos;
 use Illuminate\Support\Facades\Storage;
 use Image;
 
@@ -61,8 +62,27 @@ class EtiquetaController extends Controller
             }
         $etiquetasimprimir=($etiquetas=="")?"":$etiquetas;  
         $arrEtiquetas = explode('-',$etiquetasimprimir);
-        $productos=Producto::all();
+        $productos=Producto::join("proveedor","proveedor.id", "=", "productos.proveedores_id")
+        ->select("productos.*","proveedor.nombre as nombreproveedor","proveedor.apellido","proveedor.ciudad","proveedor.provincia","proveedor.direccion")
+        ->OrderBy("productos.nombre")
+        ->get();
+
         return view("etiquetas.imprimirEtiquetas",compact("etiquetasimprimir","arrEtiquetas","productos"));
+    }
+     public function printEtiquetasTransferencias(Request $request, $id)
+    {
+        if (!isset($_COOKIE["kiosco"])) 
+            {
+                header('Location: /');
+            }
+
+ $productos=Producto::join("proveedor","proveedor.id", "=", "productos.proveedores_id")
+        ->join("relacion_transferencias_productos","relacion_transferencias_productos.producto_id","=","productos.id")
+        ->select("productos.*","proveedor.nombre as nombreproveedor","proveedor.apellido","proveedor.ciudad","proveedor.provincia","proveedor.direccion","relacion_transferencias_productos.*")
+        ->where('relacion_transferencias_productos.tranferencia_id', '=', $id)
+        ->get();
+
+        return view("etiquetas.imprimirEtiquetasTransferencias",compact("productos"));
     }
     public function printQrs(Request $request, $etiquetas)
     {

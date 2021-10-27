@@ -117,26 +117,16 @@
     <script type="text/javascript" src="/assets/js/reportes/reportePedidos.js?v=1"></script>
     <script type="text/javascript">
         $(document).ready(function(){
-
-            <?php if ($_COOKIE["kiosco"] == "jmarroni"){ ?>
-                $('#tabla_compras').DataTable({
-                   "language": {
-                    "url": "/assets/language/Spanish.json"
-                },
-                dom: 'Bfrtip',
-                buttons: [
+        $('#tabla_compras').DataTable({
+             "language": {
+                "url": "/assets/language/Spanish.json"
+            },
+            dom: 'Bfrtip',
+            buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
-            });
-            <?php }else{?>
-                $('#tabla_compras').DataTable({
-                   "language": {
-                    "url": "/assets/language/Spanish.json"
-                }
-            });
-            <?php } ?>
-           
-           });
+            ]
+        });
+    });
        </script>
 
        @endsection

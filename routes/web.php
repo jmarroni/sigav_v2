@@ -52,6 +52,7 @@ Route::get('etiqueta.getQr/{id}', 'EtiquetaController@getQr');
 Route::get('etiqueta.buscarProductos', 'ProductoController@searchProducts');
 Route::get('etiqueta.imprimirEtiquetas/{etiquetas}', 'EtiquetaController@printEtiquetas');
 Route::get('etiqueta.imprimirQrs/{etiquetas}', 'EtiquetaController@printQrs');
+Route::get('etiqueta.imprimirEtiquetasTransferencias/{id}', 'EtiquetaController@printEtiquetasTransferencias');
 //Roles
 Route::get('rol', 'RolController@index');
 Route::post('rol.save', 'RolController@save');
@@ -94,6 +95,7 @@ Route::get('cliente.delete/{id}','ClienteController@delete' );
 Route::get('cliente.getCliente/{id}', 'ClienteController@getCliente');
 Route::get('pedido', 'PedidoController@index');
 Route::post('pedido.save', 'PedidoController@save');
+Route::get('cliente.consultarClientexCuit/{cuit}', 'ClienteController@consultarClientexCuit');
 
 
 Route::get('tipo/{type}', 'SweetController@notification');

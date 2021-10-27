@@ -23,7 +23,7 @@
     
     <div class="block block-rounded">
         <div class="block-header">
-            <h3 class="block-title">Reporte de stock</h3>
+            <h3 class="block-title">Reporte de transferencias</h3>
         </div>
         <div class="block-content">
            <div class="row text-uppercase">
@@ -115,26 +115,16 @@
     <script type="text/javascript" src="/assets/js/reportes/reporteTransferencias.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
-
-            <?php if ($_COOKIE["kiosco"] == "jmarroni"){ ?>
-                $('#tabla_compras').DataTable({
-                   "language": {
-                    "url": "/assets/language/Spanish.json"
-                },
-                dom: 'Bfrtip',
-                buttons: [
+        $('#tabla_compras').DataTable({
+             "language": {
+                "url": "/assets/language/Spanish.json"
+            },
+            dom: 'Bfrtip',
+            buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
-            });
-            <?php }else{?>
-                $('#tabla_compras').DataTable({
-                   "language": {
-                    "url": "/assets/language/Spanish.json"
-                }
-            });
-            <?php } ?>
-           
-           });
+            ]
+        });
+    });
        </script>
 
        @endsection

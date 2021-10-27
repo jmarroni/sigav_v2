@@ -1,25 +1,25 @@
 <?php
 use Spipu\Html2Pdf\Html2Pdf;
 ?>
-
-@if ($etiquetasimprimir != "")
+<div class="content" style="align-content: center;">
 <button class="btn btn-sm btn-minw btn-rounded btn-primary" onclick="window.print();" style="width:100%;height:30px;margin-top:25px;" type="button">
     <i class="fa fa-check push-5-r"></i>Imprimir etiqueta
 </button>
+</div>
 <table>
-    <?php $columnas=0; ?>
-    @foreach ($arrEtiquetas as $etiqueta)
     <?php 
-    $numetiqueta = explode('@',$etiqueta);
-    $cantidad = ($numetiqueta[1] != "")?intval($numetiqueta[1]):13;
-    $i = 0
+    $columnas=0; 
+    $i = 0;
     ?>
     @if (count($productos)>0)
-    @foreach($productos as $producto)  
-    @if ($producto->id==$numetiqueta[0])                    
+    @foreach($productos as $producto)
+    <?php $cantidad = $producto->cantidad;
+    
+      ?>                   
     @for ($i=0; $i < $cantidad; $i++)  
     @if ($columnas == 0 || $columnas % 3 == 0) <tr> @endif 
-     <?php $columnas=$columnas+1;?>  
+     <?php $columnas=$columnas+1;
+     ?>  
      <td style="border: 1px solid #CCC; width:9cm; height: 4.5cm">
         <div style="margin-top:5px;">
             <p style="text-align: center;font-family:'Montserrat';font-size:10px;font-weight: bold;">{{$producto->nombre}}</p>
@@ -38,21 +38,27 @@ use Spipu\Html2Pdf\Html2Pdf;
             <div style="margin-left: 40px"><img   alt="testing" src="/librarys/barcode.php?codetype=Code39&text=<?php echo $producto->codigo_barras;?>&print=true&size=32" /></div>
         </div>
     </td> 
-@if (($columnas % 3) == 0) </tr> @endif 
-@endfor                           
-@endif
-
-@endforeach
-
-@else
-<h1 style="text-align: center;">No hay etiquetas para este producto</h1>
+@if ($columnas!=0 && ($columnas % 3) == 0)
+</tr> 
 @endif 
 
+<?php 
+if (($columnas % 15) ==0){
+?>
+<tr style="height: 145px;">
+    <td></td>
+    <td></td>
+    <td></td>
+</tr>
+
+
+<?php }?>
+
+@endfor                           
+
 @endforeach
-@if (($columnas % 3) != 0) </tr> @endif
+@endif 
 </table>
 
-@else
-<h1 style="text-align: center;">Por favor seleccione un producto</h1>
-@endif 
+
 
