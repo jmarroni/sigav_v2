@@ -30,6 +30,7 @@ class UsuarioController extends Controller
         $usuarios=  Usuario::join("sucursales","sucursales.id", "=", "usuarios.sucursal_id")
         ->leftjoin("roles","roles.id","=","usuarios.rol_id")
         ->select("usuarios.id", "usuarios.nombre","usuarios.apellido","usuarios.clave","usuarios.rol_id","usuarios.telefono","sucursales.nombre as nombre_sucursal","roles.nombre as nombre_rol")
+        ->orderBy('nombre')
         ->get();
         $roles=Rol::all();
         return view("usuarios.accion",compact("mensaje","sucursales","usuarios","roles"));

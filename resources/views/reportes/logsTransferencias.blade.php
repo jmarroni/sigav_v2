@@ -81,7 +81,7 @@
 <script type="text/javascript" src="/assets/js/core/buttons.html5.min1.2.4.js"></script>
 <script type="text/javascript" src="/assets/js/core/buttons.print.min1.2.4.js"></script>
 <script type="text/javascript">
-   $(document).ready(function(){
+    $(document).ready(function(){
         $('#tabla_compras').DataTable({
              "language": {
                 "url": "/assets/language/Spanish.json"

@@ -2,7 +2,7 @@
 define('SEMILLA','$%Reset20122017AnnaLuca#^');
 define('PRODUCTOS_LIBRE','SI');
 
-$conn = mysqli_connect("127.0.0.1", "jmarroni", "Afoo2te1", "mercado-artesanal");
+$conn = mysqli_connect("localhost", "c2101314_ma", "40zuzoGEse", "c2101314_ma");
 date_default_timezone_set('America/Argentina/Buenos_Aires');
 if (!$conn) {
     echo "Error: Unable to connect to MySQL." . PHP_EOL;

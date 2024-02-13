@@ -4,6 +4,8 @@
     var precio = 0;
     var devolucion = '';
     var total_ventas = 0;
+    //Array para guardar los productos que se van agregando a la factura para poder buscar si ya un producto ha sido agregado
+    var detalleProductos = new Array();
     jQuery("document").ready(function(){
 
         $("#nombre-cliente").keyup(function(e){
@@ -47,14 +49,19 @@
                     setTimeout(function(){
                         $("#tablaProductos").html("");
                         $("#total_ventas").html(0);
-
+                        total_ventas=0;
+                        $("#cantidad").html(0);
+                        $("#precio").html(0);
                         $("#iframe")[0].contentWindow.print();
                     }, 2000);
+                     total_ventas=0;
+                        $("#precio").html("0.00");
+                        $("#cantidad").val('1');
                 }else{
                     var error = '';
                     if (msg.error) error = msg.error;
                     else error = msg; 
-                    alert('Sucedio un error en la facturación, no se emitió factura, por favor comuníquese con el administrador o verifique el error que nos indica AFIP, : ' + msg.mensaje + '. Recargaremos la web .-');
+                    alert('Sucedió un error en la facturación, no se emitió factura, por favor comuníquese con el administrador o verifique el error que nos indica AFIP, : ' + msg.mensaje + '. Recargaremos la web .-');
                     document.location.reload();
                 } 
             });
@@ -122,6 +129,9 @@
                     setTimeout(function(){
                         $("#tablaProductos").html("");
                         $("#total_ventas").html(0);
+                        total_ventas=0;
+                        $("#precio").html("0.00");
+                        $("#cantidad").val('1');
                     },1000);
                 }  
             });
@@ -129,7 +139,26 @@
 
         
         jQuery('#anadir_venta').click(function(){
-            if($("#cantidad").val() != "") {
+            var cant=$("#cantidad").val()!=''?$("#cantidad").val():0;
+            var stock=$("#stockactual").val()!=''?$("#stockactual").val():0;
+            cant=parseInt(cant);
+            stock=parseInt(stock);
+            if((cant !=0 && cant<= stock) &&  ($("#producto_id").val()!="")) {
+              // alert('paso');
+              if (verificarAgregado($("#producto_id").val())==1)
+              {
+                 alert('Ya ha agregado este producto');
+                    $("#codigo-barras").val('');
+                    $("#nombre-producto").val('');
+                    //$("#producto_id").val('');
+                    $("#precio").val('1');
+                    $("#cantidad").val('1');
+                    $("#stockactual").val('');
+                    $("#codigo-barras").focus();
+
+             }
+             else
+             { 
                 $.ajax({
                     method: "POST",
                     url: "ventas_post.php",
@@ -146,14 +175,25 @@
                     $("#codigo-barras").val('');
                     $("#nombre-producto").val('');
                     $("#producto_id").val('');
-                    $("#precio").html("0.00");
+                    $("#precio").val('1');
                     $("#cantidad").val('1');
+                    $("#stockactual").val('');
                     $("#codigo-barras").focus();
                 });
-            } else {
-                alert('Verifica la cantidad ingresada es incorrecta');
-            }
-        });
+            } 
+        } else{
+        if(($("#producto_id").val()!="") && (cant>stock)) {
+           alert('No puede facturar una cantidad mayor al stock disponible');
+       }
+       
+    if ($("#producto_id").val()=="" || $("#cantidad").val() == ""  || $("#precio").val() == ""){
+        alert('Debe completar todos los datos del producto para agregarlo a la factura');
+    }
+    if ( $("#cantidad").val() == 0 || $("#precio").val() == 0){
+        alert('La cantidad y monto deben ser mayores a cero');
+    }
+}
+});
 
         jQuery("#cantidad").keyup(function(){
             if ($(this).val() > 0 && precio > 0)
@@ -176,14 +216,15 @@
             });
             },
             select: function( event, ui ) {
-               $("#codigo-barras").val(ui.item.codigo_barras);
-               $("#nombre-producto").val(ui.item.value);
-               $("#producto_id").val(ui.item.id);
-               precio = ui.item.precio;
-               if ($("#cantidad").val() > 0 && precio > 0)
-                $("#precio").val($("#cantidad").val() * precio);
-            else
-                $("#precio").val("0.00");
+             $("#codigo-barras").val(ui.item.codigo_barras);
+             $("#nombre-producto").val(ui.item.value);
+             $("#producto_id").val(ui.item.id);
+             $("#stockactual").val(ui.item.stockactual);
+             //precio = ui.item.precio;
+               //if ($("#cantidad").val() > 0 && precio > 0)
+                $("#precio").val(ui.item.precio);
+           // else
+               // $("#precio").val("0.00");
             
         }
     });
@@ -195,13 +236,14 @@
             });
             },
             select: function( event, ui ) {
-               $("#nombre-producto").val(ui.item.value);
-               $("#producto_id").val(ui.item.id);
-               precio = ui.item.precio;
-               if ($("#cantidad").val() > 0 && precio > 0)
-                $("#precio").val($("#cantidad").val() * precio);
-            else
-                $("#precio").val("0.00");
+             $("#nombre-producto").val(ui.item.value);
+             $("#producto_id").val(ui.item.id);
+             $("#stockactual").val(ui.item.stockactual);
+            //precio = ui.item.precio;
+               //if ($("#cantidad").val() > 0 && precio > 0)
+                $("#precio").val(ui.item.precio);
+            //else
+              //  $("#precio").val("0.00");
             
         }
     });
@@ -290,34 +332,35 @@
     });
 
     function addRow(jsonData){
-       var rowAdd =  '<tr id="' + jsonData.ventas_id + '">' +
-       '<td class="text-center">' +
-       '   <div style="width: 180px;">' +
-       '   <img class="img-responsive" src="' + jsonData.imagen + '" alt="">' +
-       '   </div>' +
-       '   </td>' +
-       '   <td>' +
-       '   <h4>' + jsonData.nombre + '</h4>' +
-       '<p class="remove-margin-b">Producto Vendido a las ' + jsonData.fecha + '</p>' +
-       '<a class="font-w600" href="javascript:void(0)">Por ' + jsonData.usuario + '</a>' +
-       '    </td>' +
-       '    <td>' +
-       '    <p class="remove-margin-b">Precio: <span class="text-gray-dark">$ ' + jsonData.precio_unidad + '</span></p>' +
-       '    <p>Quedan en Stock: <span class="text-gray-dark">' + jsonData.stock_sucursal + '</span></p>' +
-       '    <button onclick="eliminar(' + jsonData.ventas_id + ',' + jQuery("#cantidad").val() + ',' + jsonData.id + ')">Eliminar</button>' +
-       '<button class="btn btn-xs btn-default" type="button">' +
-       '    </td>' +
-       '    <td class="text-center">' +
-       '    <span class="h1 font-w700 text-success">$ ' + (jsonData.precio_unidad * jQuery("#cantidad").val()) + '</span>' +
-       '</td>' +
-       '</tr>';
-       $("#tablaProductos").append(rowAdd);
+     var rowAdd =  '<tr id="' + jsonData.id + '">' +
+     '<td class="text-center">' +
+     '   <div style="width: 180px;">' +
+     '   <img class="img-responsive" src="' + jsonData.imagen + '" alt="">' +
+     '   </div>' +
+     '   </td>' +
+     '   <td>' +
+     '   <h4>' + jsonData.nombre + '</h4>' +
+     '<p class="remove-margin-b">Producto Vendido a las ' + jsonData.fecha + '</p>' +
+     '<a class="font-w600" href="javascript:void(0)">Por ' + jsonData.usuario + '</a>' +
+     '    </td>' +
+     '    <td>' +
+     '    <p class="remove-margin-b">Precio: <span class="text-gray-dark">$ ' + jsonData.precio_unidad + '</span></p>' +
+     '    <p>Quedan en Stock: <span class="text-gray-dark">' + jsonData.stock_sucursal + '</span></p>' +
+     '    <button onclick="eliminar(' + jsonData.ventas_id + ',' + jQuery("#cantidad").val() + ',' + jsonData.id + ','+jsonData.precio_unidad+')">Eliminar</button>' +
+     '<button class="btn btn-xs btn-default" type="button">' +
+     '    </td>' +
+     '    <td class="text-center">' +
+     '    <span class="h1 font-w700 text-success">$ ' + (jsonData.precio_unidad * jQuery("#cantidad").val()) + '</span>' +
+     '</td>' +
+     '</tr>';
+     $("#tablaProductos").append(rowAdd);
         //Actualizo el total
         total_ventas = total_ventas + (jsonData.precio_unidad * jQuery("#cantidad").val());
         $("#total_ventas").html(total_ventas);
+        detalleProductos.push(new Array($("#producto_id").val(),$("#cantidad").val(),$("#precio").val()));
     }
 
-    function eliminar(ventas,cantidad,producto_id){
+    function eliminar(ventas,cantidad,producto_id,precio){
         if (confirm("Seguro de eliminar el producto? Preguntate porque no lo vendiste primero ;)")) {
             $.ajax({
                 method: "POST",
@@ -325,10 +368,16 @@
                 data: {id: venta_id, cantidad: cantidad, producto_id: producto_id}
             })
             .done(function (msg) {
-                $("#" + ventas).hide("slow");
+                $("#" + producto_id).hide("slow");
+                total_ventas = total_ventas - (parseFloat(precio)*parseFloat(cantidad));
+                $("#total_ventas").html(total_ventas);
+                eliminarProducto(producto_id);
 
             }).fail(function() { 
-                $("#" + ventas).hide("slow");
+                $("#" + producto_id).hide("slow");
+                total_ventas = total_ventas - (parseFloat(precio)*parseFloat(cantidad));
+                $("#total_ventas").html(total_ventas);
+                eliminarProducto(producto_id);
             });
         }
     }
@@ -361,11 +410,33 @@
 
     $("#descontar_stock").change(function(){
         if ($(this).prop("checked")){
-           document.cookie = "descontarstock=1";
-       } 
-       else
-       {
-          document.cookie = "descontarstock=0";
-       }
+         document.cookie = "descontarstock=1";
+     } 
+     else
+     {
+      document.cookie = "descontarstock=0";
+  }
 
-  });
+});
+
+    function verificarAgregado(id)
+    {
+        var existe=0;
+        for (let index = 0; index < detalleProductos.length; index++) 
+        {
+            if (detalleProductos[index][0] == id){
+             existe=1;
+         }
+     }
+     return existe;
+ }
+ function eliminarProducto(id)
+ {
+    var existe=0;
+    for (let index = 0; index < detalleProductos.length; index++) 
+    {
+        if (detalleProductos[index][0] == id){
+         detalleProductos.splice(index,1);
+         }
+    }
+}

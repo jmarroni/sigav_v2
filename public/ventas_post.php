@@ -63,11 +63,11 @@ $datos = '{"data":"no data"}';
 if ($resultado->num_rows > 0) {
     // output data of each row
     while($row = $resultado->fetch_assoc()) {
-        $row["precio_unidad"] = ($_COOKIE["lista_precio"] == 1)?$row["precio_unidad"]:$row["precio_mayorista"];
+        $row["precio_unidad"] = $_POST["precio"];//($_COOKIE["lista_precio"] == 1)?$row["precio_unidad"]:$row["precio_mayorista"];
         $costo = $row["costo"];
         $precio = $row["precio_unidad"];
         $row["stock_sucursal"] =  $row["stock_sucursal"] - $_POST["cantidad"];
-        $row["imagen"] = (isset($row["imagen"]))?$row["imagen"]:"http://mercado-artesanal.com.ar/assets/img/photos/no-image-featured-image.png";
+        $row["imagen"] = (isset($row["imagen"]))?$row["imagen"]:"http://sistema.mercado-artesanal.com.ar/assets/img/photos/no-image-featured-image.png";
         $datos = $row;
     }
     

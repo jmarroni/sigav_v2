@@ -16,10 +16,7 @@ jQuery("document").ready(function() {
        }
        else
        { 
-        $urlConsulta="/cliente.consultarClientexCuit/"+$("#cuit").val();
-        $.get($urlConsulta, function(data, status){  
-                if(data== 0){
-                   $(".form-horizontal").submit();
+        $(".form-horizontal").submit();
         var datos = $(".form-horizontal").serialize();
           var url = "/cliente.save/" + datos;
           console.log(datos);
@@ -41,19 +38,7 @@ jQuery("document").ready(function() {
                     });
                 }
             });
-                        
-                }else{
-                    swal({
-                        "title":"Error",
-                        'icon': 'error',
-                        "text":"Ya existe un cliente con ese CUIT",
-                        'confirmButtonText': 'Listo'
-                    });
-                }
-            });
-    }
-        
-       
+       }
     });
 });
 

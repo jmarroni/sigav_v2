@@ -56,7 +56,11 @@
                                         <td><?php if ($producto->sucursal_id ==0) echo 'Todas'; else echo $producto->sucursal; ?></td>
                                         <td>{{$producto->usuario}}</td>
                                         <td>{{$producto->productos_id}}</td>
+                                        @if ($producto->codigo_barras!=null)
                                         <td>{{$producto->codigo_barras}}</td>
+                                        @else
+                                        <td>{{$producto->barra}}</td>
+                                        @endif 
                                         <td>{{$producto->nombre}}</td>
                                         <td>{{$producto->stock}}</td>
                                         <td>{{$producto->stock_anterior}}</td>

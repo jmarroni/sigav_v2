@@ -158,14 +158,14 @@ class TransferenciaController extends Controller
         ->where("transferencias.sucursal_origen_id","=",$sucursal_activa,"OR")
         ->ORwhere("transferencias.sucursal_destino_id","=", $sucursal_activa)
         ->addselect("transferencias.*","e.nombre AS nombre_estado","e.id AS id_estado","so.nombre AS sucursal_origen_nombre","sd.nombre AS sucursal_destino_nombre","transferencias.fecha","transferencias.usuario")
-        ->OrderBy("transferencias.fecha","desc")
+        ->OrderBy("transferencias.fecha","desc")->limit(200)
         ->get();
         $productos=RelacionTransferenciaProductos::join("productos as p","p.id","=","relacion_transferencias_productos.producto_id")
         ->select("relacion_transferencias_productos.*","p.*")
         ->OrderBy("p.nombre","asc")
         ->get();
         $imagenes=Imagen_producto::all();
-        $estados=EstadoTransferencia::all();
+        $estados=EstadoTransferencia::where("estado_transferencia.id","<>","4")->get();
         return view("transferencias.transferenciasRealizadas",compact("sucursal_activa","transferenciasRealizadas","productos","imagenes","estados"));
     }
 
@@ -263,7 +263,7 @@ public function changeStatus(Request $request)
                             $stockdestino->updated_at      = date("Y-m-d H:i:s");           
                             $stockdestino->save();
 
-                            $stock_logsorigen = new Stock_log();
+                            $stock_logsDestino = new Stock_log();
                             $stock_logsDestino->productos_id   = $producto->id;
                             $stock_logsDestino->sucursal_id    = $producto->sucursal_destino_id;
                             $stock_logsDestino->stock_anterior = 0;

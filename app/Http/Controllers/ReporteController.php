@@ -40,7 +40,7 @@ class ReporteController extends Controller
       //Se valida si se seleccionó un rango de fecha
       if(isset($request->reporte_desde) && $request->reporte_desde!="" && isset($request->reporte_hasta) && $request->reporte_hasta!="")
       {
-        $facturas=Factura::join("sucursales","sucursales.id","=","factura.sucursal_id")
+        $facturas=Factura::leftjoin("sucursales","sucursales.id","=","factura.sucursal_id")
         ->where("factura.cae","<>","")
         ->where("factura.fechacae","<>","")
         ->whereBetween('factura.fecha', [$request->reporte_desde, $request->reporte_hasta])
@@ -52,7 +52,7 @@ class ReporteController extends Controller
       else
       {   
         //Sino se muestran todas las facturas creadas
-       $facturas=Factura::join("sucursales","sucursales.id","=","factura.sucursal_id")
+       $facturas=Factura::leftjoin("sucursales","sucursales.id","=","factura.sucursal_id")
        ->where("factura.cae","<>","")
        ->where("factura.fechacae","<>","")
        ->select("factura.*","sucursales.nombre as nombre_sucursal")
@@ -65,7 +65,7 @@ class ReporteController extends Controller
    {//Se valida si se seleccionó un rango de fecha
     if(isset($request->reporte_desde) && $request->reporte_desde!="" && isset($request->reporte_hasta) && $request->reporte_hasta!="")
     {
-      $facturas=Factura::join("sucursales","sucursales.id","=","factura.sucursal_id")
+      $facturas=Factura::leftjoin("sucursales","sucursales.id","=","factura.sucursal_id")
       ->where("factura.cae","<>","")
       ->where("factura.fechacae","<>","")
       ->whereBetween('factura.fecha', [$request->reporte_desde, $request->reporte_hasta])
@@ -76,7 +76,7 @@ class ReporteController extends Controller
     }
     else
     {//Sino se muestran todas las facturas creadas en la sucursal a la que corresponde ese usuario
-      $facturas=Factura::join("sucursales","sucursales.id","=","factura.sucursal_id")
+      $facturas=Factura::leftjoin("sucursales","sucursales.id","=","factura.sucursal_id")
       ->where("factura.cae","<>","")
       ->where("factura.fechacae","<>","")
       ->where("sucursales.id","=",Sucursales::getSucursal($_COOKIE["sucursal"]))
@@ -84,6 +84,12 @@ class ReporteController extends Controller
       ->OrderBy("fecha","desc")
       ->get();
     }
+  }
+
+  foreach($facturas as $factura)
+  {
+    if ($factura->nombre_sucursal==NULL)
+      $factura->nombre_sucursal="Eliminada";
   }
 
   return view("reportes.factura",compact("facturas","reporte_desde","reporte_hasta"));
@@ -175,7 +181,7 @@ return redirect('cierreCajaReporte/mensaje/'.base64_encode($mensaje));
 public function logProductos(request $request)
 {
   $productos=Stock_log::leftjoin("sucursales","sucursales.id","=","stock_logs.sucursal_id")
-  ->join("productos","productos.id","=","stock_logs.productos_id")
+  ->leftjoin("productos","productos.id","=","stock_logs.productos_id")
   ->select("stock_logs.*","sucursales.nombre as sucursal","productos.nombre","productos.codigo_barras")
   ->OrderBy("stock_logs.id","desc")
   ->get();
@@ -194,7 +200,7 @@ public function logTransferencias(request $request)
 {
   $transferencias=Transferencia_log::leftjoin("transferencias","transferencias.id","=","transferencias_logs.transferencia_id")
   ->leftjoin("sucursales as so","so.id","=","transferencias_logs.sucursal_origen_id")
-  ->leftjoin("sucursales as sd","sd.id","=","transferencias_logs.sucursal_origen_id")
+  ->leftjoin("sucursales as sd","sd.id","=","transferencias_logs.sucursal_destino_id")
   ->select("transferencias_logs.*","so.nombre as origen","sd.nombre as destino")
   ->get();
   return view("reportes.logsTransferencias",compact("transferencias"));
@@ -381,7 +387,7 @@ public function reporteStock(request $request)
   public function logProductosCostosPrecios(request $request)
 {
   $productos=LogsCostosPrecios::leftjoin("sucursales","sucursales.id","=","logs_costos_precios.sucursal_id")
-  ->join("productos","productos.id","=","logs_costos_precios.productos_id")
+  ->leftjoin("productos","productos.id","=","logs_costos_precios.productos_id")
   ->select("logs_costos_precios.*","sucursales.nombre as sucursal","productos.nombre","productos.codigo_barras")
   ->OrderBy("logs_costos_precios.created_at","desc")
   ->get();

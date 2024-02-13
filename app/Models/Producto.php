@@ -3,13 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\ProductosStock;
-use App\Traits\Usuarios;
 
 class Producto extends Model
 {
-	use ProductosStock;
-	use Usuarios;
+
 	
 
 	protected $fillable = ['id', 'codigo_barras', 'nombre', 'precio_unidad', 'costo', 'stock', 'stock_minimo', 

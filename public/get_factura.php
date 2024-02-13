@@ -48,7 +48,7 @@ if ($resultado->num_rows > 0) {
 } else {
     echo "0 results";
 }
-echo json_encode($datos);
+echo json_encode($datos,true);
 $conn->close();
 exit();
 ?>

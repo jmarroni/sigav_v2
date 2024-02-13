@@ -29,7 +29,7 @@ class RolController extends Controller
     {
         $mensaje = $request->mensaje;
         $sucursal = (isset($request->sucursal)?$request->sucursal:Sucursales::getSucursal());
-        $roles=Rol::all();
+        $roles=Rol::orderBy('nombre')->get();
         $secciones=Seccion::all();
         $seccion_id='';
         $relacionesSeccionRol=RelacionSeccionRol::join("seccion","seccion.id", "=", "relacion_seccion_rol.secciones_id")

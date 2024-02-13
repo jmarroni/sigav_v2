@@ -37,7 +37,7 @@
                     <select class="form-control" id="proveedor" name="proveedor">
                         <option value="0">Seleccione un proveedor</option>
                         @foreach($proveedores as $provedor)
-                        <option value="{{$provedor->id}}">{{$provedor->nombre}}</option>
+                        <option value="{{$provedor->id}}">{{$provedor->nombre}} {{$provedor->apellido}}</option>
                         @endforeach
                     </select>
                 </div>
@@ -120,7 +120,7 @@
     </div>
 </div>
 <!-- Products -->
-<div class="block block-rounded">
+<div class="block block-rounded" style="overflow-x: scroll; ">
     <div class="block-header">
         <h3 class="block-title">Productos</h3>
         <div class="col-xs-6" style="padding-left: 0px;padding-top: 20px;">
@@ -137,12 +137,12 @@
         <table id="tabla_productos">
             <thead>
                 <tr>
-                    <th>Imagen</th>
+                    <th>Codigo</th>
                     <th>Producto</th>
                     <th>Proveedor</th>
                     <th>Categor&iacute;a</th>
                     <th>Stock Actual</th>
-                    <th>Stock M&iacute;nimo</th>
+                <!--     <th>Stock M&iacute;nimo</th> -->
                     <th>Precio al P&uacute;blico</th>
                     <th>Precio Reposici&oacute;n</th>
                     <th>Costo</th>
@@ -160,10 +160,10 @@
                 @endforeach
 
                 <tr id="<?php echo $producto->id; ?>">
-                    <td style="text-align:center">
+                    <!--<td style="text-align:center">
                         <div class="block">
                             <div class="block-content">
-                                <!-- Slider with dots -->
+                                <!-- Slider with dots 
                                 <div class="js-slider" data-slider-dots="true" style="width:150px;">
                                     @for($i = 0;$i < 6;$i ++)
 
@@ -175,10 +175,11 @@
                                     @endif
                                     @endfor
                                 </div>
-                                <!-- END Slider with dots -->
+                                <!-- END Slider with dots 
                             </div>
                         </div>
-                    </td>
+                    </td>-->
+                    <td>{{$producto->codigo_barras}}</td>
                     <td>{{$producto->nombre}}</td>
                     @if ($producto->nombreProveedor!=null && $producto->nombreProveedor!="")
                     <td>{{$producto->nombreProveedor}} {{$producto->apellidoProveedor}}</td>
@@ -195,11 +196,11 @@
                     @else
                     <td style="text-align:center"><input style="width:50px" type="text" value="0" name="stock_{{$producto->id}}" class="numbers" id="stock_{{$producto->id}}" /></td>
                     @endif
-                    @if (isset($producto->stock_->stock_minimo))
+                 <!--    @if (isset($producto->stock_->stock_minimo))
                     <td style="text-align:center"><input style="width:50px" type="text" value="{{$producto->stock_->stock_minimo}}" name="stock_minimo_{{$producto->id}}" id="stock_minimo_{{$producto->id}}" /></td>
                     @else
                     <td style="text-align:center"><input style="width:50px" type="text" value="0" name="stock_minimo_{{$producto->id}}" class="numbers" id="stock_minimo_{{$producto->id}}" /></td>
-                    @endif
+                    @endif -->
                     <td>{{$producto->precio_unidad}}</td>
                     <td>{{$producto->precio_reposicion}}</td>
                     <td>{{$producto->costo}}</td>
@@ -237,7 +238,7 @@
 <!-- END Products -->
 @endsection
 @section("scripts")
-<script src="/assets/js/pages/carga.js?v=1.08"></script>
+<script src="/assets/js/pages/carga.js?v=1.10"></script>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" />
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css" />

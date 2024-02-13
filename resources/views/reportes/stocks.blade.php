@@ -61,16 +61,17 @@
                                     <td>Barra</td>
                                     <td>Nombre Producto</td>
                                     <td>Precio</td>
-                                    <td>Costo</td>
-                                    <td>Proveedor</td>
+                                    <td>Subtotal</td>
                                     <td>Stock </td>
-                                    <td>Stock Mínimo</td>                              
+                                    <td>Proveedor</td>
+                                                                
                                 </tr>
                             </thead>
                             <tbody id="tbody">
                                   @if (count($productos)>0)
-                                <?php  $i = 1; ?>
+                                <?php  $i = 1; $subtotal = 0; ?>
                                 @foreach($productos as $producto)
+                                <?php $subtotal += $producto->precio_unidad *  $producto->stockactual; ?>
                                 <tr style="<?php echo (($i % 2)== 0)?"background-color: #fff !important;":"background-color: #f9f9f9 !important;"; ?>">
                                     <td><?php echo $i ?></td>
                                     <!-- <td><?php echo $producto->id ?></td> -->
@@ -78,10 +79,10 @@
                                     <td>{{$producto->codigo_barras}}</td>
                                     <td>{{$producto->nombre}}</td>
                                     <td>{{$producto->precio_unidad}}</td>
-                                    <td>{{$producto->costo}}</td>
-                                    <td>{{$producto->nombreProveedor}} {{$producto->apellidoProveedor}}</td>
+                                    <td>{{$subtotal}}</td>
                                     <td>{{$producto->stockactual}}</td>
-                                    <td>{{$producto->stockminimoActual}}</td>
+                                    <td>{{$producto->nombreProveedor}} {{$producto->apellidoProveedor}}</td>
+                                    
                                 </tr>
                                 <?php $i++; ?>
                                 @endforeach
