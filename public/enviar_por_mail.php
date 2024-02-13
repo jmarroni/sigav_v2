@@ -48,7 +48,11 @@ try {
     $mail->setFrom('facturacion@sigav.com.ar', $perfil["nombre"]);
     $mail->addAddress($_GET["mail"], 'Cliente');     // Add a recipient
     $mail->addReplyTo('facturacion@sigav.com.ar', 'Sigav');
-
+        $mail->IsSMTP();
+        $mail->Host = "c2101314.ferozo.com";
+        $mail->SMTPAuth = true;
+        $mail->Username = 'facturacion@mercado-artesanal.com.ar';
+        $mail->Password = 'Afoo2te1';
 
     // Content
     $mail->isHTML(true);                                  // Set email format to HTML

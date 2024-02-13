@@ -37,7 +37,7 @@ class ProveedorController extends Controller
     public function index(Request $request)
     {
       $mensaje = $request->mensaje;
-      $proveedores = Proveedor::all();
+      $proveedores = Proveedor::orderBy('nombre')->get();
       $sucursales = Sucursales::all();
       $sucursal = (isset($request->sucursal)?$request->sucursal:Sucursales::getSucursal());
       $productos = Producto::with(['stock_' => 
@@ -46,7 +46,7 @@ class ProveedorController extends Controller
           $query->where("sucursal_id",$sucursal);
         }])->get();
       $total=count($productos);
-      $categorias=Categoria::all();
+      $categorias=Categoria::orderBy('nombre')->get();
       $RCategoriasProveedor = Categoria::join("relacion_categoria_proveedor","relacion_categoria_proveedor.categoria_id", "=", "categorias.id")
       ->select("categorias.nombre", "categorias.habilitada","categorias.id","relacion_categoria_proveedor.proveedor_id")
       ->get();

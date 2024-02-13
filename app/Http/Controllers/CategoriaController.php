@@ -36,7 +36,7 @@ class CategoriaController extends Controller
                 $query->where("sucursal_id",$sucursal);
             }])->get();
         $total=count($productos);
-        $categorias=Categoria::all();
+        $categorias=Categoria::orderBy('nombre')->get();
 
         return view("categorias.accion",compact("categorias","total","mensaje","productos"));
     }

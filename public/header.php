@@ -91,6 +91,9 @@ function getMes($numero){
     <!-- You can include a specific file from css/themes/ folder to alter the default color theme of the template. eg: -->
     <!-- <link rel="stylesheet" id="css-theme" href="/assets/css/themes/flat.min.css"> -->
     <!-- END Stylesheets -->
+     <style>
+        .dropdown-backdrop{visibility: hidden;}
+     </style>
 </head>
 <body style="font-size: 12px !important;">
 <!-- Page Container -->
@@ -371,13 +374,14 @@ function getMes($numero){
                         </ul>
                     </li>
                     <?php 
-                    }
-                    if (getRol() > 1) { ?>
+                    }?>
+                  
                         <li class="dropdown <?php echo (isset($menu["actualizaciones"]))?$menu["actualizaciones"]:""; ?>"> 
                                 <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                     <i class="fa fa-product-hunt push-5-r"></i>Carga / Impresiones<span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
+                                  <?php if (getRol() > 1) { ?>
                                     <li>
                                         <a href="/carga" >Productos</a>
                                     </li>
@@ -387,12 +391,13 @@ function getMes($numero){
                                     <li>
                                         <a href="/categoria">Categor&iacute;as</a>
                                     </li>
+                                       <?php } ?>
                                     <li>
                                         <a href="/etiqueta">Impresi&oacute;n de etiquetas</a>
                                     </li>
                                 </ul>
                             </li>
-                    <?php } ?>
+                 
                     <li class="dropdown <?php echo (isset($menu["stock_sucursales"]))?$menu["stock_sucursales"]:""; ?>">
                             <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa fa-address-card-o push-5-r"></i>Sucursales<span class="caret"></span>

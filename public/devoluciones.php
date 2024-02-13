@@ -105,7 +105,7 @@ $conn->query($sql_update);
                                     <?php 
                                         $sql_facturas = "SELECT f.*,s.nombre as sucursal
                                                         FROM `factura` f inner join sucursales s on f.sucursal_id = s.id
-                                                        WHERE cae <> '' AND fechacae <> '' ORDER BY fecha DESC";
+                                                        WHERE cae <> '' AND fechacae <> '' ORDER BY sucursal, fecha DESC";
                                         $resultado = $conn->query($sql_facturas);
                                         if ($resultado->num_rows > 0) {
                                             // output data of each row
@@ -240,5 +240,5 @@ $conn->query($sql_update);
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="/assets/js/pages/devoluciones.js?v=1.04"></script>
+    <script src="/assets/js/pages/devoluciones.js?v=1.05"></script>
 <?php require ("footer.php"); ?>

@@ -72,7 +72,7 @@ jQuery("document").ready(function() {
         }else{
             var identificador = $(this).attr("id").split("_")[1];
             var stock           = $("#stock_" + identificador).val();
-            var stock_minimo    = $("#stock_minimo_" + identificador).val();
+            var stock_minimo    = 1;
             var sucursal        = $("#sucursal").val();
             var url = "/producto.actualizar.stock/" + identificador + "/" + stock + "/" + stock_minimo + "/" + sucursal;
             $.get(url, function(data, status){  
@@ -116,7 +116,7 @@ jQuery("document").ready(function() {
             function(isConfirm){
                 if (isConfirm){
             var stock           = $("#stock_" + identificador).val();
-            var stock_minimo    = $("#stock_minimo_" + identificador).val();
+            var stock_minimo    = 1;
             var sucursal        = $("#sucursal").val();
             var url = "/producto.eliminar.stock/" + identificador + "/" + stock + "/" + stock_minimo + "/" + sucursal;
             $.get(url, function(data, status){  
