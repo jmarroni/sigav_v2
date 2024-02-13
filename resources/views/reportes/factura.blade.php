@@ -85,7 +85,7 @@ if (getRol()!=1 && getRol()!=4 && getRol()!=5) {
                                     <td>{{$factura->nombre_sucursal}}</td>
                                     <td>{{$factura->cae}}</td>
                                     <td>{{$factura->fechacae}}</td>
-                                    <td><a id="reenvio_pdf_{{$factura->numero}}; ?>" target="_blank" href="{{$factura->pdf}}">LINK</a></td>
+                                    <td><a id="reenvio_pdf_{{$factura->numero}}" target="_blank" href="{{$factura->pdf}}">LINK</a></td>
                                     <td><a id="reenvio_mail_{{$factura->numero}}" href="#">REENVIAR MAIL</a></td>
                                 </tr>
                                 @endforeach
@@ -172,7 +172,6 @@ if (getRol()!=1 && getRol()!=4 && getRol()!=5) {
         var id_seleccionado = ''
         $("*[id^=reenvio_mail_]").click(function(e){
             e.preventDefault();
-            console.log();
             $("#reenvio_mail-modal").modal("show");
             id_seleccionado = $(this).attr('id').split("_")[2];
         });

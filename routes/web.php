@@ -15,6 +15,11 @@ Route::get('/', function () {
     return redirect ("/login.php");
 });
 
+//para actualizar el enlace simbólico a la carpeta storage
+Route::get('/updateStorage', function(){
+  Artisan::call('storage:link');
+});
+
 Route::get('/loginejemplo', function(){
 	return view('login/login');
 });
@@ -95,7 +100,6 @@ Route::get('cliente.delete/{id}','ClienteController@delete' );
 Route::get('cliente.getCliente/{id}', 'ClienteController@getCliente');
 Route::get('pedido', 'PedidoController@index');
 Route::post('pedido.save', 'PedidoController@save');
-Route::get('cliente.consultarClientexCuit/{cuit}', 'ClienteController@consultarClientexCuit');
 
 
 Route::get('tipo/{type}', 'SweetController@notification');

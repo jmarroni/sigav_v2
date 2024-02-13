@@ -17,10 +17,10 @@ use Spipu\Html2Pdf\Html2Pdf;
     
       ?>                   
     @for ($i=0; $i < $cantidad; $i++)  
-    @if ($columnas == 0 || $columnas % 3 == 0) <tr> @endif 
+    @if ($columnas == 0 || $columnas % 4 == 0) <tr> @endif 
      <?php $columnas=$columnas+1;
      ?>  
-     <td style="border: 1px solid #CCC; width:9cm; height: 4.5cm">
+      <td style="border: 1px solid #CCC; width:6.2cm; height: 5.3cm">
         <div style="margin-top:5px;">
             <p style="text-align: center;font-family:'Montserrat';font-size:10px;font-weight: bold;">{{$producto->nombre}}</p>
             <p style="text-align: center;font-family:'Montserrat';font-size:10px;">{{$producto->nombreproveedor}} &nbsp;{{$producto->apellido}}</p>
@@ -35,17 +35,17 @@ use Spipu\Html2Pdf\Html2Pdf;
   <span> {{$producto->provincia}}.</span>
 @endif         
             </p>
-            <div style="margin-left: 40px"><img   alt="testing" src="/librarys/barcode.php?codetype=Code39&text=<?php echo $producto->codigo_barras;?>&print=true&size=32" /></div>
+            <div style="margin-left: 14px;"><img style="width:5.5cm"  alt="testing" src="/librarys/barcode.php?codetype=Code128&text=<?php echo $producto->codigo_barras;?>&print=true&size=32" /></div>
         </div>
     </td> 
-@if ($columnas!=0 && ($columnas % 3) == 0)
+@if ($columnas!=0 && ($columnas % 4) == 0)
 </tr> 
 @endif 
 
 <?php 
-if (($columnas % 15) ==0){
+if (($columnas % 12) ==0){
 ?>
-<tr style="height: 145px;">
+<tr style="height: 100px;">
     <td></td>
     <td></td>
     <td></td>

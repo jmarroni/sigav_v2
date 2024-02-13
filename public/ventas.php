@@ -80,7 +80,7 @@ $conn->query($sql_update);
                     <div class="content">
                         <div class="block block-transparent block-themed text-center">
                             <div class="block-content">
-                                <h1 class="h1 font-w700 text-white animated fadeInDown push-5">Area Ventas</h1>
+                                <h1 class="h1 font-w700 text-white animated fadeInDown push-5">Área Ventas</h1>
                                 <h2 class="h4 font-w400 text-white-op animated fadeInUp">Se vendieron <?php echo $cantidad_de_ventas; ?> productos hoy</h2>
                             </div>
                         </div>
@@ -140,21 +140,25 @@ $conn->query($sql_update);
                     <form class="form-horizontal" action="bd_dashboard.html" method="post" onsubmit="return false;">
                         <div class="form-group">
                             <div class="col-xs-4">
-                                <label for="bd-qsettings-name">Codigo de Barras</label>
+                                <label for="bd-qsettings-name">Código de Barras</label>
                                 <input class="form-control" type="text" id="codigo-barras" name="codigo-barras" placeholder="Lea o ingrese el codigo de barras" value="">
                             </div>
-                            <div class="col-xs-4">
+                            <div class="col-xs-3">
                                 <label for="bd-qsettings-name">Nombre</label>
-                                <input class="form-control" type="text" id="nombre-producto" name="nombre-producto" placeholder="Ingrese parte del nombre" value="">
+                                <input class="form-control" type="text" id="nombre-producto" name="nombre-producto" placeholder="Producto 1" value="">
                                 <input class="form-control" type="hidden" id="producto_id" name="producto_id" placeholder="" value="">
                             </div>
                             <div class="col-xs-1">
-                                <label for="bd-qsettings-name">Cantidad</label>
-                                <input class="form-control" type="text" id="cantidad" name="cantidad" placeholder="1,2,3..." value="1">
+                                <label for="bd-qsettings-name">Stock</label>
+                                <input class="form-control" type="text" id="stockactual" name="stockactual" disabled="" value="">
+                            </div>
+                            <div class="col-xs-1">
+                                <label for="bd-qsettings-name">Cant</label>
+                                <input class="form-control numbers" type="text" id="cantidad" name="cantidad" placeholder="1,2,3..." value="1">
                             </div>
                             <div class="col-xs-1">
                                 <label>Monto</label>
-                                <input class="form-control" type="text" id="precio" name="precio" placeholder="utilizar el . como decimal" value="1">
+                                <input class="form-control numbers" type="text" id="precio" name="precio" placeholder="utilizar el . como decimal" value="1">
                             </div>
                             <div class="col-xs-2">
                                 <button class="btn btn-sm btn-minw btn-rounded btn-primary" type="button" id="anadir_venta">
@@ -178,7 +182,7 @@ $conn->query($sql_update);
                             </tbody>
                         </table>
                     </div>
-                    <div class="col-xs-4">
+                    <div class="col-xs-6">
                     <h3 class="block-title">Forma de Pago</h3>
                         <label class="radio-inline" for="example-inline-efectivo">
                             <input type="radio" name="example-inline-pago"  id="efectivo" checked='true' value="1"> Efectivo
@@ -193,7 +197,7 @@ $conn->query($sql_update);
                             <input type="radio" name="example-inline-pago" id="transferencia" value="4"> Transferencia
                         </label>
                     </div>
-                    <div class="col-xs-4">
+                    <div class="col-xs-6">
                         <h3 class="block-title">IVA</h3>
                         <label class="radio-inline" for="example-inline-efectivo">
                             <input type="radio" name="example-inline-iva"  id="resp_i"  value="1"> Resp. Inscripto
@@ -208,15 +212,15 @@ $conn->query($sql_update);
                             <input type="radio" name="example-inline-iva" checked='true' id="final" value="4"> Cons. Final
                         </label>
                     </div>
-                    <div class="col-xs-2">
+                    <div class="col-xs-2" style="display:none">
                     <?php $emitir = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/emitir"); ?>
                         <label class="css-input switch switch-success">
-                            <input type="checkbox" id="emision_online" <?php echo ($emitir == 1)?"checked=''":""; ?> ><span></span> Emitir Factura
+                            <input type="checkbox" id="emision_online" checked><span></span> Emitir Factura
                         </label>
                     </div>
-                       <div class="col-xs-2">
+                       <div class="col-xs-2" style="display:none">
                         <label class="css-input switch switch-success">
-                            <input type="checkbox" id="descontar_stock" <?php echo ($_COOKIE["descontarstock"]== 1)?"checked=''":""; ?> ><span></span> Descontar stock
+                            <input type="checkbox" id="descontar_stock" checked><span></span> Descontar stock
                         </label>
                     </div>
                     <?php
@@ -278,12 +282,12 @@ $conn->query($sql_update);
                     }
                     $emitir = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/emitir"); ?>
                     
-                        <button class="btn btn-sm btn-minw btn-rounded btn-primary" type="button" id="concretar_venta" style="<?php if (intval($emitir) != 1) echo "display:none;"; ?>margin-bottom: 20px;margin-top: 20px;width: 30%;">
+                        <button class="btn btn-sm btn-minw btn-rounded btn-primary" type="button" id="concretar_venta" style="margin-bottom: 20px;margin-top: 20px;width: 30%;">
                             <i class="fa fa-check push-5-r"></i>Concretar Venta y facturar
                         </button>
-                        <div id="espere_venta_activa" style="display:none;" ><i>(En proceso de emision, por favor aguarde unos segundos)</i></div>
-                        <div id="emitir_online" style="<?php if (intval($emitir) != 1) echo "display:none;"; ?>"><i>(Se encuentra habilitada la emision online de Factura Electronica)</i></div>
-                        <button class="btn btn-sm btn-minw btn-rounded btn-primary" type="button" id="presupuesto" name="presupuesto" style="<?php if (intval($emitir) == 1) echo "display:none;"; ?>margin-top: 20px;margin-bottom: 20px;width: 30%;">
+                        <div id="espere_venta_activa" style="display:none;" ><i>(En proceso de emisión, por favor aguarde unos segundos)</i></div>
+                        <div id="emitir_online"><i>(Se encuentra habilitada la emisión online de Factura Electrónica)</i></div>
+                        <button class="btn btn-sm btn-minw btn-rounded btn-primary" type="button" id="presupuesto" name="presupuesto" style="display:none;margin-top: 20px;margin-bottom: 20px;width: 30%;">
                             <i class="fa fa-check push-5-r"></i>Concretar Venta
                         </button>                    
                 </div>

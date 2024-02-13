@@ -194,6 +194,9 @@
                         @if ($transferencia->sucursal_destino_id == $sucursal_activa)
 
                         <select name="estado" id="estado{{$transferencia->id}}">
+                             @if ($transferencia->estado_id==4)
+                            <option value="4" selected > Aceptada</option>
+                            @endif
                             @if(count($estados)>0)
                             @foreach ($estados as $estado)
                             @if ($transferencia->estado_id==$estado->id)
@@ -204,7 +207,6 @@
                             @endif
                             @endif
                             @endforeach
-
                             @endif
                         </select>
 
@@ -274,7 +276,7 @@
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script src="/assets/js/transferencias/transferencias_accion.js"></script>
+<script src="/assets/js/transferencias/transferencias_realizadas.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
          
