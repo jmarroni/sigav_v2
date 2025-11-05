@@ -16,9 +16,11 @@ Route::get('/', function () {
 });
 
 //para actualizar el enlace simbólico a la carpeta storage
+// SEGURIDAD: Protegido con middleware de autenticación
 Route::get('/updateStorage', function(){
   Artisan::call('storage:link');
-});
+  return 'Storage link actualizado';
+})->middleware('auth');
 
 Route::get('/loginejemplo', function(){
 	return view('login/login');
@@ -29,14 +31,16 @@ Route::get('signup', ['uses' =>'Api\AuthController@signup']);
 Route::resource('carga', 'ProductoController');
 Route::get('carga/mensaje/{mensaje}','ProductoController@index');
 Route::get('consultarStock/sucursal/{sucursal}','ProductoController@consultarStock');
-Route::get('producto.actualizar.stock/{id}/{stock}/{stock_minimo}/{sucursal}','ProductoController@update_stock' );
-Route::get('producto.eliminar.stock/{id}/{stock}/{stock_minimo}/{sucursal}','ProductoController@delete_stock' );
+// SEGURIDAD: Cambiado de GET a POST/DELETE para prevenir ataques CSRF
+Route::post('producto.actualizar.stock/{id}','ProductoController@update_stock' );
+Route::delete('producto.eliminar.stock/{id}','ProductoController@delete_stock' );
 Route::get('buscarProductos', 'ProductoController@searchProductsSinStock');
 //Proveedor
 Route::get('proveedor', 'ProveedorController@index');
 Route::post('proveedor.save', 'ProveedorController@save');
 Route::get('proveedor/mensaje/{mensaje}','ProveedorController@index');
-Route::get('proveedor.delete/{id}','ProveedorController@delete' );
+// SEGURIDAD: Cambiado de GET a DELETE para prevenir ataques CSRF
+Route::delete('proveedor/{id}','ProveedorController@delete' );
 Route::get('proveedor.checkProducts/{id}', 'ProveedorController@checkProducts');
 Route::get('proveedor.getProveedor/{id}', 'ProveedorController@getProveedor');
 Route::get('proveedor.getCategoriasProveedor/{id}', 'ProveedorController@getCategoriasProveedor');
@@ -48,8 +52,9 @@ Route::get('categoria', 'CategoriaController@index');
 Route::post('categoria.save', 'CategoriaController@save');
 Route::get('categoria.getCategoria/{id}', 'CategoriaController@getCategoria');
 Route::get('categoria.checkProducts/{id}', 'CategoriaController@checkProducts');
-Route::get('categoria.delete/{id}','CategoriaController@delete' );
-Route::get('categoria.changeStatus/{id}','CategoriaController@changeStatus' );
+// SEGURIDAD: Cambiado de GET a DELETE/POST para prevenir ataques CSRF
+Route::delete('categoria/{id}','CategoriaController@delete' );
+Route::post('categoria.changeStatus/{id}','CategoriaController@changeStatus' );
 Route::get('categoria/mensaje/{mensaje}','CategoriaController@index');
 //Impresión de etiquetas
 Route::get('etiqueta', 'EtiquetaController@index');
@@ -62,12 +67,14 @@ Route::get('etiqueta.imprimirEtiquetasTransferencias/{id}', 'EtiquetaController@
 Route::get('rol', 'RolController@index');
 Route::post('rol.save', 'RolController@save');
 Route::get('rol/mensaje/{mensaje}','RolController@index');
-Route::get('rol.delete/{id}','RolController@delete' );
+// SEGURIDAD: Cambiado de GET a DELETE para prevenir ataques CSRF
+Route::delete('rol/{id}','RolController@delete' );
 //Usuarios
 Route::get('usuario', 'UsuarioController@index');
 Route::post('usuario.save', 'UsuarioController@save');
 Route::get('usuario/mensaje/{mensaje}','UsuarioController@index');
-Route::get('usuario.delete/{id}','UsuarioController@delete' );
+// SEGURIDAD: Cambiado de GET a DELETE para prevenir ataques CSRF
+Route::delete('usuario/{id}','UsuarioController@delete' );
 Route::get('usuario.getUsuario/{id}', 'UsuarioController@getUsuario');
 //Transferencias sucursales
 Route::get('transferencia', 'TransferenciaController@index');
@@ -96,7 +103,8 @@ Route::get('logsProductosCostosPrecios', 'ReporteController@logProductosCostosPr
 Route::get('cliente', 'ClienteController@index');
 Route::get('cliente/mensaje/{mensaje}', 'ClienteController@index');
 Route::post('cliente.save', 'ClienteController@save');
-Route::get('cliente.delete/{id}','ClienteController@delete' );
+// SEGURIDAD: Cambiado de GET a DELETE para prevenir ataques CSRF
+Route::delete('cliente/{id}','ClienteController@delete' );
 Route::get('cliente.getCliente/{id}', 'ClienteController@getCliente');
 Route::get('pedido', 'PedidoController@index');
 Route::post('pedido.save', 'PedidoController@save');

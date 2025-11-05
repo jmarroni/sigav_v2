@@ -40,11 +40,12 @@ class AuthController extends Controller
             $user = User::find($request->id);
             $user->name = $request->name;
             $user->email = $request->email;
-            
+
             if($request->password !== "") {
-                $user->password = $request->password;
+                // IMPORTANTE: Hashear el password antes de guardarlo
+                $user->password = bcrypt($request->password);
             }
-            
+
             $user->save();
         } else {
             $user = new User([
@@ -128,7 +129,7 @@ class AuthController extends Controller
      */
     public function user(Request $request)
     {
-        header('Access-Control-Allow-Origin: *');
+        // CORS se maneja mediante configuración central
         $user = $request->user();
 
         return response()->json(['user' => $user]);

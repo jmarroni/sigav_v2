@@ -16,10 +16,8 @@ use Image;
 class CategoriaController extends Controller
 {
     public function __construct(){
-        if (!isset($_COOKIE["kiosco"]) || !isset($_COOKIE["sucursal"])) {
-            redirect('/');
-            exit();
-        }
+        // Protección mediante middleware de autenticación de Laravel
+        $this->middleware('auth');
     }
     /**
      * Display a listing of the resource.

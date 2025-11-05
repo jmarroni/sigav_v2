@@ -58,6 +58,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | API Secret Key
+    |--------------------------------------------------------------------------
+    |
+    | This key is used for authenticating API requests. Generate a strong
+    | random string and store it in your .env file.
+    |
+    */
+
+    'api_secret_key' => env('API_SECRET_KEY'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

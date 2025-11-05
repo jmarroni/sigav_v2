@@ -14,10 +14,8 @@ use Image;
 class ClienteController extends Controller
 {
     public function __construct(){
-        if (!isset($_COOKIE["kiosco"]) || !isset($_COOKIE["sucursal"])) {
-            redirect('/');
-            exit();
-        }
+        // Protección mediante middleware de autenticación de Laravel
+        $this->middleware('auth');
     }
     /**
      * Display a listing of the resource.
@@ -70,14 +68,14 @@ class ClienteController extends Controller
        return redirect('cliente/mensaje/'.base64_encode($mensaje));
  }
 
- public function delete($id)
+ public function delete(Request $request, $id)
  {
-     if (!isset($_COOKIE["kiosco"])) {
-        if (!isset($_GET["apiKey"]) || $_GET["apiKey"] != "a0a035dc5213448bb1a130c27f2494c5")
-            header('Location: /');
-        else{
-            header('Access-Control-Allow-Origin: *');
-            header('Content-Type: application/json');
+     // Verificación de autenticación mediante API key o sesión de usuario
+     if (!auth()->check()) {
+        $apiKey = $request->header('Authorization') ? str_replace('Bearer ', '', $request->header('Authorization')) : $request->input('apiKey');
+
+        if (!$apiKey || $apiKey !== config('app.api_secret_key')) {
+            return response()->json(['error' => 'No autorizado'], 401);
         }
     }
     Cliente::where('id', '=', $id)->delete();

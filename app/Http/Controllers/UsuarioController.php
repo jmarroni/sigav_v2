@@ -13,10 +13,8 @@ use Image;
 class UsuarioController extends Controller
 {
     public function __construct(){
-        if (!isset($_COOKIE["kiosco"]) || !isset($_COOKIE["sucursal"])) {
-            redirect('/');
-            exit();
-        }
+        // Protección mediante middleware de autenticación de Laravel
+        $this->middleware('auth');
     }
     /**
      * Display a listing of the resource.
@@ -39,30 +37,41 @@ class UsuarioController extends Controller
 
     public function save(Request $request)
     {
-         $accion=0;
+        // SEGURIDAD: Validación de inputs
+        $validated = $request->validate([
+            'usuario' => 'required|string|max:100',
+            'nombre' => 'required|string|max:100',
+            'apellido' => 'required|string|max:100',
+            'telefono' => 'nullable|string|max:20',
+            'rol' => 'required|integer|exists:roles,id',
+            'sucursales' => 'required|integer|exists:sucursales,id',
+            'clave' => 'nullable|string|min:6'
+        ]);
+
+        $accion=0;
         if ($request->id_usuario != "")
         {
             $accion=1;
             $usuario = Usuario::find($request->id_usuario);
-            $mensaje = "Modificación realizada exitosamente";     
+            $mensaje = "Modificación realizada exitosamente";
         }
         else
         {
             $usuario = new Usuario();
-            $mensaje = "Alta realizada exitosamente";  
+            $mensaje = "Alta realizada exitosamente";
         }
-        define('SEMILLA','$%Reset20122017AnnaLuca#^');
-        $usuario->usuario = $request->usuario;
+        $usuario->usuario = $validated['usuario'];
         //Si la clave esta vacía se mantiene la actual al modificar un usuario
-        if($request->clave!="")
+        if(isset($validated['clave']) && $validated['clave'] !== null && $validated['clave'] !== "")
              {
-        $usuario->clave =  sha1($request->clave.SEMILLA);
+        // Usar bcrypt en lugar de SHA1 para mayor seguridad
+        $usuario->clave = bcrypt($validated['clave']);
              }
-        $usuario->nombre = $request->nombre;
-        $usuario->apellido = $request->apellido;
-        $usuario->telefono = $request->telefono;
-        $usuario->rol_id = $request->rol;
-        $usuario->sucursal_id = $request->sucursales;
+        $usuario->nombre = $validated['nombre'];
+        $usuario->apellido = $validated['apellido'];
+        $usuario->telefono = $validated['telefono'];
+        $usuario->rol_id = $validated['rol'];
+        $usuario->sucursal_id = $validated['sucursales'];
         $usuario->save();
 
         return redirect('usuario/mensaje/'.base64_encode($mensaje));
@@ -70,12 +79,12 @@ class UsuarioController extends Controller
 
     public function delete(Request $request,$id)
     {
-       if (!isset($_COOKIE["kiosco"])) {
-        if (!isset($_GET["apiKey"]) || $_GET["apiKey"] != "a0a035dc5213448bb1a130c27f2494c5")
-            header('Location: /');
-        else{
-            header('Access-Control-Allow-Origin: *');
-            header('Content-Type: application/json');
+       // Verificación de autenticación mediante API key o sesión de usuario
+       if (!auth()->check()) {
+        $apiKey = $request->header('Authorization') ? str_replace('Bearer ', '', $request->header('Authorization')) : $request->input('apiKey');
+
+        if (!$apiKey || $apiKey !== config('app.api_secret_key')) {
+            return response()->json(['error' => 'No autorizado'], 401);
         }
     }
     Usuario::destroy($id);

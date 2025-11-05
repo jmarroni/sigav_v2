@@ -17,18 +17,22 @@ return [
 
     'paths' => ['api/*'],
 
-    'allowed_methods' => ['*'],
+    // SEGURIDAD: Métodos HTTP permitidos
+    'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 
-    'allowed_origins' => ['*'],
+    // SEGURIDAD: Origenes permitidos - CAMBIAR '*' por dominios específicos en producción
+    // Ejemplo: ['https://tudominio.com', 'https://app.tudominio.com']
+    'allowed_origins' => [env('FRONTEND_URL', '*')],
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['*'],
+    // SEGURIDAD: Headers permitidos
+    'allowed_headers' => ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
 
     'exposed_headers' => false,
 
-    'max_age' => false,
+    'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 
 ];
