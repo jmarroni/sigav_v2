@@ -9,8 +9,13 @@ class Producto extends Model
 
 	
 
-	protected $fillable = ['id', 'codigo_barras', 'nombre', 'precio_unidad', 'costo', 'stock', 'stock_minimo', 
-		'proveedores_id', 'categorias_id', 'usuario', 'fecha', 'precio_mayorista', 'es_comodato'];
+	// SEGURIDAD: Removido 'id' de fillable para prevenir mass assignment
+	protected $fillable = ['codigo_barras', 'nombre', 'precio_unidad', 'costo', 'stock', 'stock_minimo',
+		'proveedores_id', 'categorias_id', 'precio_mayorista', 'es_comodato', 'descripcion',
+		'descripcion_pr', 'descripcion_en', 'material', 'precio_reposicion'];
+
+	// Proteger campos sensibles de asignación masiva
+	protected $guarded = ['id', 'usuario', 'fecha'];
 
 
 	public function stock_(){

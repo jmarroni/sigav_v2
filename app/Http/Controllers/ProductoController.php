@@ -20,10 +20,8 @@ use Curl\curl;
 class ProductoController extends Controller
 {
     public function __construct(){
-        if (!isset($_COOKIE["kiosco"]) || !isset($_COOKIE["sucursal"])) {
-            redirect('/');
-            exit();
-        }
+        // Protección mediante middleware de autenticación de Laravel
+        $this->middleware('auth');
     }
     /**
      * Display a listing of the resource.
@@ -61,8 +59,19 @@ class ProductoController extends Controller
     }
 
 
-    public function update_stock(Request $request,$id,$_stock,$stock_minimo,$sucursal)
+    public function update_stock(Request $request,$id)
     {
+        // SEGURIDAD: Validación de inputs
+        $validated = $request->validate([
+            'stock' => 'required|integer|min:0',
+            'stock_minimo' => 'required|integer|min:0',
+            'sucursal_id' => 'required|integer|exists:sucursales,id'
+        ]);
+
+        $_stock = $validated['stock'];
+        $stock_minimo = $validated['stock_minimo'];
+        $sucursal = $validated['sucursal_id'];
+
         $token="";
         $producto=Producto::where("id",$id)->first();
         $stock = Stock::where("productos_id",$id)->where("sucursal_id",$sucursal)->first();
@@ -303,16 +312,28 @@ class ProductoController extends Controller
         //
 
     }
-    public function delete_stock(Request $request,$id,$_stock,$stock_minimo,$sucursal)
+    public function delete_stock(Request $request,$id)
     {
-     if (!isset($_COOKIE["kiosco"])) {
-        if (!isset($_GET["apiKey"]) || $_GET["apiKey"] != "a0a035dc5213448bb1a130c27f2494c5")
-            header('Location: /');
-        else{
-            header('Access-Control-Allow-Origin: *');
-            header('Content-Type: application/json');
+     // Verificación de autenticación mediante API key o sesión de usuario
+     if (!auth()->check()) {
+        $apiKey = $request->header('Authorization') ? str_replace('Bearer ', '', $request->header('Authorization')) : $request->input('apiKey');
+
+        if (!$apiKey || $apiKey !== config('app.api_secret_key')) {
+            return response()->json(['error' => 'No autorizado'], 401);
         }
     }
+
+    // SEGURIDAD: Validación de inputs
+    $validated = $request->validate([
+        'stock' => 'required|integer|min:0',
+        'stock_minimo' => 'required|integer|min:0',
+        'sucursal_id' => 'required|integer|exists:sucursales,id'
+    ]);
+
+    $_stock = $validated['stock'];
+    $stock_minimo = $validated['stock_minimo'];
+    $sucursal = $validated['sucursal_id'];
+
     $stock = Stock::where("productos_id",$id)->where("sucursal_id",$sucursal)->first();
     $producto =Producto::find($id);
     $stock_logs = new Stock_log();
@@ -414,8 +435,10 @@ public function searchProducts(request $request)
                             $datos[$i]["suc"]=$sucursal_seleccionada;
                             if (isset($request->sucursal) && ($request->sucursal != ""))
                             {
-                                $stock =Stock::where("sucursal_id =".intval($request->sucursal)." AND productos_id = ".$producto->id)
-                                ->get();
+                                // SEGURIDAD: Corrección de inyección SQL potencial
+                    $stock = Stock::where("sucursal_id", intval($request->sucursal))
+                                  ->where("productos_id", $producto->id)
+                                  ->get();
                                 if (count($stock)>0) 
                                 {           
                                     $datos[$i]["stock"]         =   $stock->stock;
