@@ -1,0 +1,10 @@
+SoapFault exception: [Sender] Function ("getLastRequest") is not a valid method for this service in /var/www/html/public/vendor/afipsdk/afip.php/src/Afip.php:231
+Stack trace:
+#0 /var/www/html/public/vendor/afipsdk/afip.php/src/Afip.php(231): SoapClient->__call('getLastRequest', Array)
+#1 /var/www/html/public/vendor/afipsdk/afip.php/src/Afip.php(171): Afip->CreateServiceTA('wsfe')
+#2 /var/www/html/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(327): Afip->GetServiceTA('wsfe')
+#3 /var/www/html/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(304): ElectronicBilling->GetWSInitialRequest('FECompUltimoAut...')
+#4 /var/www/html/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(41): ElectronicBilling->ExecuteRequest('FECompUltimoAut...', Array)
+#5 /var/www/html/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(122): ElectronicBilling->GetLastVoucher(22, 11)
+#6 /var/www/html/public/facturar.php(322): ElectronicBilling->CreateNextVoucher(Array)
+#7 {main}

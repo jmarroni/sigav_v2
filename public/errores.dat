@@ -1,0 +1,10 @@
+Exception: SOAP Fault: soap:Sender
+Server was unable to read request. ---> There is an error in XML document (2, 1419). ---> Input string was not in a correct format.
+ in /home/c2101314/public_html/sistema/public/vendor/afipsdk/afip.php/src/Afip.php:401
+Stack trace:
+#0 /home/c2101314/public_html/sistema/public/vendor/afipsdk/afip.php/src/Afip.php(381): AfipWebService->_CheckErrors('FECAESolicitar', Object(SoapFault))
+#1 /home/c2101314/public_html/sistema/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(305): AfipWebService->ExecuteRequest('FECAESolicitar', Array)
+#2 /home/c2101314/public_html/sistema/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(92): ElectronicBilling->ExecuteRequest('FECAESolicitar', Array)
+#3 /home/c2101314/public_html/sistema/public/vendor/afipsdk/afip.php/src/Class/ElectronicBilling.php(129): ElectronicBilling->CreateVoucher(Array)
+#4 /home/c2101314/public_html/sistema/public/facturar.php(265): ElectronicBilling->CreateNextVoucher(Array)
+#5 {main}

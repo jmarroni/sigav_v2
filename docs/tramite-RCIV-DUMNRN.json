@@ -1,0 +1,34 @@
+{
+  "id": "a69ca63c-4b6e-47fa-b7fd-484c0ecf5eb3",
+  "codigo": "RCIV-DUMNRN",
+  "nombre": "Solicitud de Actas",
+  "descripcion": "Aquí podrás solicitar Actas de Defunción, Unión Convivencial, Matrimonio y Nacimiento.",
+  "organismoId": "e7aa698c-b0e3-4d41-b0f4-6af152f8fb27",
+  "organismoNombre": "Dirección de Registro Civil y Capacidad de las Personas",
+  "estado": "borrador",
+  "activo": false,
+  "pasoInicialId": "3f9791e2-5ae3-4714-b469-4720092e042d",
+  "pasos": [
+    {
+      "id": "3f9791e2-5ae3-4714-b469-4720092e042d",
+      "tramiteId": "a69ca63c-4b6e-47fa-b7fd-484c0ecf5eb3",
+      "nombre": "Elegí el tipo de Acta",
+      "descripcion": "Aquí podes elegir entre:\nActa de Defunción\nActa de Unión Convivencial\nActa de Matrimonios\nActa de Nacimientos",
+      "sectorId": null,
+      "sectorNombre": null,
+      "estado": "borrador",
+      "tipo": "formulario",
+      "esFinal": false,
+      "orden": 1,
+      "configuracion": null
+    }
+  ],
+  "estadisticas": {
+    "totalPasos": 1,
+    "totalTransiciones": 0,
+    "pasosListos": 0,
+    "pasosBorrador": 1,
+    "tienePasoInicial": true,
+    "tienePasoFinal": false
+  }
+}
