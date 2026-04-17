@@ -4,6 +4,7 @@ $menu["cargas"] = "";
 $menu["reportes"] = "";
 require_once ("conection.php");
 require 'vendor/autoload.php';
+require_once __DIR__ . '/afip_env.php';
 require ('header.php');
 if (getRol() < 4 && getRol() != 1) {
     exit();
@@ -190,7 +191,7 @@ $conn->query($sql_update);
                                 try{
                                     $cuit = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/cuit");
 
-                                    $afip = new Afip(array("CUIT" => $cuit, "production" => TRUE));
+                                    $afip = new Afip(array("CUIT" => $cuit, "production" => afip_is_production()));
                                     $document_types = $afip->ElectronicBilling->GetDocumentTypes();
                                     foreach ($document_types as $key => $value) {
                                         if ($value->Desc == "CUIT" || $value->Desc == "CUIL" || $value->Desc == "CDI"){

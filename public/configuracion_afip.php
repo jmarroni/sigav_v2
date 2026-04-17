@@ -10,6 +10,7 @@ if (getRol() < 2) {
     exit();
 }
 require 'vendor/autoload.php';
+require_once __DIR__ . '/afip_env.php';
 //Productos vendidos hoy por el usuario
 $sql = "SELECT * FROM `productos`";
 $resultado = $conn->query($sql);
@@ -106,7 +107,7 @@ require ('header.php');
                         <label>Tipo Comprobante</label>
                         <?php
                         try{
-                            $afip = new Afip(array("CUIT" => $cuit, "production" => TRUE));
+                            $afip = new Afip(array("CUIT" => $cuit, "production" => afip_is_production()));
                             $voucher_types = $afip->ElectronicBilling->GetVoucherTypes();
                         }catch(Exception $e){
                             // echo $e;

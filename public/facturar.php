@@ -9,6 +9,7 @@ ini_set('display_startup_errors', 0);
 // error_reporting(E_ALL);
 require_once ("conection.php");
 require 'vendor/autoload.php';
+require_once __DIR__ . '/afip_env.php';
 use Spipu\Html2Pdf\Html2Pdf;
 $stockfinal=0;
 $stockanterior=0;
@@ -205,7 +206,7 @@ if ($resultado->num_rows > 0) {
 }
 $fecha = explode("-",$_GET["fecha-facturacion"]);
 if (count($fecha) < 3) { echo "error"; exit(); }
-$afip = new Afip(array('CUIT' => floatval($cuit), "production" => TRUE));
+$afip = new Afip(array('CUIT' => floatval($cuit), "production" => afip_is_production()));
 if (intval($comprobante) != 11){
 	$ImpNeto = round($total / 1.21,2);
 	$impuestoIVA = round($ImpNeto * 0.21,2);

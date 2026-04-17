@@ -10,6 +10,26 @@
 /public/comprobantesProveedores
 /storage/*.key
 /vendor
+
+# AFIP - credenciales y datos del contribuyente (se cargan desde el panel /configuracion_afip.php)
+/public/AFIP/
+/public/vendor/afipsdk/afip.php/src/Afip_res/cert
+/public/vendor/afipsdk/afip.php/src/Afip_res/key
+/public/vendor/afipsdk/afip.php/src/Afip_res/cuit
+/public/vendor/afipsdk/afip.php/src/Afip_res/ptovta
+/public/vendor/afipsdk/afip.php/src/Afip_res/comprobante
+/public/vendor/afipsdk/afip.php/src/Afip_res/condicion_iva
+/public/vendor/afipsdk/afip.php/src/Afip_res/inicio_actividades
+/public/vendor/afipsdk/afip.php/src/Afip_res/ingresos_brutos
+/public/vendor/afipsdk/afip.php/src/Afip_res/solicitar_datos
+/public/vendor/afipsdk/afip.php/src/Afip_res/emitir
+/public/vendor/afipsdk/afip.php/src/Afip_res/production
+/public/vendor/afipsdk/afip.php/src/Afip_res/TA-*.xml
+/public/vendor/afipsdk/afip.php/src/Afip_res/TRA-*.xml
+*.pem
+*.crt
+*.p12
+*.pfx
 .env
 .env.backup
 .phpunit.result.cache

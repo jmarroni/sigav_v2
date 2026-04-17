@@ -6,6 +6,7 @@ ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 require_once ("conection.php");
 require 'vendor/autoload.php';
+require_once __DIR__ . '/afip_env.php';
 use Spipu\Html2Pdf\Html2Pdf;
 
 
@@ -27,7 +28,7 @@ $ingresos_brutos 	= file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.ph
 
 
 
-$afip = new Afip(array('CUIT' => floatval($cuit), "production" => TRUE));
+$afip = new Afip(array('CUIT' => floatval($cuit), "production" => afip_is_production()));
 //$res = json_encode($afip->ElectronicBilling->GetAliquotTypes());
 $tiposdocumentos= $afip->ElectronicBilling->GetDocumentTypes();
 echo $tipodocumentos;

@@ -1,44 +1,28 @@
 <?php
-if ($_POST["certificado"]){
-    if (file_exists(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/cert")){
-    file_put_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/cert",$_POST["certificado"]);
-    };
-}
-if ($_POST["key"]){
-    if (file_exists(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/key")){
-        file_put_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/key",$_POST["key"]);
-    };
-}
-if ($_POST["comprobante"]){
-    if (file_exists(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/comprobante")){
-        file_put_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/comprobante",$_POST["comprobante"]);
-    };
-}
-if ($_POST["ptovta"]){
-    if (file_exists(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/ptovta")){
-        file_put_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/ptovta",$_POST["ptovta"]);
-    };
-}
-if ($_POST["cuit"]){
-    if (file_exists(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/cuit")){
-        file_put_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/cuit",$_POST["cuit"]);
-    };
+require_once __DIR__ . '/afip_env.php';
+
+$AFIP_RES = __DIR__ . '/vendor/afipsdk/afip.php/src/Afip_res/';
+
+if (!is_dir($AFIP_RES)) {
+    @mkdir($AFIP_RES, 0750, true);
 }
 
-if ($_POST["condicion_iva"]){
-    if (file_exists(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/condicion_iva")){
-        file_put_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/condicion_iva",$_POST["condicion_iva"]);
-    };
-}
-if ($_POST["inicio_actividades"]){
-    if (file_exists(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/inicio_actividades")){
-        file_put_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/inicio_actividades",$_POST["inicio_actividades"]);
-    };
-}
-if ($_POST["ingresos_brutos"]){
-    if (file_exists(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/ingresos_brutos")){
-        file_put_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/ingresos_brutos",$_POST["ingresos_brutos"]);
-    };
+$campos = array(
+    'certificado'        => 'cert',
+    'key'                => 'key',
+    'comprobante'        => 'comprobante',
+    'ptovta'             => 'ptovta',
+    'cuit'               => 'cuit',
+    'condicion_iva'      => 'condicion_iva',
+    'inicio_actividades' => 'inicio_actividades',
+    'ingresos_brutos'    => 'ingresos_brutos',
+);
+
+foreach ($campos as $postKey => $fileName) {
+    if (isset($_POST[$postKey]) && $_POST[$postKey] !== '') {
+        file_put_contents($AFIP_RES . $fileName, $_POST[$postKey]);
+        @chmod($AFIP_RES . $fileName, 0640);
+    }
 }
 
 if (!isset($_COOKIE["kiosco"])) {
@@ -46,11 +30,11 @@ if (!isset($_COOKIE["kiosco"])) {
 }
 require_once ("conection.php");
 require 'vendor/autoload.php';
-$cuit = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/cuit");
-$ptovta = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/ptovta");
-$comprobante = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/comprobante");
+$cuit = file_get_contents($AFIP_RES . 'cuit');
+$ptovta = file_get_contents($AFIP_RES . 'ptovta');
+$comprobante = file_get_contents($AFIP_RES . 'comprobante');
 try{
-    $afip = new Afip(array('CUIT' => floatval($cuit), "production" => TRUE));
+    $afip = new Afip(array('CUIT' => floatval($cuit), "production" => afip_is_production()));
     $server_status = $afip->ElectronicBilling->GetLastVoucher($ptovta,$comprobante);
     echo "Alta exitosa, ya tiene configurado el sistema de facturacion electronica";
 } catch (Exception $e) {

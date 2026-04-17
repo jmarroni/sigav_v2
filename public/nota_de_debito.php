@@ -7,6 +7,7 @@ if (!isset($_COOKIE["kiosco"])) {
 header('Content-Type: application/json');
 require_once ("conection.php");
 require 'vendor/autoload.php';
+require_once __DIR__ . '/afip_env.php';
 use Spipu\Html2Pdf\Html2Pdf;
 $arrSucursal = array();
 if (isset($_COOKIE["sucursal"])){
@@ -71,7 +72,7 @@ if ($resultado_perfil->num_rows > 0) {
 
 $fecha = explode("-",date("Y-m-d"));
 if (count($fecha) < 3) { echo "error"; exit(); }
-$afip = new Afip(array('CUIT' => floatval($cuit), "production" => TRUE));
+$afip = new Afip(array('CUIT' => floatval($cuit), "production" => afip_is_production()));
 $data = array(
 	'CantReg' 		=> 1,  // Cantidad de comprobantes a registrar
 	'PtoVta' 		=> $ptovta,  // Punto de venta
