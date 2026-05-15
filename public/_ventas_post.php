@@ -66,7 +66,7 @@ if ($resultado->num_rows > 0) {
         $costo = $row["costo"];
         $precio = $row["precio_unidad"];
         $row["stock_sucursal"] =  $row["stock_sucursal"] - $_POST["cantidad"];
-        $row["imagen"] = (isset($row["imagen"]))?$row["imagen"]:"http://mercado-artesanal.com.ar/assets/img/photos/no-image-featured-image.png";
+        $row["imagen"] = (isset($row["imagen"]))?$row["imagen"]:"http://sigav.com.ar/assets/img/photos/no-image-featured-image.png";
         $datos = $row;
     }
     

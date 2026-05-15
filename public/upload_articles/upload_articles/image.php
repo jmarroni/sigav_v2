@@ -15,7 +15,7 @@ if (isset($_POST["file"])){
 	file_put_contents($target_path, $imagedata);
 
 	$data['result'] = $imagen;
-	$data['image_url'] = 'http://mercado-artesanal.com.ar/upload_articles/'.$target_path;
+	$data['image_url'] = 'http://sigav.com.ar/upload_articles/'.$target_path;
 
 }  
 

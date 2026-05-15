@@ -384,7 +384,7 @@ public function searchProducts(request $request)
             $datos[$i]["costo"]         = $producto->costo;
             $datos[$i]["precio"]        = ($lista_precio == 1)?$producto->precio_unidad:$producto->precio_mayorista;
             $datos[$i]["stock"]         = $producto->stock;
-            $datos[$i]["imagen"]         = ($producto->imagen!=NULL)?$producto->imagen:"http://mercado-artesanal.com.ar/assets/img/photos/no-image-featured-image.png";
+            $datos[$i]["imagen"]         = ($producto->imagen!=NULL)?$producto->imagen:"http://sigav.com.ar/assets/img/photos/no-image-featured-image.png";
             $datos[$i]["stock_minimo"]  = $producto->stock_minimo;
             $datos[$i]["codigo_barras"] = $producto->codigo_barras;
             $datos[$i]["stockactual"]   = $producto->stockactual;

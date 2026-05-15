@@ -50,7 +50,7 @@ try {
         $mail->IsSMTP();
         $mail->Host = "c2101314.ferozo.com";
         $mail->SMTPAuth = true;
-        $mail->Username = 'facturacion@mercado-artesanal.com.ar';
+        $mail->Username = 'facturacion@sigav.com.ar';
         $mail->Password = 'Afoo2te1';
 
     // Content

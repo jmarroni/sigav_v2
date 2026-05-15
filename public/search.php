@@ -29,7 +29,7 @@ if (isset($_GET["producto"]) && (intval($_GET["producto"])) !== null){
             $datos[0]["costo"]         = $row_stock["costo"];
             $datos[0]["precio"]        = ($lista_precio == 1)?$row["precio_unidad"]:$row["precio_mayorista"];
             $datos[0]["stock"]         = $row_stock["stock"];
-            $datos[$i]["imagen"]         = (isset($row["imagen"]))?$row["imagen"]:"http://mercado-artesanal.com.ar/assets/img/photos/no-image-featured-image.png";
+            $datos[$i]["imagen"]         = (isset($row["imagen"]))?$row["imagen"]:"http://sigav.com.ar/assets/img/photos/no-image-featured-image.png";
             $datos[0]["stock_minimo"]  = $row_stock["stock_minimo"];
             $datos[0]["codigo_barras"] = $row_stock["codigo_barras"];
         }
@@ -49,7 +49,7 @@ if (isset($_GET["producto"]) && (intval($_GET["producto"])) !== null){
                 $datos[$i]["costo"]         = $row["costo"];
                 $datos[$i]["precio"]        = ($_COOKIE["lista_precio"] == 1)?$row_stock["precio_unidad"]:$row_stock["precio_mayorista"];
                 $datos[$i]["stock"]         = 0;
-                $datos[$i]["imagen"]         = (isset($row["imagen"]))?$row["imagen"]:"http://mercado-artesanal.com.ar/assets/img/photos/no-image-featured-image.png";
+                $datos[$i]["imagen"]         = (isset($row["imagen"]))?$row["imagen"]:"http://sigav.com.ar/assets/img/photos/no-image-featured-image.png";
                 $datos[$i]["stock_minimo"]  = 0;
                 $datos[$i]["codigo_barras"] = $row["codigo_barras"];
             }

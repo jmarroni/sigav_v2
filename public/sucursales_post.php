@@ -56,10 +56,10 @@ if (isset($_POST["id"]) && intval($_POST["id"]) != ""){
 
     if ($imagen != ""){
         $stmt = $conn->prepare("UPDATE sucursales SET nombre = ?, fecha_alta = ?, fecha_baja = ?, provincia = ?, codigo_postal = ?, pto_vta = ?, direccion = ?, imagen = ? WHERE id = ?");
-        $stmt->bind_param("sssssisii", $nombre, $fecha_alta, $fecha_baja, $provincia, $codigo_postal, $pto_vta, $direccion, $imagen, $id);
+        $stmt->bind_param("sssssissi", $nombre, $fecha_alta, $fecha_baja, $provincia, $codigo_postal, $pto_vta, $direccion, $imagen, $id);
     } else {
         $stmt = $conn->prepare("UPDATE sucursales SET nombre = ?, fecha_alta = ?, fecha_baja = ?, provincia = ?, codigo_postal = ?, pto_vta = ?, direccion = ? WHERE id = ?");
-        $stmt->bind_param("ssssssii", $nombre, $fecha_alta, $fecha_baja, $provincia, $codigo_postal, $pto_vta, $direccion, $id);
+        $stmt->bind_param("sssssisi", $nombre, $fecha_alta, $fecha_baja, $provincia, $codigo_postal, $pto_vta, $direccion, $id);
     }
 
     if ($stmt->execute()) {
@@ -71,8 +71,8 @@ if (isset($_POST["id"]) && intval($_POST["id"]) != ""){
 } else {
     // Insertar nueva sucursal
     $nombre = $_POST["nombre"] ?? '';
-    $fecha_alta = $_POST["Fecha_alta"] ?? date("Y-m-d");
-    $fecha_baja = $_POST["Fecha_baja"] ?? '';
+    $fecha_alta = !empty($_POST["Fecha_alta"]) ? $_POST["Fecha_alta"] : date("Y-m-d H:i:s");
+    $fecha_baja = !empty($_POST["Fecha_baja"]) ? $_POST["Fecha_baja"] : date("Y-m-d H:i:s");
     $direccion = $_POST["direccion"] ?? '';
     $provincia = $_POST["provincia"] ?? '';
     $codigo_postal = $_POST["codigo_postal"] ?? '';

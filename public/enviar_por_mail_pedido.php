@@ -43,20 +43,20 @@ $message = $htmlContent;
 // Instantiation and passing `true` enables exceptions
 $mail = new PHPMailer(true);
 try {
-    $header = "From: facturacion@mercado-artesanal.com.ar\nReply-To:facturacion@mercado-artesanal.com.ar\n";
+    $header = "From: facturacion@sigav.com.ar\nReply-To:facturacion@sigav.com.ar\n";
     $header .= "Mime-Version: 1.0\n";
     $header .= "Content-Type: text/plain";
     if(mail("jmarroni@gmail.com", "$subject", "$contenido" ,"$header")){
     echo "Mail Enviado.";
     }else{ echo "Error en el envio";}
         //Recipients
-        $mail->setFrom('facturacion@mercado-artesanal.com.ar', $perfil["nombre"]);
+        $mail->setFrom('facturacion@sigav.com.ar', $perfil["nombre"]);
         $mail->addAddress($_GET["mail"], 'Cliente');     // Add a recipient
-        $mail->addReplyTo('facturacion@mercado-artisanal.com.ar', 'Mercado Artesanal');
+        $mail->addReplyTo('facturacion@sigav.com.ar', 'SIGAV');
         $mail->IsSMTP();
         $mail->Host = "c2101314.ferozo.com";
         $mail->SMTPAuth = true;
-        $mail->Username = 'facturacion@mercado-artesanal.com.ar';
+        $mail->Username = 'facturacion@sigav.com.ar';
         $mail->Password = 'Afoo2te1';
         // Content
         $mail->isHTML(true);                                  // Set email format to HTML

@@ -42,7 +42,7 @@ use Spipu\Html2Pdf\Html2Pdf;
 										<table>
 											<tr>
 												<td>
-													<img = src='http://mercado-artesanal.com.ar/assets/perfil/20190524111724-54396137.jpeg' style='height:80px;width:120px;'/>
+													<img = src='http://sigav.com.ar/assets/perfil/20190524111724-54396137.jpeg' style='height:80px;width:120px;'/>
 												</td>
 												<td>	
 													<br />Central

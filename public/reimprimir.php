@@ -151,7 +151,7 @@ $html = utf8_encode("
    
 
    //if ($tipo == 4){ // Si es transferencia coloco la leyenda
-   // $html .= utf8_encode("<p style='text-align:left'> *P&aacute;guese a la cuenta oficial Tesorer&iacute;a General Mercado Artesanal Provincial-Recaudadora. <br/><b>N° Cta Bco.</b> - 900001194 <br/><b>CBU</b> - 0340250600900001194004 <br/><b>CUIT</b> - Tesorer&iacute;a General Nro. 30-63945328-2 </p>");
+   // $html .= utf8_encode("<p style='text-align:left'> *P&aacute;guese a la cuenta oficial Tesorer&iacute;a General SIGAV Provincial-Recaudadora. <br/><b>N° Cta Bco.</b> - 900001194 <br/><b>CBU</b> - 0340250600900001194004 <br/><b>CUIT</b> - Tesorer&iacute;a General Nro. 30-63945328-2 </p>");
    //}
 
    $html2pdf = new HTML2PDF('P', 'A4', 'pt', true, 'UTF-8');

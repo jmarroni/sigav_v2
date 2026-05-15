@@ -100,7 +100,7 @@ if ($resultado_perfil->num_rows > 0) {
 	$logo = "http://".$_SERVER['HTTP_HOST']."/assets/img/photos/no-image-featured-image.png";
 	$nombre_fantasia = "SIGAV";
 }
-if (strpos($logo,"127.0.0.1") > 0) $logo = "http://sistema.mercado-artesanal.com.ar/assets/img/photos/no-image-featured-image.png";
+if (strpos($logo,"127.0.0.1") > 0) $logo = "http://sistema.sigav.com.ar/assets/img/photos/no-image-featured-image.png";
 // Agarro el numero de lista para la venta
 if (isset($_COOKIE["lista_precio"])) $lista_precio = $_COOKIE["lista_precio"];
 else $lista_precio = 1;
@@ -479,7 +479,7 @@ if($voucher_info === NULL){
 	}
 
 	//if ($tipo == 4){ // Si es transferencia coloco la leyenda
-	//	$html .= utf8_encode("<p style='text-align:left'> *P&aacute;guese a la cuenta oficial Tesorer&iacute;a General Mercado Artesanal Provincial-Recaudadora. <br/><b>N° Cta Bco.</b> - 900001194 <br/><b>CBU</b> - 0340250600900001194004 <br/><b>CUIT</b> - Tesorer&iacute;a General Nro. 30-63945328-2 </p>");
+	//	$html .= utf8_encode("<p style='text-align:left'> *P&aacute;guese a la cuenta oficial Tesorer&iacute;a General SIGAV Provincial-Recaudadora. <br/><b>N° Cta Bco.</b> - 900001194 <br/><b>CBU</b> - 0340250600900001194004 <br/><b>CUIT</b> - Tesorer&iacute;a General Nro. 30-63945328-2 </p>");
 	//}
 
 	$html2pdf = new HTML2PDF('P', 'A4', 'pt', true, 'UTF-8');

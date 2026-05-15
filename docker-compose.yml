@@ -1,8 +1,9 @@
-version: '3.8'
+version: '3.3'
 
 services:
   db:
     image: mysql:5.7
+    container_name: acantilado-sur-db
     ports:
       - "3307:3306"
     environment:
@@ -11,13 +12,14 @@ services:
       MYSQL_USER: c2101314_testing
       MYSQL_PASSWORD: nekesuBU83
     volumes:
-      - db_data:/var/lib/mysql
+      - acantilado_sur_db_data:/var/lib/mysql
     restart: unless-stopped
 
   web:
     build: .
+    container_name: acantilado-sur-web
     ports:
-      - "10880:80"
+      - "8101:80"
     volumes:
       - .:/var/www/html
     environment:
@@ -31,4 +33,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  db_data:
+  acantilado_sur_db_data:
