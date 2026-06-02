@@ -79,12 +79,14 @@ Para no romper las escrituras del legacy ni "cazar" cada carpeta escribible, **e
 - **MySQL**: volumen Docker `sigav_db_data` sobre el disco persistente.
 - **Archivos de la app** (AFIP, PDFs, imágenes, `storage/`): viven en `/opt/sigav` (el repo montado) sobre el disco persistente.
 - Permisos: el usuario de Apache del contenedor (`www-data`) debe poder escribir `storage/`, `bootstrap/cache/` y las carpetas de `public/` que generan archivos.
-- **Carga inicial de datos**: importar el dump actual a MySQL; subir certs de AFIP de producción a `public/AFIP/{cert,key}` (no versionados).
+- **Carga inicial de datos**: importar `dump/c2101314_ma.sql` (esquema de **53 tablas**, charset **latin1**, **sin datos** salvo unos pocos registros). **Producción arranca vacía** y se cargan datos desde la app (decisión del usuario). Como el dump es `latin1` y MySQL 5.7 usa `latin1` por defecto, no hace falta conversión de charset; respetar `latin1` al importar para evitar mojibake (coherente con el `utf8_decode` del código).
+- Subir certs de AFIP de producción a `public/AFIP/{cert,key}` (no versionados; el usuario ya los tiene).
 
-## 7. HTTPS y dominio
+## 7. HTTPS y dominio (Cloudflare)
 
-- Registro **A** del dominio → IP estática de la VM.
-- Caddy emite y renueva el certificado Let's Encrypt automáticamente; redirige `http → https`.
+- DNS gestionado en **Cloudflare**. Registro **A** del dominio → IP estática de la VM, en modo **"DNS only" (nube gris, sin proxy)**.
+- Con DNS-only, el tráfico pega directo a la VM y **Caddy** emite/renueva el certificado Let's Encrypt vía challenge **HTTP-01** sin configuración extra; redirige `http → https`.
+- **Upgrade futuro (opcional):** activar el proxy de Cloudflare (nube naranja) para CDN/DDoS y ocultar la IP de origen. Requiere cambiar Caddy al challenge **DNS-01** con un token API de Cloudflare + el plugin DNS de Caddy, y poner el SSL de Cloudflare en **Full (strict)**. Fuera de alcance de este deploy inicial.
 
 ## 8. Backups y recuperación
 
