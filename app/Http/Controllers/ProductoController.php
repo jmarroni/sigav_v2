@@ -34,28 +34,122 @@ class ProductoController extends Controller
         $proveedores = Proveedor::orderBy('nombre')->get();
         $sucursales = Sucursales::all();
         $sucursal = (isset($request->sucursal)?$request->sucursal:Sucursales::getSucursal());
-        $imagenes=Imagen_producto::all();
-        $imagen=array();
-        $productos =//Producto::leftjoin("stock","stock.productos_id", "=", "productos.id")
-        //                     ->leftjoin("categorias","categorias.id", "=", "productos.categorias_id")
-        //                     ->leftjoin("proveedor","proveedor.id", "=", "productos.proveedores_id")
-        //                     ->where("stock.sucursal_id","=",$sucursal)
-        //                     ->select("productos.*","stock.stock as stockReal","stock.stock_minimo as stockMinimoReal","proveedor.nombre as nombreProveedor","proveedor.apellido as apellidoProveedor","categorias.nombre as nombreCategoria")
-        //                     ->get();
+        // PERF: la grilla se carga por AJAX con paginación server-side (ver datatable()).
+        // La vista ya no recibe todos los productos: solo el total para el contador.
+        // Antes esto traía TODOS los productos con un join + eager load en cada carga
+        // de página, lo que hacía lentísima la pantalla con catálogos grandes.
+        $totalProductos = Producto::count();
 
-        Producto::with(['stock_' => 
-            function ($query) use ($sucursal)
-            {
-                $query->where("sucursal_id",$sucursal);
+        return view("productos.accion", compact("proveedores","mensaje","sucursal","sucursales","totalProductos"));
+    }
+
+    /**
+     * Endpoint server-side para DataTables.
+     *
+     * Devuelve los productos paginados, filtrados y ordenados desde el servidor,
+     * en el formato que espera DataTables (draw / recordsTotal / recordsFiltered / data).
+     * Reemplaza la carga completa de la grilla por peticiones AJAX por página.
+     */
+    public function datatable(Request $request)
+    {
+        $sucursal = $request->input('sucursal') ?: Sucursales::getSucursal();
+
+        $draw   = (int) $request->input('draw');
+        $start  = (int) $request->input('start', 0);
+        $length = (int) $request->input('length', 25);
+        $search = trim((string) $request->input('search.value', ''));
+
+        // Total sin filtrar (COUNT barato, sin traer filas)
+        $recordsTotal = Producto::count();
+
+        // Query base: mismos joins/selects/eager-load que usaba index()
+        $query = Producto::with(['stock_' => function ($q) use ($sucursal) {
+                $q->where('sucursal_id', $sucursal);
             }])
-        ->leftjoin("categorias","categorias.id", "=", "productos.categorias_id")
-        ->leftjoin("proveedor","proveedor.id", "=", "productos.proveedores_id")
-        //->leftjoin("imagen_producto","imagen_producto.productos_id","=","productos.id")
-        ->select("productos.*","proveedor.nombre as nombreProveedor","proveedor.apellido as apellidoProveedor","categorias.nombre as nombreCategoria")
-        ->get();
+            ->leftjoin('categorias', 'categorias.id', '=', 'productos.categorias_id')
+            ->leftjoin('proveedor', 'proveedor.id', '=', 'productos.proveedores_id')
+            ->select(
+                'productos.*',
+                'proveedor.nombre as nombreProveedor',
+                'proveedor.apellido as apellidoProveedor',
+                'categorias.nombre as nombreCategoria'
+            );
 
-         //get();
-        return view("productos.accion",compact("productos","proveedores","mensaje","sucursal","sucursales","imagenes","imagen"));
+        // Búsqueda server-side (consultas parametrizadas => sin inyección)
+        if ($search !== '') {
+            $like = '%' . $search . '%';
+            $query->where(function ($q) use ($like) {
+                $q->where('productos.codigo_barras', 'like', $like)
+                  ->orWhere('productos.nombre', 'like', $like)
+                  ->orWhere('proveedor.nombre', 'like', $like)
+                  ->orWhere('proveedor.apellido', 'like', $like)
+                  ->orWhere('categorias.nombre', 'like', $like);
+            });
+        }
+
+        $recordsFiltered = (clone $query)->count('productos.id');
+
+        // Orden: solo columnas con respaldo directo en DB (las demás son no-ordenables)
+        $orderColumns = [
+            1 => 'productos.nombre',
+            5 => 'productos.precio_unidad',
+            6 => 'productos.precio_reposicion',
+        ];
+        $orderCol = (int) $request->input('order.0.column', 1);
+        $orderDir = strtolower((string) $request->input('order.0.dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+        $orderBy  = $orderColumns[$orderCol] ?? 'productos.nombre';
+        $query->orderBy($orderBy, $orderDir);
+
+        // Paginación
+        if ($length > 0) {
+            $query->skip($start)->take($length);
+        }
+
+        $productos = $query->get();
+
+        $data = [];
+        foreach ($productos as $p) {
+            $stockVal = isset($p->stock_->stock) ? $p->stock_->stock : 0;
+
+            if ($p->nombreProveedor !== null && $p->nombreProveedor !== '') {
+                $proveedor = e($p->nombreProveedor . ' ' . $p->apellidoProveedor);
+            } else {
+                $proveedor = '<span class="sg-tag sg-tag--warn">Sin proveedor</span>';
+            }
+
+            if ($p->nombreCategoria !== null && $p->nombreCategoria !== '') {
+                $categoria = '<span class="sg-tag">' . e($p->nombreCategoria) . '</span>';
+            } else {
+                $categoria = '<span class="sg-tag sg-tag--warn">Sin categoría</span>';
+            }
+
+            $stockInput = '<input type="text" value="' . e($stockVal) . '" name="stock_' . $p->id
+                . '" class="numbers sg-stock" id="stock_' . $p->id . '" />';
+
+            $acciones = '<button id="editar_' . $p->id . '" title="Editar" class="btn sg-icon-btn sg-icon-btn--edit" type="button"><i class="fa fa-pencil"></i></button>'
+                . '<button id="eliminar_' . $p->id . '" title="Eliminar" class="btn sg-icon-btn sg-icon-btn--del" type="button"><i class="fa fa-times"></i></button>'
+                . '<button id="actualizar_' . $p->id . '" title="Actualizar stock" class="btn sg-icon-btn sg-icon-btn--ok" type="button"><i class="fa fa-check"></i></button>';
+
+            $data[] = [
+                'DT_RowId' => (string) $p->id,
+                e($p->codigo_barras),
+                e($p->nombre),
+                $proveedor,
+                $categoria,
+                $stockInput,
+                e($p->precio_unidad),
+                e($p->precio_reposicion),
+                e($p->costo),
+                $acciones,
+            ];
+        }
+
+        return response()->json([
+            'draw'            => $draw,
+            'recordsTotal'    => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data'            => $data,
+        ]);
     }
 
 
