@@ -13,7 +13,7 @@
         </header>
 
         <div class="sg-card__body">
-            <form class="sg-form" action="/carga" enctype="multipart/form-data" method="post">
+            <form class="sg-form form-horizontal" action="/carga" enctype="multipart/form-data" method="post">
                 <input type="hidden" value="" name="id" id="id" />
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
