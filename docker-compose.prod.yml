@@ -1,0 +1,66 @@
+# SIGAV v2 — producción (VM única). Variables desde el .env del directorio.
+services:
+  app:
+    build: .
+    image: sigav-app:prod
+    container_name: sigav_app
+    restart: always
+    expose:
+      - "80"
+    volumes:
+      - ./:/var/www/html
+      - ./deploy/afip-protect.conf:/etc/apache2/conf-enabled/zz-afip-protect.conf:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/html/public
+      LEGACY_DB_HOST: db
+      LEGACY_DB_USER: ${DB_USERNAME}
+      LEGACY_DB_PASS: ${DB_PASSWORD}
+      LEGACY_DB_NAME: ${DB_DATABASE}
+    networks: [sigav]
+
+  db:
+    image: mysql:5.7
+    container_name: sigav_db
+    restart: always
+    command: --character-set-server=latin1 --collation-server=latin1_swedish_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - sigav_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks: [sigav]
+
+  caddy:
+    image: caddy:2
+    container_name: sigav_caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    networks: [sigav]
+
+networks:
+  sigav:
+
+volumes:
+  sigav_db_data:
+  caddy_data:
+  caddy_config:
