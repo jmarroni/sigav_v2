@@ -9,6 +9,8 @@
 /public/comprobantesTransferencias
 /public/comprobantesProveedores
 /storage/*.key
+/storage/afip_credentials
+/public/assets/perfil
 /vendor
 .env
 .env.backup
