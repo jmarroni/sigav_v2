@@ -1,5 +1,7 @@
 
 jQuery("document").ready(function() {
+    // CSRF token para peticiones POST/DELETE a rutas Laravel (web group).
+    $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
     setTimeout(function () {
         $("#add_success").hide('slow');
     }, 3000);
@@ -61,28 +63,41 @@ jQuery("document").ready(function() {
         }
         $(".form-horizontal").submit();
     });
-    $("button[id^='actualizar_']" ).click(function( index ) {
-        if ($("#stock_" + identificador).val() < 0 || $("#stock_" + identificador).val() == ''){
+    $(document).on("click", "button[id^='actualizar_']", function( index ) {
+        var identificador = $(this).attr("id").split("_")[1];
+        var stock         = $("#stock_" + identificador).val();
+        var sucursal      = $("#sucursal").val();
+
+        if (stock < 0 || stock === ''){
             swal({
                 "title":"Verificar",
                 'icon': 'warning',
                 "text":"Recuerde que el stock debe ser mayor o igual a cero.",
                 'confirmButtonText': 'Listo'
             });
-        }else{
-            var identificador = $(this).attr("id").split("_")[1];
-            var stock           = $("#stock_" + identificador).val();
-            var stock_minimo    = 1;
-            var sucursal        = $("#sucursal").val();
-            var url = "/producto.actualizar.stock/" + identificador + "/" + stock + "/" + stock_minimo + "/" + sucursal;
-            $.get(url, function(data, status){  
-                if(data.proceso == "OK"){
+            return;
+        }
+        if (!sucursal || sucursal == 0){
+            swal({
+                "title":"Verificar",
+                'icon': 'warning',
+                "text":"Seleccione una sucursal antes de actualizar el stock.",
+                'confirmButtonText': 'Listo'
+            });
+            return;
+        }
+
+        $.ajax({
+            url: "/producto.actualizar.stock/" + identificador,
+            method: "POST",
+            data: { stock: stock, stock_minimo: 1, sucursal_id: sucursal },
+            success: function(data){
+                if(data && data.proceso == "OK"){
                     swal({
                         "title":"Perfecto !!",
                         'icon': 'success',
                         "text":"Actualización realizada con éxito !",
-                        'confirmButtonText': 'Listo',
-                        
+                        'confirmButtonText': 'Listo'
                     });
                 }else{
                     swal({
@@ -92,18 +107,35 @@ jQuery("document").ready(function() {
                         'confirmButtonText': 'Listo'
                     });
                 }
-            });
-        }
-        
+            },
+            error: function(){
+                swal({
+                    "title":"Error",
+                    'icon': 'error',
+                    "text":"Error, por favor verifique los datos",
+                    'confirmButtonText': 'Listo'
+                });
+            }
+        });
     });
 
-    $("button[id^='editar_']" ).click(function( index ) {
+    $(document).on("click", "button[id^='editar_']", function( index ) {
         var identificador = $(this).attr("id").split("_")[1];
         modificar(identificador);
     });
 
- $("button[id^='eliminar_']" ).click(function( index ) {
+ $(document).on("click", "button[id^='eliminar_']", function( index ) {
         var identificador = $(this).attr("id").split("_")[1];
+        var sucursal      = $("#sucursal").val();
+        if (!sucursal || sucursal == 0){
+            swal({
+                "title":"Verificar",
+                'icon': 'warning',
+                "text":"Seleccione una sucursal antes de eliminar el producto.",
+                'confirmButtonText': 'Listo'
+            });
+            return;
+        }
         swal({
             title: '¿Está seguro de eliminarlo?',
             icon: 'question',
@@ -116,20 +148,27 @@ jQuery("document").ready(function() {
             function(isConfirm){
                 if (isConfirm){
             var stock           = $("#stock_" + identificador).val();
-            var stock_minimo    = 1;
-            var sucursal        = $("#sucursal").val();
-            var url = "/producto.eliminar.stock/" + identificador + "/" + stock + "/" + stock_minimo + "/" + sucursal;
-            $.get(url, function(data, status){  
-                if(data.proceso == "OK"){
+            if (stock === '' || stock === undefined) { stock = 0; }
+            $.ajax({
+              url: "/producto.eliminar.stock/" + identificador,
+              method: "DELETE",
+              data: { stock: stock, stock_minimo: 1, sucursal_id: sucursal },
+              success: function(data, status){
+                if(data && data.proceso == "OK"){
                     swal({
                         "title":"Perfecto !!",
                         'icon': 'success',
                         "text":"Eliminación realizada con éxito !",
                         'confirmButtonText': 'Listo',
-                       
+
                     });
-                   $("#"+identificador).remove();
-                        
+                   // Grilla server-side: refrescar la página actual de DataTables.
+                   if (window.tablaProductos) {
+                       window.tablaProductos.ajax.reload(null, false);
+                   } else {
+                       $("#"+identificador).remove();
+                   }
+
                 }else{
                     swal({
                         "title":"Error",
@@ -138,6 +177,15 @@ jQuery("document").ready(function() {
                         'confirmButtonText': 'Listo'
                     });
                 }
+              },
+              error: function(){
+                swal({
+                    "title":"Error",
+                    'icon': 'error',
+                    "text":"Error al realizar la eliminación",
+                    'confirmButtonText': 'Listo'
+                });
+              }
             });
                 }
             });

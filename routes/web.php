@@ -28,6 +28,7 @@ Route::get('/loginejemplo', function(){
 
 Route::get('signup', ['uses' =>'Api\AuthController@signup']);
 //Producto
+Route::get('productos/datatable', 'ProductoController@datatable');
 Route::resource('carga', 'ProductoController');
 Route::get('carga/mensaje/{mensaje}','ProductoController@index');
 Route::get('consultarStock/sucursal/{sucursal}','ProductoController@consultarStock');
