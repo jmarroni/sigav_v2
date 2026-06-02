@@ -8,13 +8,15 @@ require_once (public_path()."/conection.php");
 //     exit();
 // }
 //Productos vendidos hoy por el usuario
-$sql = "SELECT * FROM `productos`";
+// PERF: antes hacía SELECT * FROM productos solo para contar filas (traía toda la
+// tabla en cada carga de página, en TODAS las pantallas). Ahora cuenta en la DB.
+$sql = "SELECT COUNT(*) AS total FROM `productos`";
 $resultado = $conn->query($sql);
 $total = 0;
 $cantidad_de_ventas_usuario = 0;
 $caja = 540;
-if ($resultado->num_rows > 0) {
-    $total = $resultado->num_rows; 
+if ($resultado && ($fila = $resultado->fetch_assoc())) {
+    $total = (int) $fila['total'];
 }
 
 $menu["ventas"] = "";
