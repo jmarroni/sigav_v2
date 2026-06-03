@@ -43,6 +43,33 @@ Internet → Caddy (443/80, HTTPS automático) → app (PHP 7.4 + Apache) → My
    - Crear el registro **A** en Cloudflare (DNS only) → IP de la VM; verificar HTTPS.
 3. **Backups**: probar `deploy/backup.sh` y agendarlo por cron (`0 3 * * *`).
 
+## Pasos manuales post-bootstrap (reproducibilidad)
+
+Ajustes que se aplicaron a mano en la VM y **NO** están en el código. **Reaplicar en un redeploy desde cero** (todos los comandos desde `/opt/sigav`):
+
+1. **Permisos de carpetas de subida** (Apache=`www-data` escribe imágenes ahí; sin esto da `Permission denied` al subir):
+   ```bash
+   sudo docker compose -f docker-compose.prod.yml exec -T app sh -c '
+     for d in public/assets/sucursales public/assets/perfil public/productos; do
+       mkdir -p "$d"; chown -R www-data:www-data "$d"; chmod -R 775 "$d";
+     done'
+   ```
+   Si otra pantalla da `Permission denied` al subir/generar archivos, agregar esa carpeta a la lista.
+
+2. **Columna `provider` en `oauth_clients`** (el dump trae el esquema viejo y arrancamos sin `migrate`; Passport la necesita):
+   ```bash
+   set -a; . ./.env; set +a
+   sudo docker exec sigav_db mysql -uroot -p"$DB_ROOT_PASSWORD" "$DB_DATABASE" \
+     -e "ALTER TABLE oauth_clients ADD COLUMN provider VARCHAR(255) NULL AFTER secret;"
+   sudo docker compose -f docker-compose.prod.yml exec -T app php artisan passport:install --force
+   ```
+
+3. **`LEGACY_SEMILLA` en `.env`** — imprescindible (puente auth legacy→Laravel, middleware `LegacyCookieAuth`). Sin esto, las rutas Laravel (`/carga`, etc.) rebotan al login. Ya está en `deploy/.env.production.example`; debe coincidir con `SEMILLA` de `public/conection.php`.
+
+> **Assets:** `npm ci` / `npm run prod` **no funcionan** (no hay `package-lock.json` ni `resources/js/app.js`·`resources/sass/app.scss`); los compilados ya vienen versionados en `public/css` y `public/js`. **Saltear el build de assets.**
+>
+> **Datos:** el dump trae esquema + `usuarios`/`roles`, pero `sucursales` y `productos` vienen **vacías**. Los usuarios referencian ~17 `sucursal_id` que no existen hasta cargar las sucursales reales (dump completo) o alinear ids a mano.
+
 ## Deploy de cambios futuros
 
 ```bash
@@ -51,8 +78,7 @@ git pull
 # si cambió composer.lock:
 docker run --rm -v "$PWD":/app -w /app composer:2 install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
 docker compose -f docker-compose.prod.yml run --rm --no-deps app php artisan package:discover
-# si cambiaron assets:
-docker run --rm -v "$PWD":/app -w /app node:14 sh -c "npm ci && npm run prod"
+# (los assets ya vienen compilados en public/; no se buildean con npm — ver nota arriba)
 docker compose -f docker-compose.prod.yml restart app
 ```
 
