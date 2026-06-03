@@ -12,7 +12,8 @@ class TrustProxies extends Middleware
      *
      * @var array|string
      */
-    protected $proxies;
+    // Confía en el reverse proxy (Caddy) de la misma red Docker para honrar X-Forwarded-*.
+    protected $proxies = '*';
 
     /**
      * The headers that should be used to detect proxies.
