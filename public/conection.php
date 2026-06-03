@@ -2,7 +2,15 @@
 define('SEMILLA','$%Reset20122017AnnaLuca#^');
 define('PRODUCTOS_LIBRE','SI');
 
-$conn = mysqli_connect("localhost", "c2101314_ma", "40zuzoGEse", "c2101314_ma");
+// Conexión configurable por entorno (no hardcodear credenciales).
+// Si las variables LEGACY_DB_* no están definidas, usa los valores históricos
+// como fallback para no romper despliegues existentes.
+$dbHost = getenv('LEGACY_DB_HOST') ?: "localhost";
+$dbUser = getenv('LEGACY_DB_USER') ?: "c2101314_ma";
+$dbPass = getenv('LEGACY_DB_PASS') ?: "40zuzoGEse";
+$dbName = getenv('LEGACY_DB_NAME') ?: "c2101314_ma";
+
+$conn = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName);
 date_default_timezone_set('America/Argentina/Buenos_Aires');
 if (!$conn) {
     echo "Error: Unable to connect to MySQL." . PHP_EOL;

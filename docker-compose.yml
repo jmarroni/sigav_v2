@@ -1,0 +1,39 @@
+# SIGAV v2 — entorno de desarrollo local
+# Levanta: app (PHP 7.4 + Apache) y db (MySQL 5.7)
+services:
+  app:
+    build: .
+    container_name: sigav_app
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/html/public
+      # Conexión del lado legacy (public/conection.php) -> contenedor db
+      LEGACY_DB_HOST: db
+      LEGACY_DB_USER: root
+      LEGACY_DB_PASS: secret
+      LEGACY_DB_NAME: laravel
+
+  db:
+    image: mysql:5.7
+    container_name: sigav_db
+    ports:
+      - "3307:3306"   # 3307 en el host para no chocar con un MySQL local
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: secret
+    volumes:
+      - sigav_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-psecret"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  sigav_db_data:

@@ -68,6 +68,10 @@ return [
 
     'api_secret_key' => env('API_SECRET_KEY'),
 
+    // Semilla compartida con el login legacy (public/conection.php) para
+    // validar las cookies 'rol'/'sucursal' en el bridge de autenticación.
+    'legacy_semilla' => env('LEGACY_SEMILLA'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
