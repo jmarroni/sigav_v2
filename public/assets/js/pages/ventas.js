@@ -333,25 +333,23 @@
 
     function addRow(jsonData){
      var rowAdd =  '<tr id="' + jsonData.id + '">' +
-     '<td class="text-center">' +
-     '   <div style="width: 180px;">' +
+     '<td style="width:72px;">' +
      '   <img class="img-responsive" src="' + jsonData.imagen + '" alt="">' +
-     '   </div>' +
      '   </td>' +
      '   <td>' +
      '   <h4>' + jsonData.nombre + '</h4>' +
-     '<p class="remove-margin-b">Producto Vendido a las ' + jsonData.fecha + '</p>' +
-     '<a class="font-w600" href="javascript:void(0)">Por ' + jsonData.usuario + '</a>' +
+     '<p>Agregado ' + jsonData.fecha + ' · por ' + jsonData.usuario + '</p>' +
      '    </td>' +
      '    <td>' +
-     '    <p class="remove-margin-b">Precio: <span class="text-gray-dark">$ ' + jsonData.precio_unidad + '</span></p>' +
-     '    <p>Quedan en Stock: <span class="text-gray-dark">' + jsonData.stock_sucursal + '</span></p>' +
-     '    <button onclick="eliminar(' + jsonData.ventas_id + ',' + jQuery("#cantidad").val() + ',' + jsonData.id + ','+jsonData.precio_unidad+')">Eliminar</button>' +
-     '<button class="btn btn-xs btn-default" type="button">' +
+     '    <p>Precio: <span class="sg-strong">$ ' + jsonData.precio_unidad + '</span></p>' +
+     '    <p>Stock restante: ' + jsonData.stock_sucursal + '</p>' +
      '    </td>' +
-     '    <td class="text-center">' +
-     '    <span class="h1 font-w700 text-success">$ ' + (jsonData.precio_unidad * jQuery("#cantidad").val()) + '</span>' +
-     '</td>' +
+     '    <td class="sg-num">' +
+     '    <span class="h1">$ ' + (jsonData.precio_unidad * jQuery("#cantidad").val()) + '</span>' +
+     '    </td>' +
+     '    <td class="sg-num">' +
+     '    <button type="button" class="sg-line-del" onclick="eliminar(' + jsonData.ventas_id + ',' + jQuery("#cantidad").val() + ',' + jsonData.id + ','+jsonData.precio_unidad+')"><i class="fa fa-trash-o"></i> Eliminar</button>' +
+     '    </td>' +
      '</tr>';
      $("#tablaProductos").append(rowAdd);
         //Actualizo el total

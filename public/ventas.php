@@ -18,7 +18,7 @@ require ('header.php');
 $sql = "SELECT * FROM `ventas` v WHERE `fecha` > '".date("Y-m-d")."'";
 $resultado = $conn->query($sql);
 if ($resultado->num_rows > 0) {
-    $cantidad_de_ventas = $resultado->num_rows; 
+    $cantidad_de_ventas = $resultado->num_rows;
 }else{
     $cantidad_de_ventas = 0;
 }
@@ -46,7 +46,7 @@ if ($resultado_caja->num_rows > 0) {
 						$row_caja["cinco"] * 5;
 				break;
 		}
-	} 
+	}
 }else{
 	$cantidad_de_ventas = 0;
 }
@@ -57,7 +57,7 @@ $resultado = $conn->query($sql);
 $total = 0;
 $cantidad_de_ventas_usuario = 0;
 if ($resultado->num_rows > 0) {
-    $cantidad_de_ventas_usuario = $resultado->num_rows; 
+    $cantidad_de_ventas_usuario = $resultado->num_rows;
     while($row = $resultado->fetch_assoc()) {
         $total += $row["precio"] * $row["cantidad"];
     }
@@ -72,313 +72,276 @@ $conn->query($sql_update);
             background: white url("assets/img/favicons/ui-anim_basic_16x16.gif") right center no-repeat;
         }
     </style>
-        <!-- Page Content -->
-        <div class="content content-boxed">
-            <!-- Section -->
-            <div class="bg-image img-rounded overflow-hidden push" style="background-image: url('assets/img/photos/_photo25@2x.jpg');background-position-y:-280px;">
-                <div class="bg-black-op">
-                    <div class="content">
-                        <div class="block block-transparent block-themed text-center">
-                            <div class="block-content">
-                                <h1 class="h1 font-w700 text-white animated fadeInDown push-5">Área Ventas</h1>
-                                <h2 class="h4 font-w400 text-white-op animated fadeInUp">Se vendieron <?php echo $cantidad_de_ventas; ?> productos hoy</h2>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- END Section -->
+    <!-- Page Content -->
+    <div class="content content-boxed sigav-app">
 
-            <!-- Stats -->
-            <div class="row text-uppercase">
-                <div class="col-xs-6 col-sm-3">
-                    <div class="block block-rounded">
-                        <div class="block-content block-content-full">
-                            <div class="font-s12 font-w700">Productos Vendidos</div>
-                            <a class="h2 font-w300 text-primary" href="javascript:void(0)"><?php echo $cantidad_de_ventas_usuario; ?></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6 col-sm-3">
-                    <div class="block block-rounded">
-                        <div class="block-content block-content-full">
-                            <div class="font-s12 font-w700">Caja</div>
-                            <a class="h2 font-w300 text-primary" href="javascript:void(0)">$ <?php echo $caja; ?></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6 col-sm-3">
-                    <div class="block block-rounded">
-                        <div class="block-content block-content-full">
-                            <div class="font-s12 font-w700">Facturado</div>
-                            <a class="h2 font-w300 text-primary" href="javascript:void(0)">$ <?php echo $total; ?></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6 col-sm-3">
-                    <div class="block block-rounded">
-                        <div class="block-content block-content-full">
-                            <div class="font-s12 font-w700">Total</div>
-                            <a class="h2 font-w300 text-primary" href="javascript:void(0)">$ <?php echo $total + $caja ?></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- END Stats -->
-            <div class="block block-rounded" id="add_success" style="display: none;background-color: #46c37b !important;color:white;">
-                <div class="block-header">
-                    <div class="col-xs-12 bg-success" id="nombre-devuelto"></div>
-                </div>
-            </div>
-            <div class="block block-rounded" id="add_success_error" style="display: none;background-color: #d26a5c !important;color:white;">
-                <div class="block-header">
-                    <div class="col-xs-12 bg-danger" id="nombre-devuelto-error"></div>
-                </div>
-            </div>
-            <div class="block block-rounded">
-                <div class="block-content">
-                    <form class="form-horizontal" action="bd_dashboard.html" method="post" onsubmit="return false;">
-                        <div class="form-group">
-                            <div class="col-xs-4">
-                                <label for="bd-qsettings-name">Código de Barras</label>
-                                <input class="form-control" type="text" id="codigo-barras" name="codigo-barras" placeholder="Lea o ingrese el codigo de barras" value="">
-                            </div>
-                            <div class="col-xs-3">
-                                <label for="bd-qsettings-name">Nombre</label>
-                                <input class="form-control" type="text" id="nombre-producto" name="nombre-producto" placeholder="Producto 1" value="">
-                                <input class="form-control" type="hidden" id="producto_id" name="producto_id" placeholder="" value="">
-                            </div>
-                            <div class="col-xs-1">
-                                <label for="bd-qsettings-name">Stock</label>
-                                <input class="form-control" type="text" id="stockactual" name="stockactual" disabled="" value="">
-                            </div>
-                            <div class="col-xs-1">
-                                <label for="bd-qsettings-name">Cant</label>
-                                <input class="form-control numbers" type="text" id="cantidad" name="cantidad" placeholder="1,2,3..." value="1">
-                            </div>
-                            <div class="col-xs-1">
-                                <label>Monto</label>
-                                <input class="form-control numbers" type="text" id="precio" name="precio" placeholder="utilizar el . como decimal" value="1">
-                            </div>
-                            <div class="col-xs-2">
-                                <button class="btn btn-sm btn-minw btn-rounded btn-primary" type="button" id="anadir_venta">
-                                    <i class="fa fa-check push-5-r"></i>A&ntilde;adir
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <!-- Products -->
-            <div class="block block-rounded">
-                <div class="block-header">
-                    <h3 class="block-title">Venta Actual Total: $ <label id="total_ventas" style="font-size:15px;">0.00</label></h3>
-                </div>
-                <div class="block-content" style="text-align: center">
-                    <div class="table-responsive">
-                        <table class="table table-hover table-vcenter">
-                            <tbody id="tablaProductos">
-                
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-xs-6">
-                    <h3 class="block-title">Forma de Pago</h3>
-                        <label class="radio-inline" for="example-inline-efectivo">
-                            <input type="radio" name="example-inline-pago"  id="efectivo" checked='true' value="1"> Efectivo
-                        </label>
-                        <label class="radio-inline" for="example-inline-debito">
-                            <input type="radio" name="example-inline-pago" id="debito" value="2"> Debito
-                        </label>
-                        <label class="radio-inline" for="example-inline-credito">
-                            <input type="radio" name="example-inline-pago" id="credito" value="3"> Credito
-                        </label>
-                        <label class="radio-inline" for="example-inline-credito">
-                            <input type="radio" name="example-inline-pago" id="transferencia" value="4"> Transferencia
-                        </label>
-                    </div>
-                    <div class="col-xs-6">
-                        <h3 class="block-title">IVA</h3>
-                        <label class="radio-inline" for="example-inline-efectivo">
-                            <input type="radio" name="example-inline-iva"  id="resp_i"  value="1"> Resp. Inscripto
-                        </label>
-                        <label class="radio-inline" for="example-inline-debito">
-                            <input type="radio" name="example-inline-iva" id="mono" value="2"> Monotributista
-                        </label>
-                        <label class="radio-inline" for="example-inline-credito">
-                            <input type="radio" name="example-inline-iva" id="excento" value="3"> Excento
-                        </label>
-                        <label class="radio-inline" for="example-inline-credito">
-                            <input type="radio" name="example-inline-iva" checked='true' id="final" value="4"> Cons. Final
-                        </label>
-                    </div>
-                    <div class="col-xs-2" style="display:none">
-                    <?php $emitir = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/emitir"); ?>
-                        <label class="css-input switch switch-success">
-                            <input type="checkbox" id="emision_online" checked><span></span> Emitir Factura
-                        </label>
-                    </div>
-                       <div class="col-xs-2" style="display:none">
-                        <label class="css-input switch switch-success">
-                            <input type="checkbox" id="descontar_stock" checked><span></span> Descontar stock
-                        </label>
-                    </div>
-                    <?php
-                    $solicitar = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/solicitar_datos"); 
-                    if (intval($solicitar) == 1){?>
-                    
-                    <div class="col-xs-12" style="margin-top:4%;">
-                        <div class="form-group">
-                            <div class="col-xs-3">
-                                <label for="bd-qsettings-name">Nombre y apellido</label>
-                                <input class="form-control" type="hidden" id="clientes_id" name="clientes_id" placeholder="" value="">
-                                <input class="form-control" type="text" id="nombre-cliente" name="nombre-cliente" autocomplete="false" placeholder="Ingrese el nombre y apellido" value="">
-                            </div>
-                            
-                            <div class="col-xs-3">
-                                <label>Direcci&oacute;n</label>
-                                <input class="form-control" type="text" id="direccion-cliente" name="direccion-cliente" placeholder="Direccion 324, Viedma, Rio Negro" value="">
-                            </div>
-                            <div class="col-xs-2">
-                                <label for="bd-qsettings-name">Tipo de Documento</label>
-                                <select id="tipo"  class="form-control" name="tipo">
-                                <?php
-                                try{
-                                    $cuit = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/cuit");
-
-                                    $afip = new Afip(array("CUIT" => $cuit, "production" => TRUE));
-                                    $document_types = $afip->ElectronicBilling->GetDocumentTypes();
-                                    foreach ($document_types as $key => $value) {
-                                        if ($value->Desc == "CUIT" || $value->Desc == "CUIL" || $value->Desc == "CDI"){
-                                ?>
-                                        <option value="<?php echo $value->Id ?>" ><?php echo $value->Desc ?></option>
-                                <?php
-                                        }
-                                    }
-                                ?>
-                                
-                                <?php 
-                                }catch(Exception $e){
-                                    $document_types = array();
-                                    ?>
-                                        <option value="0" >Sin documentos cargados</option>
-                                    <?php
-                                }
-                                ?>
-                                </select>
-                            </div>
-                            <div class="col-xs-2">
-                                <label for="bd-qsettings-name">CUIT, CUIL &oacute; CDI</label>
-                                <input class="form-control" type="text" maxlength="11" id="documento-cliente" name="documento-cliente" placeholder=" Sin guiones, XXXXXXXXXXX" value="">
-                            </div>
-                            
-                            <div class="col-xs-2">
-                                <label>Fecha de Facturaci&oacute;n</label>
-                                <input class="form-control" type="date" id="fecha" name="fecha" placeholder="dd/mm/yyyy" value="<?php echo date("Y-m-d") ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <?php 
-                    }
-                    $emitir = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/emitir"); ?>
-                    
-                        <button class="btn btn-sm btn-minw btn-rounded btn-primary" type="button" id="concretar_venta" style="margin-bottom: 20px;margin-top: 20px;width: 30%;">
-                            <i class="fa fa-check push-5-r"></i>Concretar Venta y facturar
-                        </button>
-                        <div id="espere_venta_activa" style="display:none;" ><i>(En proceso de emisión, por favor aguarde unos segundos)</i></div>
-                        <div id="emitir_online"><i>(Se encuentra habilitada la emisión online de Factura Electrónica)</i></div>
-                        <button class="btn btn-sm btn-minw btn-rounded btn-primary" type="button" id="presupuesto" name="presupuesto" style="display:none;margin-top: 20px;margin-bottom: 20px;width: 30%;">
-                            <i class="fa fa-check push-5-r"></i>Concretar Venta
-                        </button>                    
-                </div>
-            </div>
-            <div class="block block-rounded" id="factura_iframe" >
-                <div class="block-header">
-                    <h3 class="block-title">Factura</h3>
-                </div>
-                <div class="col-xs-12" style="margin-top:4%;margin-bottom:4%;">
-                    <div class="form-group">
-                        <div class="col-xs-6">
-                            <label for="bd-qsettings-name">Mail donde enviar factura:</label>
-                            <input class="form-control" type="text" id="mail_factura" name="mail_factura" placeholder="ingrese el mail" value="">
-                        </div><div class="col-xs-6">
-                            <button class="btn btn-minw btn-rounded btn-primary" type="button" id="enviar_mail" name="enviar_mail" style="margin-top: 20px;margin-bottom: 20px;width: 30%;">
-                                <i class="fa fa-check push-5-r"></i>Enviar Factura
-                            </button>
-                        </div><div  style="display:none" id="mensaje_enviado" class="col-xs-12">
-                            <p style="color:#2d62a5;font-weight: bold;font-size: 12pt;"><i>El mail fue enviado correctamente</i></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="block-content" style="text-align: center">
-                    <iframe id="iframe" style="width: 98%;height: 300px;margin-bottom: 30px;"></iframe>
-                </div>
-            </div>
-            <!-- END Products -->
-            <?php if (intval($emitir) != 1){?>
-            <!-- Productos Vendidos -->
-            <div class="block block-rounded">
-                <div class="block-header">
-                    <h3 class="block-title">Ventas</h3>
-                </div>
-                <div class="block-content">
-                    <div class="table-responsive">
-                        <table class="table table-hover table-vcenter">
-                            <tbody>
-                            <?php
-                            $sql = "SELECT v.*,v.fecha as fecha_vta, v.usuario as usuario_vta,pr.*,st.stock as stock_sucursal FROM `ventas` v inner join productos pr on pr.id = v.productos_id left join stock st ON (st.productos_id = pr.id AND st.sucursal_id = ".getSucursal($_COOKIE["sucursal"]).") WHERE v.`fecha` > '".date("Y-m-d")."' ORDER BY v.id DESC";
-                            // echo $sql;exit();
-                            $resultado = $conn->query($sql);
-                            if ($resultado->num_rows > 0) {
-                                // output data of each row
-                                while($row = $resultado->fetch_assoc()) { ?>
-                                    <tr>
-                                       <td class="text-center">
-                                           <div style="width: 180px;">
-                                           <?php
-                                           $sql_img = "SELECT * FROM imagen_producto WHERE productos_id =".$row["id"];
-                                            // echo $sql;exit();
-                                            $resultado_img = $conn->query($sql_img);
-                                            if ($resultado_img->num_rows > 0) { 
-                                                if ($row_img = $resultado_img->fetch_assoc()) {?>
-                                                <img class="img-responsive" src="<?php echo (isset($row_img["imagen_url"]))?str_replace('/'.$row["id"].'/','/'.$row["id"].'/thumb_300x300_',$row_img["imagen_url"]):"assets/img/photos/no-image-featured-image.png"; ?>" alt="">
-                                            <?php } }else{ ?>
-                                                <img class="img-responsive" src="assets/img/photos/no-image-featured-image.png" alt="">
-                                            <?php } ?>
-                                            </div>
-                                           </td>
-                                       <td>
-                                           <h4><?php echo $row["nombre"] ?></h4>
-                                        <p class="remove-margin-b">Producto Vendido a las <?php echo $row["fecha_vta"] ?></p>
-                                        <a class="font-w600" href="javascript:void(0)">Por <?php echo $row["usuario_vta"] ?></a>
-                                            </td>
-                                        <td>
-                                            <p class="remove-margin-b">Precio: <span class="text-gray-dark">$ <?php echo  $row["precio"] ?></span></p>
-                                            <p>Quedan en Stock: <span class="text-gray-dark"><?php echo (isset($row["stock_sucursal"]))?$row["stock_sucursal"]:0; ?></span></p>
-                                        </td>
-                                        <td class="text-center">
-                                            <span class="h1 font-w700 text-success">$ <?php echo $row["precio"] * $row["cantidad"]; ?></span>
-                                        </td>
-                                    </tr>
-                                <?php }
-                            } else {?>
-                                <tr>
-                                    <td>
-                                        <label  style="text-align: center;padding-bottom: 15px;font-weight: bold;width: 100%;">No hay ventas en el d&iacute;a de hoy</label>
-                                    </td>
-                                </tr>
-                            <?php }
-                            $conn->close();
-                            ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <!-- END Products -->
-            <?php  } ?>
+        <!-- Hero -->
+        <div class="sg-hero">
+            <p class="sg-hero__eyebrow">Punto de venta</p>
+            <h1>Área de Ventas</h1>
+            <p>Se vendieron <b><?php echo $cantidad_de_ventas; ?></b> productos hoy</p>
         </div>
-        <!-- END Page Content -->
+
+        <!-- Stats -->
+        <div class="sg-stats">
+            <div class="sg-stat">
+                <div class="sg-stat__label"><i class="fa fa-shopping-bag"></i> Productos Vendidos</div>
+                <div class="sg-stat__value"><?php echo $cantidad_de_ventas_usuario; ?></div>
+            </div>
+            <div class="sg-stat">
+                <div class="sg-stat__label"><i class="fa fa-money"></i> Caja</div>
+                <div class="sg-stat__value">$<?php echo $caja; ?></div>
+            </div>
+            <div class="sg-stat">
+                <div class="sg-stat__label"><i class="fa fa-file-text-o"></i> Facturado</div>
+                <div class="sg-stat__value">$<?php echo $total; ?></div>
+            </div>
+            <div class="sg-stat sg-stat--accent">
+                <div class="sg-stat__label"><i class="fa fa-line-chart"></i> Total</div>
+                <div class="sg-stat__value">$<?php echo $total + $caja ?></div>
+            </div>
+        </div>
+
+        <!-- Alertas (mismos IDs que usa ventas.js) -->
+        <div class="sg-alert sg-alert--ok" id="add_success" style="display:none;">
+            <i class="fa fa-check-circle"></i><span id="nombre-devuelto"></span>
+        </div>
+        <div class="sg-alert sg-alert--err" id="add_success_error" style="display:none;">
+            <i class="fa fa-exclamation-circle"></i><span id="nombre-devuelto-error"></span>
+        </div>
+
+        <!-- Cargar producto -->
+        <section class="sg-card">
+            <header class="sg-card__head">
+                <div class="sg-card__title"><span class="sg-dot"></span><h3>Cargar producto</h3></div>
+                <p class="sg-card__hint">Escaneá el código de barras o buscá por nombre</p>
+            </header>
+            <div class="sg-card__body">
+                <form class="sg-pos-form" action="bd_dashboard.html" method="post" onsubmit="return false;">
+                    <div class="sg-pos-grid">
+                        <div class="sg-field">
+                            <label for="codigo-barras">Código de Barras</label>
+                            <input class="form-control" type="text" id="codigo-barras" name="codigo-barras" placeholder="Lea o ingrese el código" value="">
+                        </div>
+                        <div class="sg-field">
+                            <label for="nombre-producto">Nombre</label>
+                            <input class="form-control" type="text" id="nombre-producto" name="nombre-producto" placeholder="Buscar producto…" value="">
+                            <input type="hidden" id="producto_id" name="producto_id" value="">
+                        </div>
+                        <div class="sg-field">
+                            <label for="stockactual">Stock</label>
+                            <input class="form-control sg-mono-input" type="text" id="stockactual" name="stockactual" disabled value="">
+                        </div>
+                        <div class="sg-field">
+                            <label for="cantidad">Cant.</label>
+                            <input class="form-control numbers sg-mono-input" type="text" id="cantidad" name="cantidad" placeholder="1" value="1">
+                        </div>
+                        <div class="sg-field">
+                            <label for="precio">Monto</label>
+                            <input class="form-control numbers sg-mono-input" type="text" id="precio" name="precio" placeholder="0.00" value="1">
+                        </div>
+                        <div class="sg-field">
+                            <label aria-hidden="true">&nbsp;</label>
+                            <button class="sg-btn sg-btn--primary" type="button" id="anadir_venta">
+                                <i class="fa fa-plus"></i> Añadir
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Venta en curso -->
+        <section class="sg-card">
+            <header class="sg-card__head">
+                <div class="sg-card__title"><span class="sg-dot sg-dot--edit"></span><h3>Venta en curso</h3></div>
+                <span class="sg-total-badge">Total&nbsp; $ <span id="total_ventas">0.00</span></span>
+            </header>
+            <div class="sg-card__body">
+                <div class="sg-table-wrap">
+                    <table class="sg-sale-table">
+                        <tbody id="tablaProductos"></tbody>
+                    </table>
+                </div>
+
+                <!-- Forma de pago / IVA -->
+                <div class="sg-subgrid">
+                    <div>
+                        <h4>Forma de pago</h4>
+                        <div class="sg-options">
+                            <label class="sg-radio" for="efectivo"><input type="radio" name="example-inline-pago" id="efectivo" checked value="1"><span class="sg-radio__dot"></span> Efectivo</label>
+                            <label class="sg-radio" for="debito"><input type="radio" name="example-inline-pago" id="debito" value="2"><span class="sg-radio__dot"></span> Débito</label>
+                            <label class="sg-radio" for="credito"><input type="radio" name="example-inline-pago" id="credito" value="3"><span class="sg-radio__dot"></span> Crédito</label>
+                            <label class="sg-radio" for="transferencia"><input type="radio" name="example-inline-pago" id="transferencia" value="4"><span class="sg-radio__dot"></span> Transferencia</label>
+                        </div>
+                    </div>
+                    <div>
+                        <h4>Condición IVA</h4>
+                        <div class="sg-options">
+                            <label class="sg-radio" for="resp_i"><input type="radio" name="example-inline-iva" id="resp_i" value="1"><span class="sg-radio__dot"></span> Resp. Inscripto</label>
+                            <label class="sg-radio" for="mono"><input type="radio" name="example-inline-iva" id="mono" value="2"><span class="sg-radio__dot"></span> Monotributista</label>
+                            <label class="sg-radio" for="excento"><input type="radio" name="example-inline-iva" id="excento" value="3"><span class="sg-radio__dot"></span> Exento</label>
+                            <label class="sg-radio" for="final"><input type="radio" name="example-inline-iva" id="final" checked value="4"><span class="sg-radio__dot"></span> Cons. Final</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toggles ocultos (los controla ventas.js) -->
+                <div style="display:none;">
+                    <label><input type="checkbox" id="emision_online" checked> Emitir Factura</label>
+                    <label><input type="checkbox" id="descontar_stock" checked> Descontar stock</label>
+                </div>
+
+                <?php
+                $solicitar = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/solicitar_datos");
+                if (intval($solicitar) == 1){ ?>
+                <!-- Datos del cliente (cuando AFIP los solicita) -->
+                <div class="sg-fieldset" style="margin-top:24px;">
+                    <span class="sg-fieldset__label">Datos del cliente · Facturación</span>
+                    <div class="sg-grid sg-grid--3">
+                        <div class="sg-field">
+                            <label for="nombre-cliente">Nombre y apellido</label>
+                            <input class="form-control" type="hidden" id="clientes_id" name="clientes_id" value="">
+                            <input class="form-control" type="text" id="nombre-cliente" name="nombre-cliente" autocomplete="off" placeholder="Ingrese el nombre y apellido" value="">
+                        </div>
+                        <div class="sg-field">
+                            <label for="direccion-cliente">Dirección</label>
+                            <input class="form-control" type="text" id="direccion-cliente" name="direccion-cliente" placeholder="Dirección 324, Viedma, Río Negro" value="">
+                        </div>
+                        <div class="sg-field">
+                            <label for="tipo">Tipo de Documento</label>
+                            <select id="tipo" class="form-control" name="tipo">
+                            <?php
+                            try{
+                                $cuit = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/cuit");
+
+                                $afip = new Afip(array("CUIT" => $cuit, "production" => TRUE));
+                                $document_types = $afip->ElectronicBilling->GetDocumentTypes();
+                                foreach ($document_types as $key => $value) {
+                                    if ($value->Desc == "CUIT" || $value->Desc == "CUIL" || $value->Desc == "CDI"){
+                            ?>
+                                    <option value="<?php echo $value->Id ?>" ><?php echo $value->Desc ?></option>
+                            <?php
+                                    }
+                                }
+                            ?>
+                            <?php
+                            }catch(Exception $e){
+                                $document_types = array();
+                                ?>
+                                    <option value="0" >Sin documentos cargados</option>
+                                <?php
+                            }
+                            ?>
+                            </select>
+                        </div>
+                        <div class="sg-field">
+                            <label for="documento-cliente">CUIT, CUIL ó CDI</label>
+                            <input class="form-control" type="text" maxlength="11" id="documento-cliente" name="documento-cliente" placeholder="Sin guiones, XXXXXXXXXXX" value="">
+                        </div>
+                        <div class="sg-field">
+                            <label for="fecha">Fecha de Facturación</label>
+                            <input class="form-control" type="date" id="fecha" name="fecha" value="<?php echo date("Y-m-d") ?>">
+                        </div>
+                    </div>
+                </div>
+                <?php
+                }
+                $emitir = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/emitir"); ?>
+
+                <!-- Acciones de la venta -->
+                <div class="sg-cta-row">
+                    <button class="sg-btn sg-btn--primary sg-btn--lg" type="button" id="concretar_venta">
+                        <i class="fa fa-check"></i> Concretar venta y facturar
+                    </button>
+                    <button class="sg-btn sg-btn--ghost sg-btn--lg" type="button" id="presupuesto" name="presupuesto" style="display:none;">
+                        <i class="fa fa-check"></i> Concretar venta
+                    </button>
+                    <span id="espere_venta_activa" class="sg-note" style="display:none;">(En proceso de emisión, por favor aguarde unos segundos)</span>
+                    <span id="emitir_online" class="sg-note sg-note--accent">Emisión online de Factura Electrónica habilitada</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Factura emitida -->
+        <section class="sg-card" id="factura_iframe" style="display:none;">
+            <header class="sg-card__head">
+                <div class="sg-card__title"><span class="sg-dot"></span><h3>Factura</h3></div>
+            </header>
+            <div class="sg-card__body">
+                <div class="sg-grid sg-grid--2" style="align-items:end; margin-bottom:18px;">
+                    <div class="sg-field">
+                        <label for="mail_factura">Mail donde enviar la factura</label>
+                        <input class="form-control" type="text" id="mail_factura" name="mail_factura" placeholder="ingrese el mail" value="">
+                    </div>
+                    <div class="sg-field">
+                        <label aria-hidden="true">&nbsp;</label>
+                        <button class="sg-btn sg-btn--ghost" type="button" id="enviar_mail" name="enviar_mail">
+                            <i class="fa fa-paper-plane"></i> Enviar factura
+                        </button>
+                    </div>
+                </div>
+                <p id="mensaje_enviado" class="sg-note sg-note--accent" style="display:none;">El mail fue enviado correctamente</p>
+                <iframe id="iframe"></iframe>
+            </div>
+        </section>
+
+        <?php if (intval($emitir) != 1){ ?>
+        <!-- Ventas del día -->
+        <section class="sg-card">
+            <header class="sg-card__head">
+                <div class="sg-card__title"><span class="sg-dot"></span><h3>Ventas de hoy</h3></div>
+            </header>
+            <div class="sg-card__body sg-table-wrap">
+                <table class="sg-sale-table">
+                    <tbody>
+                    <?php
+                    $sql = "SELECT v.*,v.fecha as fecha_vta, v.usuario as usuario_vta,pr.*,st.stock as stock_sucursal FROM `ventas` v inner join productos pr on pr.id = v.productos_id left join stock st ON (st.productos_id = pr.id AND st.sucursal_id = ".getSucursal($_COOKIE["sucursal"]).") WHERE v.`fecha` > '".date("Y-m-d")."' ORDER BY v.id DESC";
+                    // echo $sql;exit();
+                    $resultado = $conn->query($sql);
+                    if ($resultado->num_rows > 0) {
+                        // output data of each row
+                        while($row = $resultado->fetch_assoc()) { ?>
+                            <tr>
+                                <td style="width:72px;">
+                                    <?php
+                                    $sql_img = "SELECT * FROM imagen_producto WHERE productos_id =".$row["id"];
+                                    // echo $sql;exit();
+                                    $resultado_img = $conn->query($sql_img);
+                                    if ($resultado_img->num_rows > 0) {
+                                        if ($row_img = $resultado_img->fetch_assoc()) {?>
+                                        <img class="img-responsive" src="<?php echo (isset($row_img["imagen_url"]))?str_replace('/'.$row["id"].'/','/'.$row["id"].'/thumb_300x300_',$row_img["imagen_url"]):"assets/img/photos/no-image-featured-image.png"; ?>" alt="">
+                                    <?php } }else{ ?>
+                                        <img class="img-responsive" src="assets/img/photos/no-image-featured-image.png" alt="">
+                                    <?php } ?>
+                                </td>
+                                <td>
+                                    <h4><?php echo $row["nombre"] ?></h4>
+                                    <p>Vendido a las <?php echo $row["fecha_vta"] ?> · por <?php echo $row["usuario_vta"] ?></p>
+                                </td>
+                                <td>
+                                    <p>Precio: <span class="sg-strong">$ <?php echo  $row["precio"] ?></span></p>
+                                    <p>Quedan en stock: <?php echo (isset($row["stock_sucursal"]))?$row["stock_sucursal"]:0; ?></p>
+                                </td>
+                                <td class="sg-num">
+                                    <span class="h1">$ <?php echo $row["precio"] * $row["cantidad"]; ?></span>
+                                </td>
+                            </tr>
+                        <?php }
+                    } else {?>
+                        <tr>
+                            <td colspan="4"><div class="sg-sale-empty">No hay ventas en el día de hoy</div></td>
+                        </tr>
+                    <?php }
+                    $conn->close();
+                    ?>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <?php  } ?>
+    </div>
+    <!-- END Page Content -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>

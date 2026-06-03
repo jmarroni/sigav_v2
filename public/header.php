@@ -87,6 +87,12 @@ function getMes($numero){
     <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
     <link rel="stylesheet" id="css-main" href="/assets/css/oneui.css">
     <link rel="stylesheet" id="css-main" href="/assets/css/jquery.dataTables.min.css">
+
+    <!-- SIGAV UI Kit: tipografía + look unificado del menú (consola /carga) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="/assets/css/sigav-ui.css?v=1.01">
 	<script src="/assets/js/core/jquery.min.js"></script>
     <!-- You can include a specific file from css/themes/ folder to alter the default color theme of the template. eg: -->
     <!-- <link rel="stylesheet" id="css-theme" href="/assets/css/themes/flat.min.css"> -->
