@@ -5,87 +5,79 @@
     }
 </style>
 @section("body")
-<div class="content content-boxed">
-    <!-- Section -->
-    <div class="bg-image img-rounded overflow-hidden push" style="background-image: url('/assets/img/photos/photo25@2x.jpg');">
-        <div class="bg-black-op">
-            <div class="content">
-                <div class="block block-transparent block-themed text-center">
-                    <div class="block-content">
-                        <h1 class="h1 font-w700 text-white animated fadeInDown push-5" style="color:white">Reporte de notas de crédito</h1>
-                        <h2 class="h4 font-w400 text-white-op animated fadeInUp"></h2>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="content content-boxed sigav-app">
+
+    <!-- Hero -->
+    <div class="sg-hero">
+        <p class="sg-hero__eyebrow">Reportes</p>
+        <h1>Reporte de notas de crédito</h1>
     </div>
-    <!-- END Section -->   
-    
-            <!-- Stats -->
-            <div class="row text-uppercase">
-                <form action="reportes.php" method="POST" >
-                    <div class="block block-rounded">
-                        <div class="col-sm-5">
-                        <div class="block block-rounded">
-                                <div class="block-content block-content-full">
-                                    Desde:&nbsp;<input type="date" class="form-control" name="reporte_desde" id="reporte_desde" value="<?php //echo $reporte_desde; ?>">
-                                </div></div>
-                        </div>
-                        <div class="col-sm-5">
-                        <div class="block block-rounded">                
-                            <div class="block-content block-content-full">
-                                Hasta&nbsp;<input type="date" class="form-control" name="reporte_hasta" id="reporte_hasta" value="<?php //echo $reporte_hasta; ?>">
-                            </div></div>
-                        </div>
-                        
-                        <div class="col-sm-2">
-                        <div class="block block-rounded">               
-                            <div class="block-content block-content-full" style="padding-top: 40px;">
-                                <button class="btn btn-primary" style="width: 100%;">Filtrar</button>
-                            </div></div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-                <div class="row text-uppercase">
-                    <div class="col-sm-12">
-                        <table id="tabla_compras">
-                            <thead>
-                                <tr>
-                                    <td>Numero</td>
-                                    <td>Total</td>
-                                    <td>Fecha</td>
-                                    <td>Usuario</td>
-                                    <td>Sucursal</td>
-                                    <td>Link</td>
-                                    <td>Mail Reenvio</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                           
-                            @if (count($notasCredito)>0)
-                                @foreach($notasCredito as $notaCredito)
-                                 <?php $i=0;?>
-                                    <tr style="<?php echo (($i % 2)== 0)?"background-color: #fff !important;":"background-color: #f9f9f9 !important;"; ?>">
-                                        <td><?php echo $notaCredito->numero; ?></td>
-                                        <td>$&nbsp;<?php echo number_format($notaCredito->total,2,",","."); ?></td>
-                                        <td><?php echo $notaCredito->fecha; ?></td>
-                                        <td><?php echo $notaCredito->usuario; ?></td>
-                                        <td><?php echo $notaCredito->nombre_sucursal; ?></td>
-                                        <td><a id="reenvio_pdf_<?php echo $notaCredito->numero; ?>" target="_blank" href="<?php echo $notaCredito->pdf; ?>">LINK</a></td>
-                                        <td><a id="reenvio_mail_<?php echo $notaCredito->numero; ?>" href="#">REENVIAR MAIL</a></td>
-                                    </tr>
-                                <?php $i++;?>
-                            @endforeach
-                            @endif
-                            
-                            </tbody>
-                        </table>
-                    </div>
+
+    <!-- Filtros -->
+    <section class="sg-card">
+        <header class="sg-card__head">
+            <div class="sg-card__title"><span class="sg-dot"></span><h3>Filtros</h3></div>
+        </header>
+        <div class="sg-card__body">
+            <form class="sg-filters" action="reportes.php" method="POST" >
+                <div class="sg-field">
+                    <label for="reporte_desde">Desde</label>
+                    <input type="date" class="form-control" name="reporte_desde" id="reporte_desde" value="<?php //echo $reporte_desde; ?>">
                 </div>
-            
+                <div class="sg-field">
+                    <label for="reporte_hasta">Hasta</label>
+                    <input type="date" class="form-control" name="reporte_hasta" id="reporte_hasta" value="<?php //echo $reporte_hasta; ?>">
+                </div>
+                <div class="sg-filter-actions">
+                    <button class="sg-btn sg-btn--primary" type="submit"><i class="fa fa-filter"></i> Filtrar</button>
+                </div>
+            </form>
         </div>
-        <!-- END Page Content -->
+    </section>
+
+    <!-- Resultados -->
+    <section class="sg-card">
+        <header class="sg-card__head">
+            <div class="sg-card__title"><span class="sg-dot"></span><h3>Resultados</h3></div>
+        </header>
+        <div class="sg-card__body sg-table-wrap">
+            <table id="tabla_compras" class="sg-table">
+                <thead>
+                    <tr>
+                        <th>Numero</th>
+                        <th class="sg-num">Total</th>
+                        <th>Fecha</th>
+                        <th>Usuario</th>
+                        <th>Sucursal</th>
+                        <th>Link</th>
+                        <th>Mail Reenvio</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                @if (count($notasCredito)>0)
+                    @foreach($notasCredito as $notaCredito)
+                     <?php $i=0;?>
+                        <tr style="<?php echo (($i % 2)== 0)?"background-color: #fff !important;":"background-color: #f9f9f9 !important;"; ?>">
+                            <td class="sg-strong"><?php echo $notaCredito->numero; ?></td>
+                            <td class="sg-num sg-mono">$&nbsp;<?php echo number_format($notaCredito->total,2,",","."); ?></td>
+                            <td><?php echo $notaCredito->fecha; ?></td>
+                            <td><?php echo $notaCredito->usuario; ?></td>
+                            <td><?php echo $notaCredito->nombre_sucursal; ?></td>
+                            <td><a id="reenvio_pdf_<?php echo $notaCredito->numero; ?>" target="_blank" href="<?php echo $notaCredito->pdf; ?>">LINK</a></td>
+                            <td><a id="reenvio_mail_<?php echo $notaCredito->numero; ?>" href="#">REENVIAR MAIL</a></td>
+                        </tr>
+                    <?php $i++;?>
+                @endforeach
+                @endif
+
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+<!-- END Page Content -->
 
         <div class="modal in" id="reenvio_mail-modal" tabindex="-1" role="dialog" aria-hidden="true" style="display: none; padding-right: 16px;">
             <div class="modal-dialog modal-lg">

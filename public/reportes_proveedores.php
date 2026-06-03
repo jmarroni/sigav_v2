@@ -126,66 +126,63 @@ if ($resultado->num_rows > 0) {
         }
     </style>
         <!-- Page Content -->
-        <div class="content content-boxed">
-            <!-- Section -->
-            <div class="bg-image img-rounded overflow-hidden push" style="background-image: url('assets/img/photos/photo25@2x.jpg');">
-                <div class="bg-black-op">
-                    <div class="content">
-                        <div class="block block-transparent block-themed text-center">
-                            <div class="block-content">
-                                <h1 class="h1 font-w700 text-white animated fadeInDown push-5">Reporte de Pagos a Proveedores</h1>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- END Section -->
+        <div class="content content-boxed sigav-app">
 
-            <!-- Stats -->
-            <div class="row text-uppercase">
-            <form action="reportes.php" method="POST" >
-                <div class="block block-rounded">
-                    <div class="col-sm-4">
-                    <div class="block block-rounded">
-                            <div class="block-content block-content-full">
-                                Desde:&nbsp;<input type="date" class="form-control" name="reporte_desde" id="reporte_desde" value="<?php echo $reporte_desde; ?>">
-                            </div></div>
-                    </div>
-                    <div class="col-sm-4">
-                    <div class="block block-rounded">                
-                        <div class="block-content block-content-full">
-                            Hasta&nbsp;<input type="date" class="form-control" name="reporte_hasta" id="reporte_hasta" value="<?php echo $reporte_hasta; ?>">
-                        </div></div>
-                    </div>
-                    
-                    <div class="col-sm-3">
-                    <div class="block block-rounded">               
-                        <div class="block-content block-content-full" style="padding-top: 40px;">
-                            <button class="btn btn-primary" style="width: 100%;">Filtrar</button>
-                        </div></div>
-                    </div>
-                </div>
-            </form>
-                <div class="col-sm-12">
-                    <div class="block block-rounded">
-                        <div class="block-content block-content-full">
-                            <div id="columnchart_material" style="width: 100%; height: 500px;"></div>
+            <!-- Hero -->
+            <div class="sg-hero">
+                <p class="sg-hero__eyebrow">Reportes</p>
+                <h1>Reporte de Pagos a Proveedores</h1>
+            </div>
+
+            <!-- Filtros -->
+            <section class="sg-card">
+                <header class="sg-card__head">
+                    <div class="sg-card__title"><span class="sg-dot"></span><h3>Filtros</h3></div>
+                </header>
+                <div class="sg-card__body">
+                    <form class="sg-filters" action="reportes.php" method="POST">
+                        <div class="sg-field">
+                            <label for="reporte_desde">Desde</label>
+                            <input type="date" class="form-control" name="reporte_desde" id="reporte_desde" value="<?php echo $reporte_desde; ?>">
                         </div>
+                        <div class="sg-field">
+                            <label for="reporte_hasta">Hasta</label>
+                            <input type="date" class="form-control" name="reporte_hasta" id="reporte_hasta" value="<?php echo $reporte_hasta; ?>">
+                        </div>
+                        <div class="sg-filter-actions">
+                            <button class="sg-btn sg-btn--primary" type="submit"><i class="fa fa-filter"></i> Filtrar</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Grafico -->
+            <section class="sg-card">
+                <header class="sg-card__head">
+                    <div class="sg-card__title"><span class="sg-dot"></span><h3>Cuadro comparativo ventas / pago / ganancia / costo</h3></div>
+                </header>
+                <div class="sg-card__body">
+                    <div class="sg-chart">
+                        <div id="columnchart_material" style="width: 100%; height: 500px;"></div>
                     </div>
                 </div>
-                </div>
-                <div class="row text-uppercase">
-                    <div class="col-sm-12">
-                        <table id="tabla_compras">
+            </section>
+
+            <!-- Detalle -->
+            <section class="sg-card">
+                <header class="sg-card__head">
+                    <div class="sg-card__title"><span class="sg-dot"></span><h3>Detalle</h3></div>
+                </header>
+                <div class="sg-card__body sg-table-wrap">
+                        <table id="tabla_compras" class="sg-table">
                             <thead>
                                 <tr>
-                                    <td>Proveedor</td>
-                                    <td>Precio</td>
-                                    <td>Costo</td>
-                                    <td>Ganancia</td>
-                                    <td>Pagos</td>
-                                    
-                                    <td>Ganancia Final</td>
+                                    <th>Proveedor</th>
+                                    <th class="sg-num">Precio</th>
+                                    <th class="sg-num">Costo</th>
+                                    <th class="sg-num">Ganancia</th>
+                                    <th class="sg-num">Pagos</th>
+                                    <th class="sg-num">Ganancia Final</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -208,9 +205,9 @@ if ($resultado->num_rows > 0) {
                             ?>
                             </tbody>
                         </table>
-                    </div>
                 </div>
-            
+            </section>
+
         </div>
         <!-- END Page Content -->
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">

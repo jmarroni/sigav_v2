@@ -516,3 +516,91 @@
     width:100%; min-height:320px; border:1px solid var(--sg-line);
     border-radius:var(--sg-r-sm); background:var(--sg-surface-2);
 }
+
+/* ============================================================
+   3 · REPORTES — barra de filtros, gráficos y DataTables
+   Scopeado a .sigav-app. Da consistencia a las 10 pantallas
+   de reportes sin tocar su markup de tabla/JS.
+   ============================================================ */
+
+/* Fila de filtros dentro de una tarjeta */
+.sigav-app .sg-filters{
+    display:flex; flex-wrap:wrap; align-items:flex-end; gap:14px 16px;
+}
+.sigav-app .sg-filters .sg-field{ flex:1 1 200px; min-width:170px; }
+.sigav-app .sg-filters .sg-filter-actions{ flex:0 0 auto; display:flex; gap:10px; align-items:flex-end; }
+.sigav-app .sg-filters .sg-btn{ min-height:40px; }
+
+/* Contenedor de gráfico (Google Charts en reportes legacy) */
+.sigav-app .sg-chart{
+    border:1px solid var(--sg-line); border-radius:var(--sg-r-sm);
+    background:var(--sg-surface); padding:8px; overflow:hidden;
+}
+.sigav-app .sg-chart-grid{ display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); }
+
+/* Neutraliza restos de .block de OneUI que queden dentro de las tarjetas */
+.sigav-app .sg-card .block,
+.sigav-app .sg-card .block-rounded{
+    background:transparent !important; box-shadow:none !important;
+    border:0 !important; margin:0 !important;
+}
+.sigav-app .sg-card .block-content{ padding:0 !important; }
+
+/* ---------- Integración con DataTables ---------- */
+.sigav-app .dataTables_wrapper{ padding-top:4px; font-family:var(--sg-sans); }
+.sigav-app .dt-buttons{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+.sigav-app .dt-button{
+    font-family:var(--sg-sans) !important; font-size:12.5px !important; font-weight:600 !important;
+    color:var(--sg-ink-2) !important; background:var(--sg-surface) !important;
+    border:1px solid var(--sg-line) !important; border-radius:8px !important;
+    padding:7px 14px !important; margin:0 !important; box-shadow:var(--sg-shadow-sm) !important;
+    transition: all .15s ease !important;
+}
+.sigav-app .dt-button:hover{
+    color:var(--sg-accent-700) !important; background:var(--sg-accent-soft) !important;
+    border-color:#bfe7d5 !important; transform:translateY(-1px);
+}
+.sigav-app .dataTables_filter{ margin-bottom:14px; text-align:right; }
+.sigav-app .dataTables_filter label{
+    font-size:12.5px; color:var(--sg-muted); font-weight:600;
+    display:inline-flex; align-items:center; gap:8px;
+}
+.sigav-app .dataTables_filter input{
+    min-height:38px; padding:8px 12px; font-size:13.5px; font-family:var(--sg-sans);
+    color:var(--sg-ink); background:var(--sg-surface);
+    border:1px solid var(--sg-line) !important; border-radius:var(--sg-r-sm);
+    box-shadow:var(--sg-shadow-sm); margin-left:4px; min-width:240px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.sigav-app .dataTables_filter input:focus{ outline:none; border-color:var(--sg-accent) !important; box-shadow:var(--sg-ring); }
+.sigav-app .dataTables_length label{ font-size:12.5px; color:var(--sg-muted); font-weight:600; }
+.sigav-app .dataTables_length select{
+    min-height:34px; padding:4px 8px; border:1px solid var(--sg-line); border-radius:8px;
+    background:var(--sg-surface); color:var(--sg-ink); font-family:var(--sg-sans);
+}
+.sigav-app .dataTables_info{ font-size:12.5px; color:var(--sg-muted); padding-top:14px; }
+.sigav-app .dataTables_paginate{ padding-top:12px; }
+.sigav-app .dataTables_paginate .paginate_button{
+    padding:6px 12px !important; margin-left:4px; font-size:13px;
+    border:1px solid var(--sg-line) !important; border-radius:8px !important;
+    background:var(--sg-surface) !important; color:var(--sg-ink-2) !important;
+    box-shadow:var(--sg-shadow-sm); cursor:pointer;
+}
+.sigav-app .dataTables_paginate .paginate_button.current,
+.sigav-app .dataTables_paginate .paginate_button.current:hover{
+    background:var(--sg-accent) !important; border-color:var(--sg-accent) !important;
+    color:#fff !important; box-shadow:0 4px 10px -4px rgba(14,159,110,.5);
+}
+.sigav-app .dataTables_paginate .paginate_button:hover{
+    background:var(--sg-accent-soft) !important; border-color:#bfe7d5 !important; color:var(--sg-accent-700) !important;
+}
+.sigav-app .dataTables_paginate .paginate_button.disabled,
+.sigav-app .dataTables_paginate .paginate_button.disabled:hover{
+    color:#c2cedb !important; background:var(--sg-surface) !important; cursor:default; transform:none;
+}
+/* Cabeceras ordenables de DataTables sobre .sg-table */
+.sigav-app table.sg-table thead th{ outline:none; }
+.sigav-app table.dataTable thead .sorting,
+.sigav-app table.dataTable thead .sorting_asc,
+.sigav-app table.dataTable thead .sorting_desc{ cursor:pointer; }
+.sigav-app table.sg-table tbody tr:nth-child(even){ background:transparent; }

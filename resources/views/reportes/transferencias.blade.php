@@ -5,96 +5,83 @@
     }
 </style>
 @section("body")
-<div class="content content-boxed">
-    <!-- Section -->
-    <div class="bg-image img-rounded overflow-hidden push" style="background-image: url('/assets/img/photos/photo25@2x.jpg');">
-        <div class="bg-black-op">
-            <div class="content">
-                <div class="block block-transparent block-themed text-center">
-                    <div class="block-content">
-                        <h1 class="h1 font-w700 text-white animated fadeInDown push-5" style="color:white">Reporte de transferencias</h1>
-                        <h2 class="h4 font-w400 text-white-op animated fadeInUp"></h2>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- END Section -->
-    
-    <div class="block block-rounded">
-        <div class="block-header">
-            <h3 class="block-title">Reporte de transferencias</h3>
-        </div>
-        <div class="block-content">
-           <div class="row text-uppercase">
-            <form action="">
-                <div class="block block-rounded">
+<div class="content content-boxed sigav-app">
 
-                    <div class="col-sm-4">
-                        <div class="block block-rounded">
-                            <div class="block-content block-content-full">
-                                <label>Sucursal</label>
-                                <select class="form-control" name="sucursal" id="sucursal" >
-                                    <option value="0">Todas</option> 
-                                    @foreach($sucursales as $sucu)
-                                    <option @if($sucursal == $sucu->id) selected="selected" @endif value="{{$sucu->id}}">{{utf8_decode($sucu->nombre)}}</option>
-                                    @endforeach
-                                </select>
-                            </div></div>
-                        </div>
-                        <div class="col-sm-2">
-                            <div class="block block-rounded">               
-                                <div class="block-content block-content-full" style="padding-top: 40px;">
-                                    <button class="btn btn-primary" type="button" style="width: 100%;" id="btnBuscar">Filtrar</button>
-                                </div></div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="row text-uppercase">
-                    <div class="col-sm-12">
-                        <table id="tabla_compras">
-                            <thead>
-                                <tr>
-                                    <td>Nº</td>
-                                    <td>Sucursal origen</td>
-                                    <td>Sucursal destino</td>
-                                    <td>Fecha</td>
-                                    <td>Estado</td>
-                                    <td>Comentario</td>
-                                    <td>usuario</td>
-                                    <td>Remito</td>                            
-                                </tr>
-                            </thead>
-                            <tbody id="tbody">
-                                  @if (count($transferencias)>0)
-                                <?php  $i = 1; ?>
-                                @foreach($transferencias as $transferencia)
-                                <tr style="<?php echo (($i % 2)== 0)?"background-color: #fff !important;":"background-color: #f9f9f9 !important;"; ?>">
-                                    <td><?php echo $i ?></td>
-                                    <td>{{$transferencia->origen}}</td>
-                                    <td>{{$transferencia->destino}}</td>
-                                    <td>{{$transferencia->fecha}}</td>
-                                    <td>{{$transferencia->estado}}</td>
-                                    <td>{{$transferencia->comentario}}</td>
-                                    <td>{{$transferencia->usuario}}</td>
-                                    @if ($transferencia->archivo!=null)
-                                     <td><a href="{{$transferencia->archivo}}" target="blank">Ver</a></td>
-                                    @else
-                                    <td>No cargado</td>
-                                    @endif
-                                </tr>
-                                <?php $i++; ?>
-                                @endforeach
-                                @endif
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- END Products -->
+    <!-- Hero -->
+    <div class="sg-hero">
+        <p class="sg-hero__eyebrow">Reportes</p>
+        <h1>Reporte de transferencias</h1>
     </div>
+
+    <!-- Filtros -->
+    <section class="sg-card">
+        <header class="sg-card__head">
+            <div class="sg-card__title"><span class="sg-dot"></span><h3>Filtros</h3></div>
+        </header>
+        <div class="sg-card__body">
+            <form class="sg-filters" action="">
+                <div class="sg-field">
+                    <label for="sucursal">Sucursal</label>
+                    <select class="form-control" name="sucursal" id="sucursal">
+                        <option value="0">Todas</option>
+                        @foreach($sucursales as $sucu)
+                        <option @if($sucursal == $sucu->id) selected="selected" @endif value="{{$sucu->id}}">{{utf8_decode($sucu->nombre)}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="sg-filter-actions">
+                    <button class="sg-btn sg-btn--primary" type="button" id="btnBuscar"><i class="fa fa-filter"></i> Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Resultados -->
+    <section class="sg-card">
+        <header class="sg-card__head">
+            <div class="sg-card__title"><span class="sg-dot"></span><h3>Resultados</h3></div>
+        </header>
+        <div class="sg-card__body sg-table-wrap">
+            <table id="tabla_compras" class="sg-table">
+                <thead>
+                    <tr>
+                        <th>Nº</th>
+                        <th>Sucursal origen</th>
+                        <th>Sucursal destino</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Comentario</th>
+                        <th>usuario</th>
+                        <th>Remito</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                      @if (count($transferencias)>0)
+                    <?php  $i = 1; ?>
+                    @foreach($transferencias as $transferencia)
+                    <tr>
+                        <td><?php echo $i ?></td>
+                        <td class="sg-strong">{{$transferencia->origen}}</td>
+                        <td>{{$transferencia->destino}}</td>
+                        <td>{{$transferencia->fecha}}</td>
+                        <td>{{$transferencia->estado}}</td>
+                        <td>{{$transferencia->comentario}}</td>
+                        <td>{{$transferencia->usuario}}</td>
+                        @if ($transferencia->archivo!=null)
+                         <td><a href="{{$transferencia->archivo}}" target="blank">Ver</a></td>
+                        @else
+                        <td>No cargado</td>
+                        @endif
+                    </tr>
+                    <?php $i++; ?>
+                    @endforeach
+                    @endif
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
     @endsection
     @section("scripts")
     <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->

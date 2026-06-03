@@ -138,41 +138,40 @@ if ($resultado->num_rows > 0) {
         }
     </style>
         <!-- Page Content -->
-        <div class="content content-boxed">
-            <!-- Section -->
-            <div class="bg-image img-rounded overflow-hidden push" style="background-image: url('assets/img/photos/photo25@2x.jpg');">
-                <div class="bg-black-op">
-                    <div class="content">
-                        <div class="block block-transparent block-themed text-center">
-                            <div class="block-content">
-                                <h1 class="h1 font-w700 text-white animated fadeInDown push-5">Reporte de Clientes por Servicios</h1>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- END Section -->
+        <div class="content content-boxed sigav-app">
 
-            <!-- Stats -->
-            <div class="row text-uppercase">
-                <div class="col-sm-12">
-                    <div class="block block-rounded">
-                        <div class="block-content block-content-full">
-                            <div id="columnchart_material" style="width: 100%; height: 500px;"></div>
-                        </div>
+            <!-- Hero -->
+            <div class="sg-hero">
+                <p class="sg-hero__eyebrow">Reportes</p>
+                <h1>Reporte de Clientes por Servicios</h1>
+            </div>
+
+            <!-- Grafico -->
+            <section class="sg-card">
+                <header class="sg-card__head">
+                    <div class="sg-card__title"><span class="sg-dot"></span><h3>Cantidad de clientes por Servicio</h3></div>
+                </header>
+                <div class="sg-card__body">
+                    <div class="sg-chart">
+                        <div id="columnchart_material" style="width: 100%; height: 500px;"></div>
                     </div>
                 </div>
-                </div>
-                <div class="row text-uppercase">
-                    <div class="col-sm-12">
-                        <table id="tabla_compras">
+            </section>
+
+            <!-- Detalle -->
+            <section class="sg-card">
+                <header class="sg-card__head">
+                    <div class="sg-card__title"><span class="sg-dot"></span><h3>Detalle</h3></div>
+                </header>
+                <div class="sg-card__body sg-table-wrap">
+                        <table id="tabla_compras" class="sg-table">
                             <thead>
                                 <tr>
-                                    <td>Plan</td>
-                                    <td>Cliente</td>
-                                    <td>cuit</td>
-                                    <td>Domicilio</td>
-                                    <td>Localidad, Provincia</td>
+                                    <th>Plan</th>
+                                    <th>Cliente</th>
+                                    <th>cuit</th>
+                                    <th>Domicilio</th>
+                                    <th>Localidad, Provincia</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -203,9 +202,9 @@ if ($resultado->num_rows > 0) {
                             ?>
                             </tbody>
                         </table>
-                    </div>
                 </div>
-            
+            </section>
+
         </div>
         <!-- END Page Content -->
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">

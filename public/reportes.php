@@ -192,97 +192,102 @@ function line_chart() {
         }
     </style>
         <!-- Page Content -->
-        <div class="content content-boxed">
-            <!-- Section -->
-            <div class="bg-image img-rounded overflow-hidden push" style="background-image: url('assets/img/photos/photo25@2x.jpg');">
-                <div class="bg-black-op">
-                    <div class="content">
-                        <div class="block block-transparent block-themed text-center">
-                            <div class="block-content">
-                                <h1 class="h1 font-w700 text-white animated fadeInDown push-5">Reporte de ventas</h1>
-                                <h2 class="h4 font-w400 text-white-op animated fadeInUp">Se vendieron <?php echo $cantidad_de_ventas; ?> productos hoy <?php echo ($proveedor  != "")?"del proveedor selecionado":""; ?></h2>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- END Section -->
+        <div class="content content-boxed sigav-app">
 
-            <!-- Stats -->
-            <div class="row text-uppercase">
-            <form action="reportes.php" method="POST" >
-                <div class="block block-rounded">
-                    <div class="col-sm-3">
-                    <div class="block block-rounded">
-                            <div class="block-content block-content-full">
-                                Desde:&nbsp;<input type="date" class="form-control" name="reporte_desde" id="reporte_desde" value="<?php echo $reporte_desde; ?>">
-                            </div></div>
-                    </div>
-                    <div class="col-sm-3">
-                    <div class="block block-rounded">                
-                        <div class="block-content block-content-full">
-                            Hasta&nbsp;<input type="date" class="form-control" name="reporte_hasta" id="reporte_hasta" value="<?php echo $reporte_hasta; ?>">
-                        </div></div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="block block-rounded">
-                            <div class="block-content block-content-full">
-                                Proveedor&nbsp;<select class="form-control" name="proveedor">
-                                    <option value="0">Seleccione el proveedor</option>
-                                    <?php
-                                    $sql = "SELECT * FROM `proveedores`";
-                                    $resultado = $conn->query($sql);
-                                    if ($resultado->num_rows > 0) {
-                                        // output data of each row
-                                        while($row = $resultado->fetch_assoc()) {
-                                            ?>
-                                            <option <?php echo ($proveedor_id == $row["id"])?"selected='selected'":""; ?>value="<?php echo $row["id"]; ?>"><?php echo $row["nombre"]; ?></option>
-                                        <?php }} ?>
-                                </select>
-                            </div></div>
-                    </div>
-                    <div class="col-sm-2">
-                    <div class="block block-rounded">               
-                        <div class="block-content block-content-full" style="padding-top: 40px;">
-                            <button class="btn btn-primary" style="width: 100%;">Filtrar</button>
-                        </div></div>
-                    </div>
-                </div>
-            </form>
-                <div class="col-sm-12">
-                    <div class="block block-rounded">
-                        <div class="block-content block-content-full">
-                            <div id="chart_div" style="width: 100%; height: 500px;"></div>
+            <!-- Hero -->
+            <div class="sg-hero">
+                <p class="sg-hero__eyebrow">Reportes</p>
+                <h1>Reporte de ventas</h1>
+                <p>Se vendieron <?php echo $cantidad_de_ventas; ?> productos hoy <?php echo ($proveedor  != "")?"del proveedor selecionado":""; ?></p>
+            </div>
+
+            <!-- Filtros -->
+            <section class="sg-card">
+                <header class="sg-card__head">
+                    <div class="sg-card__title"><span class="sg-dot"></span><h3>Filtros</h3></div>
+                </header>
+                <div class="sg-card__body">
+                    <form class="sg-filters" action="reportes.php" method="POST">
+                        <div class="sg-field">
+                            <label for="reporte_desde">Desde</label>
+                            <input type="date" class="form-control" name="reporte_desde" id="reporte_desde" value="<?php echo $reporte_desde; ?>">
                         </div>
-                    </div>
-                </div>
-                <div class="col-sm-12">
-                    <div class="block block-rounded">
-                        <div class="block-content block-content-full">
-                            <div id="piechart_3d" style="width: 100%; height: 500px;"></div>
+                        <div class="sg-field">
+                            <label for="reporte_hasta">Hasta</label>
+                            <input type="date" class="form-control" name="reporte_hasta" id="reporte_hasta" value="<?php echo $reporte_hasta; ?>">
                         </div>
-                    </div>
-                </div>
-                <div class="col-sm-12">
-                    <div class="block block-rounded">
-                        <div class="block-content block-content-full">
-                            <div id="line_chart" style="width: 100%; height: 500px;"></div>
+                        <div class="sg-field">
+                            <label for="proveedor">Proveedor</label>
+                            <select class="form-control" name="proveedor" id="proveedor">
+                                <option value="0">Seleccione el proveedor</option>
+                                <?php
+                                $sql = "SELECT * FROM `proveedores`";
+                                $resultado = $conn->query($sql);
+                                if ($resultado->num_rows > 0) {
+                                    // output data of each row
+                                    while($row = $resultado->fetch_assoc()) {
+                                        ?>
+                                        <option <?php echo ($proveedor_id == $row["id"])?"selected='selected'":""; ?>value="<?php echo $row["id"]; ?>"><?php echo $row["nombre"]; ?></option>
+                                    <?php }} ?>
+                            </select>
                         </div>
+                        <div class="sg-filter-actions">
+                            <button class="sg-btn sg-btn--primary" type="submit"><i class="fa fa-filter"></i> Filtrar</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Graficos -->
+            <section class="sg-card">
+                <header class="sg-card__head">
+                    <div class="sg-card__title"><span class="sg-dot"></span><h3>Ganancia y Precio por hora</h3></div>
+                </header>
+                <div class="sg-card__body">
+                    <div class="sg-chart">
+                        <div id="chart_div" style="width: 100%; height: 500px;"></div>
                     </div>
                 </div>
+            </section>
+
+            <section class="sg-card">
+                <header class="sg-card__head">
+                    <div class="sg-card__title"><span class="sg-dot"></span><h3>Monto facturado por usuario</h3></div>
+                </header>
+                <div class="sg-card__body">
+                    <div class="sg-chart">
+                        <div id="piechart_3d" style="width: 100%; height: 500px;"></div>
+                    </div>
                 </div>
-                <div class="row text-uppercase">
-                    <div class="col-sm-12">
-                        <table id="tabla_compras">
+            </section>
+
+            <section class="sg-card">
+                <header class="sg-card__head">
+                    <div class="sg-card__title"><span class="sg-dot"></span><h3>Comparacion Pagos / Facturacion</h3></div>
+                </header>
+                <div class="sg-card__body">
+                    <div class="sg-chart">
+                        <div id="line_chart" style="width: 100%; height: 500px;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Detalle -->
+            <section class="sg-card">
+                <header class="sg-card__head">
+                    <div class="sg-card__title"><span class="sg-dot"></span><h3>Detalle</h3></div>
+                </header>
+                <div class="sg-card__body sg-table-wrap">
+                        <table id="tabla_compras" class="sg-table">
                             <thead>
                                 <tr>
-                                    <td>Producto</td>
-                                    <td>Cantidad Vendida</td>
-                                    <td>En Stock</td>
-                                    <td>Precio</td>
-                                    <td>Costo</td>
-                                    <td>Ganancia</td>
-                                    <td>Costo Reposici&oacute;n</td>
+                                    <th>Producto</th>
+                                    <th class="sg-num">Cantidad Vendida</th>
+                                    <th class="sg-num">En Stock</th>
+                                    <th class="sg-num">Precio</th>
+                                    <th class="sg-num">Costo</th>
+                                    <th class="sg-num">Ganancia</th>
+                                    <th class="sg-num">Costo Reposici&oacute;n</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -308,9 +313,9 @@ function line_chart() {
                             ?>
                             </tbody>
                         </table>
-                    </div>
                 </div>
-            
+            </section>
+
         </div>
         <!-- END Page Content -->
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
