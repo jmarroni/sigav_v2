@@ -8,6 +8,12 @@ class AddProviderColumnToOauthClientsTable extends Migration
 {
     public function up()
     {
+        // Passport >= 9.4 ya incluye la columna `provider` en su propia
+        // migración de oauth_clients; solo la agregamos si todavía no existe.
+        if (Schema::hasColumn('oauth_clients', 'provider')) {
+            return;
+        }
+
         Schema::table('oauth_clients', function (Blueprint $table) {
             $table->string('provider')->after('secret')->nullable();
         });

@@ -15,7 +15,9 @@ class Authenticate extends Middleware
     protected function redirectTo($request)
     {
         if (! $request->expectsJson()) {
-            return route('login');
+            // Esta app usa el login legacy (public/login.php); no existe una
+            // ruta Laravel llamada 'login', así que redirigimos directo al script.
+            return url('/login.php');
         }
     }
 }

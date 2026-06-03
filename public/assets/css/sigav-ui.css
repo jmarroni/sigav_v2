@@ -1,0 +1,606 @@
+/* ============================================================
+   SIGAV · UI Kit compartido
+   - Tokens del sistema de diseño (consola de inventario /carga)
+   - Restyle GLOBAL del menú superior (header + sub-header)
+   - Sistema de componentes scopeado a .sigav-app
+   Cargado desde public/header.php → aplica el look unificado
+   del menú en TODAS las pantallas sin tocar el contenido
+   propio de cada página (los componentes viven bajo .sigav-app).
+   ============================================================ */
+
+:root{
+    --sg-ink:        #16212e;
+    --sg-ink-2:      #38495a;
+    --sg-muted:      #76889a;
+    --sg-line:       #e6ebf0;
+    --sg-line-2:     #eef2f6;
+    --sg-surface:    #ffffff;
+    --sg-surface-2:  #f6f9fb;
+    --sg-surface-3:  #f0f5f3;
+    --sg-accent:     #0e9f6e;
+    --sg-accent-700: #0b7e58;
+    --sg-accent-soft:#e6f6ef;
+    --sg-warn:       #b7791f;
+    --sg-warn-soft:  #fdf3e1;
+    --sg-danger:     #d64545;
+    --sg-danger-soft:#fbeaea;
+    --sg-edit:       #2563c9;
+    --sg-edit-soft:  #e7eefb;
+    --sg-r:          14px;
+    --sg-r-sm:       9px;
+    --sg-shadow:     0 1px 2px rgba(20,33,46,.04), 0 8px 24px -12px rgba(20,33,46,.18);
+    --sg-shadow-sm:  0 1px 2px rgba(20,33,46,.06);
+    --sg-ring:       0 0 0 3px rgba(14,159,110,.18);
+    --sg-sans: 'IBM Plex Sans', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+    --sg-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+
+/* ============================================================
+   1 · MENÚ SUPERIOR (global) — header-navbar + sub-header-nav
+   Restyle puramente visual: NO altera estructura ni los
+   data-toggle / data-action de OneUI (dropdowns, side-overlay,
+   theme switch siguen funcionando).
+   ============================================================ */
+
+/* --- Barra superior --- */
+#page-container #header-navbar{
+    background: var(--sg-surface);
+    border-bottom: 1px solid var(--sg-line);
+    box-shadow: 0 1px 2px rgba(20,33,46,.05);
+    font-family: var(--sg-sans);
+}
+#page-container #header-navbar .content-mini{ padding-top:6px; padding-bottom:6px; }
+
+/* Marca */
+#header-navbar .nav-header.pull-left .header-content a{
+    display:inline-flex; align-items:center; gap:9px;
+    font-family: var(--sg-sans);
+}
+#header-navbar .header-content .text-primary-dark{
+    color: var(--sg-ink) !important;
+    font-weight: 700 !important;
+    letter-spacing: -.01em;
+    font-size: 17px !important;
+}
+#header-navbar .header-content .fa-circle-o-notch{
+    color: var(--sg-accent) !important;
+    font-size: 15px;
+}
+
+/* Selector de lista de precios en la barra */
+#header-navbar #lista_precios.form-control{
+    height: 36px; min-height:36px; padding:6px 30px 6px 12px;
+    font-family: var(--sg-sans); font-size:13px; color:var(--sg-ink);
+    border:1px solid var(--sg-line); border-radius: var(--sg-r-sm);
+    background-color: var(--sg-surface); box-shadow: var(--sg-shadow-sm);
+}
+#header-navbar #lista_precios.form-control:focus{
+    border-color: var(--sg-accent); box-shadow: var(--sg-ring);
+}
+
+/* Botón de usuario / avatar */
+#header-navbar .btn-image{
+    display:inline-flex; align-items:center; gap:6px;
+    background: var(--sg-surface-2) !important;
+    border:1px solid var(--sg-line) !important;
+    border-radius: 999px !important;
+    padding:4px 14px 4px 4px !important;
+    font-family: var(--sg-sans); font-size:13px; font-weight:600;
+    color: var(--sg-ink-2) !important;
+    box-shadow: var(--sg-shadow-sm);
+    transition: border-color .15s ease, background .15s ease;
+}
+#header-navbar .btn-image:hover{ border-color:#cfdae3 !important; background:#fff !important; }
+#header-navbar .btn-image img{
+    width:28px; height:28px; border-radius:50%; object-fit:cover;
+    border:2px solid var(--sg-surface);
+}
+#header-navbar .btn-image .fa-ellipsis-v{ color:var(--sg-muted); }
+
+/* --- Sub-header / barra de navegación principal --- */
+#sub-header-nav.bg-primary-lighter{
+    background: var(--sg-surface) !important;
+    border-bottom: 1px solid var(--sg-line);
+}
+#sub-header-nav .content-mini{ padding-top:0; padding-bottom:0; }
+
+#sub-header-nav .nav-sub-header{
+    display:flex; flex-wrap:wrap; align-items:center; gap:3px;
+    margin:0; padding:7px 0;
+}
+/* Ítems del menú como pills */
+#sub-header-nav .nav-sub-header > li > a{
+    display:inline-flex; align-items:center; gap:7px;
+    font-family: var(--sg-sans);
+    font-size: 13px; font-weight: 600; letter-spacing:.005em;
+    color: var(--sg-ink-2);
+    background: transparent;
+    border:1px solid transparent;
+    border-radius: var(--sg-r-sm);
+    padding: 8px 13px; line-height:1;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+#sub-header-nav .nav-sub-header > li > a .fa{
+    font-size: 13px; color: var(--sg-muted);
+    transition: color .15s ease;
+}
+#sub-header-nav .nav-sub-header > li > a:hover,
+#sub-header-nav .nav-sub-header > li > a:focus{
+    background: var(--sg-surface-2);
+    color: var(--sg-ink);
+    border-color: var(--sg-line);
+}
+#sub-header-nav .nav-sub-header > li > a:hover .fa{ color: var(--sg-ink-2); }
+
+/* Ítem activo / dropdown abierto */
+#sub-header-nav .nav-sub-header > li.active > a,
+#sub-header-nav .nav-sub-header > li.active > a:hover,
+#sub-header-nav .nav-sub-header > li.active > a:focus,
+#sub-header-nav .nav-sub-header > li.open > a{
+    background: var(--sg-accent) !important;
+    color: #fff !important;
+    border-color: var(--sg-accent) !important;
+    box-shadow: 0 6px 14px -7px rgba(14,159,110,.6);
+}
+#sub-header-nav .nav-sub-header > li.active > a .fa,
+#sub-header-nav .nav-sub-header > li.open > a .fa{ color:#fff !important; }
+#sub-header-nav .nav-sub-header > li.active > a .caret,
+#sub-header-nav .nav-sub-header > li.open > a .caret{ border-top-color:#fff; }
+#sub-header-nav .nav-sub-header > li > a .caret{ color:var(--sg-muted); margin-left:2px; }
+
+/* Menús desplegables */
+#sub-header-nav .nav-sub-header .dropdown-menu{
+    border:1px solid var(--sg-line);
+    border-radius: var(--sg-r-sm);
+    box-shadow: var(--sg-shadow);
+    padding:6px;
+    margin-top:4px;
+    min-width: 210px;
+}
+#sub-header-nav .nav-sub-header .dropdown-menu > li > a{
+    font-family: var(--sg-sans);
+    font-size: 13px; font-weight:500;
+    color: var(--sg-ink-2);
+    border-radius: 7px;
+    padding: 8px 11px;
+    transition: background .12s ease, color .12s ease;
+}
+#sub-header-nav .nav-sub-header .dropdown-menu > li > a:hover,
+#sub-header-nav .nav-sub-header .dropdown-menu > li > a:focus{
+    background: var(--sg-accent-soft);
+    color: var(--sg-accent-700);
+}
+
+/* Botón "Menu" responsive */
+.visible-xs .btn.btn-block.btn-default{
+    font-family: var(--sg-sans); font-weight:600;
+    border:1px solid var(--sg-line); border-radius: var(--sg-r-sm);
+    color: var(--sg-ink-2);
+}
+
+/* ============================================================
+   2 · SISTEMA DE COMPONENTES  (scopeado a .sigav-app)
+   Tarjetas, formularios, tablas, botones, stats, alertas.
+   Mismo lenguaje visual que /carga (.sigav-carga).
+   ============================================================ */
+
+.sigav-app{
+    font-family: var(--sg-sans);
+    color: var(--sg-ink);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+.sigav-app *{ box-sizing: border-box; }
+/* Los encabezados de OneUI (h1..h6) traen su propia font-family por regla
+   directa, que gana sobre la herencia de .sigav-app. La reimponemos con
+   mayor especificidad para que IBM Plex aplique también a los títulos. */
+.sigav-app h1, .sigav-app h2, .sigav-app h3,
+.sigav-app h4, .sigav-app h5, .sigav-app h6{ font-family: var(--sg-sans); }
+
+/* ---------- Tarjetas ---------- */
+.sigav-app .sg-card{
+    background: var(--sg-surface);
+    border: 1px solid var(--sg-line);
+    border-radius: var(--sg-r);
+    box-shadow: var(--sg-shadow);
+    margin-bottom: 22px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: sgRise .5s cubic-bezier(.16,1,.3,1) forwards;
+}
+.sigav-app .sg-card:nth-of-type(2){ animation-delay:.05s; }
+.sigav-app .sg-card:nth-of-type(3){ animation-delay:.1s; }
+.sigav-app .sg-card:nth-of-type(4){ animation-delay:.15s; }
+@keyframes sgRise{ to{ opacity:1; transform:none; } }
+
+.sigav-app .sg-card__head{
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--sg-line-2);
+    background: linear-gradient(180deg, var(--sg-surface) 0%, var(--sg-surface-2) 100%);
+}
+.sigav-app .sg-card__title{ display:flex; align-items:center; gap:10px; }
+.sigav-app .sg-card__title h3{
+    margin:0; font-size:16px; font-weight:700; letter-spacing:-.01em; color:var(--sg-ink);
+}
+.sigav-app .sg-dot{
+    width:9px; height:9px; border-radius:50%;
+    background: var(--sg-accent);
+    box-shadow: 0 0 0 4px var(--sg-accent-soft);
+}
+.sigav-app .sg-dot--warn{ background:var(--sg-warn); box-shadow:0 0 0 4px var(--sg-warn-soft); }
+.sigav-app .sg-dot--edit{ background:var(--sg-edit); box-shadow:0 0 0 4px var(--sg-edit-soft); }
+.sigav-app .sg-card__hint{ margin:0; font-size:12.5px; color:var(--sg-muted); }
+.sigav-app .sg-card__hint b{ color:var(--sg-ink-2); }
+.sigav-app .sg-count{
+    font-family: var(--sg-mono); font-size:12px; font-weight:600;
+    color: var(--sg-accent-700); background: var(--sg-accent-soft);
+    padding: 2px 9px; border-radius: 999px; line-height:1.6;
+}
+.sigav-app .sg-card__body{ padding: 22px; }
+
+/* ---------- Hero de página ---------- */
+.sigav-app .sg-hero{
+    position:relative; overflow:hidden;
+    border:1px solid var(--sg-line); border-radius: var(--sg-r);
+    background:
+        radial-gradient(120% 140% at 100% 0%, rgba(14,159,110,.16) 0%, rgba(14,159,110,0) 55%),
+        radial-gradient(120% 160% at 0% 100%, rgba(37,99,201,.10) 0%, rgba(37,99,201,0) 50%),
+        linear-gradient(160deg, #16212e 0%, #1d3142 60%, #173a30 100%);
+    color:#fff; padding: 30px 30px 28px;
+    box-shadow: var(--sg-shadow);
+    margin-bottom: 22px;
+    opacity:0; transform:translateY(10px);
+    animation: sgRise .5s cubic-bezier(.16,1,.3,1) forwards;
+}
+.sigav-app .sg-hero::after{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Ccircle cx='1' cy='1' r='.6' fill='%23ffffff' fill-opacity='.05'/%3E%3C/svg%3E");
+}
+.sigav-app .sg-hero__eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--sg-mono); font-size:11px; font-weight:600;
+    text-transform:uppercase; letter-spacing:.14em;
+    color:#8fe3c2; margin:0 0 10px;
+}
+.sigav-app .sg-hero__eyebrow::before{
+    content:""; width:7px; height:7px; border-radius:50%;
+    background:#26d18d; box-shadow:0 0 0 4px rgba(38,209,141,.25);
+}
+.sigav-app .sg-hero h1{
+    margin:0; font-size:30px; font-weight:700; letter-spacing:-.02em; color:#fff;
+}
+.sigav-app .sg-hero p{ margin:8px 0 0; font-size:14.5px; color:rgba(255,255,255,.7); }
+.sigav-app .sg-hero p b{ color:#fff; font-weight:700; }
+
+/* ---------- Stats ---------- */
+.sigav-app .sg-stats{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:16px;
+    margin-bottom:22px;
+}
+@media (max-width: 767px){ .sigav-app .sg-stats{ grid-template-columns:repeat(2,1fr); } }
+.sigav-app .sg-stat{
+    background:var(--sg-surface); border:1px solid var(--sg-line);
+    border-radius:var(--sg-r); padding:16px 18px; box-shadow:var(--sg-shadow-sm);
+    opacity:0; transform:translateY(10px);
+    animation: sgRise .5s cubic-bezier(.16,1,.3,1) forwards;
+    transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+.sigav-app .sg-stat:hover{ transform:translateY(-2px); border-color:#cfe5da; box-shadow:var(--sg-shadow); }
+.sigav-app .sg-stat:nth-child(2){ animation-delay:.05s; }
+.sigav-app .sg-stat:nth-child(3){ animation-delay:.1s; }
+.sigav-app .sg-stat:nth-child(4){ animation-delay:.15s; }
+.sigav-app .sg-stat__label{
+    display:flex; align-items:center; gap:7px;
+    font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--sg-muted); margin-bottom:9px;
+}
+.sigav-app .sg-stat__label .fa{ color:var(--sg-accent); font-size:12px; }
+.sigav-app .sg-stat__value{
+    font-family:var(--sg-mono); font-size:26px; font-weight:600;
+    letter-spacing:-.01em; color:var(--sg-ink); line-height:1;
+    font-variant-numeric:tabular-nums;
+}
+.sigav-app .sg-stat--accent{ background:linear-gradient(180deg,#fff,var(--sg-accent-soft)); border-color:#bfe7d5; }
+.sigav-app .sg-stat--accent .sg-stat__value{ color:var(--sg-accent-700); }
+
+/* ---------- Formulario ---------- */
+.sigav-app .sg-fieldset{ margin-bottom: 20px; }
+.sigav-app .sg-fieldset:last-of-type{ margin-bottom: 4px; }
+.sigav-app .sg-fieldset__label{
+    display:block; font-size:11px; font-weight:600; text-transform:uppercase;
+    letter-spacing:.09em; color:var(--sg-muted);
+    padding-bottom:10px; margin-bottom:14px;
+    border-bottom:1px dashed var(--sg-line);
+}
+.sigav-app .sg-grid{ display:grid; gap:16px 18px; }
+.sigav-app .sg-grid--2{ grid-template-columns: repeat(2, 1fr); }
+.sigav-app .sg-grid--3{ grid-template-columns: repeat(3, 1fr); }
+.sigav-app .sg-grid--4{ grid-template-columns: repeat(4, 1fr); }
+.sigav-app .sg-pos-grid{
+    display:grid; gap:14px;
+    grid-template-columns: 1.4fr 1.6fr .7fr .7fr .9fr auto;
+    align-items:end;
+}
+@media (max-width: 991px){
+    .sigav-app .sg-grid--3,
+    .sigav-app .sg-grid--4{ grid-template-columns: repeat(2, 1fr); }
+    .sigav-app .sg-pos-grid{ grid-template-columns: repeat(2,1fr); }
+}
+@media (max-width: 600px){
+    .sigav-app .sg-grid--2,
+    .sigav-app .sg-grid--3,
+    .sigav-app .sg-grid--4,
+    .sigav-app .sg-pos-grid{ grid-template-columns: 1fr; }
+}
+.sigav-app .sg-field{ display:flex; flex-direction:column; gap:6px; min-width:0; }
+.sigav-app .sg-field label{
+    font-size:12.5px; font-weight:600; color:var(--sg-ink-2); margin:0;
+}
+.sigav-app .sg-field label i{ font-weight:400; color:var(--sg-muted); font-size:11.5px; }
+.sigav-app .sg-req{ color:var(--sg-accent-700); font-weight:700; }
+
+.sigav-app .form-control{
+    width:100%; height:auto; min-height:40px;
+    padding:9px 12px; font-size:14px; font-family:var(--sg-sans);
+    color:var(--sg-ink); background:var(--sg-surface);
+    border:1px solid var(--sg-line); border-radius:var(--sg-r-sm);
+    box-shadow:var(--sg-shadow-sm);
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.sigav-app textarea.form-control{ min-height:74px; resize:vertical; line-height:1.55; }
+.sigav-app .form-control::placeholder{ color:#a9b6c2; }
+.sigav-app .form-control:hover{ border-color:#cfdae3; }
+.sigav-app .form-control:focus{
+    outline:none; border-color:var(--sg-accent); background:#fff; box-shadow:var(--sg-ring);
+}
+.sigav-app select.form-control{
+    appearance:none; -webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2376889a' d='M6 8 0 0h12z'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 12px center; padding-right:32px;
+    cursor:pointer;
+}
+.sigav-app .form-control[disabled]{ background:var(--sg-surface-2); color:var(--sg-muted); cursor:not-allowed; }
+.sigav-app input.sg-mono-input{ font-family:var(--sg-mono); font-weight:600; }
+
+/* ---------- Botones ---------- */
+.sigav-app .sg-btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    font-family:var(--sg-sans); font-size:14px; font-weight:600; letter-spacing:.01em;
+    border:1px solid transparent; border-radius:var(--sg-r-sm); cursor:pointer;
+    padding:11px 20px; transition: transform .12s ease, box-shadow .15s ease, background .15s ease, color .15s ease;
+    text-decoration:none;
+}
+.sigav-app .sg-btn .fa{ font-size:13px; }
+.sigav-app .sg-btn--primary{
+    color:#fff; background:var(--sg-accent);
+    box-shadow:0 6px 16px -6px rgba(14,159,110,.55);
+}
+.sigav-app .sg-btn--primary:hover{ background:var(--sg-accent-700); transform:translateY(-1px); color:#fff; }
+.sigav-app .sg-btn--primary:active{ transform:translateY(0); }
+.sigav-app .sg-btn--primary:focus{ outline:none; box-shadow:var(--sg-ring), 0 6px 16px -6px rgba(14,159,110,.55); color:#fff; }
+.sigav-app .sg-btn--ghost{
+    color:var(--sg-ink-2); background:var(--sg-surface); border-color:var(--sg-line); box-shadow:var(--sg-shadow-sm);
+}
+.sigav-app .sg-btn--ghost:hover{ color:var(--sg-accent-700); background:var(--sg-accent-soft); border-color:#bfe7d5; transform:translateY(-1px); }
+.sigav-app .sg-btn--block{ width:100%; }
+.sigav-app .sg-btn--lg{ padding:13px 26px; font-size:15px; }
+.sigav-app .sg-btn--full-min{ min-width:240px; }
+
+/* ---------- Selectores de opción (pago / IVA / radios) ---------- */
+.sigav-app .sg-options{ display:flex; flex-wrap:wrap; gap:9px; }
+.sigav-app .sg-radio{
+    position:relative; display:inline-flex; align-items:center; gap:8px;
+    padding:9px 14px; cursor:pointer; user-select:none;
+    border:1px solid var(--sg-line); border-radius:var(--sg-r-sm);
+    background:var(--sg-surface); box-shadow:var(--sg-shadow-sm);
+    font-size:13px; font-weight:600; color:var(--sg-ink-2);
+    transition: border-color .15s ease, background .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.sigav-app .sg-radio:hover{ border-color:#cfdae3; }
+.sigav-app .sg-radio input{ position:absolute; opacity:0; width:0; height:0; }
+.sigav-app .sg-radio__dot{
+    width:16px; height:16px; border-radius:50%;
+    border:2px solid #c2cedb; background:#fff; flex:none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.sigav-app .sg-radio input:checked ~ .sg-radio__dot{
+    border-color:var(--sg-accent);
+    box-shadow: inset 0 0 0 3px var(--sg-accent);
+}
+.sigav-app .sg-radio:has(input:checked){
+    border-color:var(--sg-accent); background:var(--sg-accent-soft); color:var(--sg-accent-700);
+    box-shadow: var(--sg-ring);
+}
+.sigav-app .sg-radio input:focus-visible ~ .sg-radio__dot{ box-shadow: var(--sg-ring); }
+
+/* ---------- Tabla genérica ---------- */
+.sigav-app .sg-table-wrap{ overflow-x:auto; }
+.sigav-app table.sg-table{ width:100%; border-collapse:separate; border-spacing:0; }
+.sigav-app table.sg-table thead th{
+    text-align:left; white-space:nowrap;
+    font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--sg-muted); background:var(--sg-surface);
+    padding:12px 14px; border-bottom:2px solid var(--sg-line);
+}
+.sigav-app table.sg-table thead th.sg-num{ text-align:right; }
+.sigav-app table.sg-table tbody td{
+    padding:12px 14px; font-size:13.5px; color:var(--sg-ink-2);
+    border-bottom:1px solid var(--sg-line-2); vertical-align:middle;
+}
+.sigav-app table.sg-table tbody tr{ transition: background .12s ease; }
+.sigav-app table.sg-table tbody tr:hover{ background:var(--sg-surface-2); }
+.sigav-app table.sg-table tbody tr:last-child td{ border-bottom:none; }
+.sigav-app .sg-strong{ font-weight:600; color:var(--sg-ink); }
+.sigav-app .sg-muted{ color:var(--sg-muted); }
+.sigav-app .sg-mono{ font-family:var(--sg-mono); font-size:12.5px; }
+.sigav-app td.sg-num{ text-align:right; font-variant-numeric:tabular-nums; }
+
+/* ---------- Tabla de venta en curso (#tablaProductos) ---------- */
+.sigav-app .sg-sale-table{ width:100%; border-collapse:separate; border-spacing:0; text-align:left; }
+.sigav-app .sg-sale-table tbody tr{ transition: background .12s ease; }
+.sigav-app .sg-sale-table tbody tr:hover{ background:var(--sg-surface-2); }
+.sigav-app .sg-sale-table td{
+    padding:12px 14px; border-bottom:1px solid var(--sg-line-2); vertical-align:middle; color:var(--sg-ink-2);
+}
+.sigav-app .sg-sale-table tr:last-child td{ border-bottom:none; }
+.sigav-app .sg-sale-table img,
+.sigav-app .sg-sale-table .img-responsive{
+    width:56px !important; height:56px; object-fit:cover;
+    border-radius:10px; border:1px solid var(--sg-line); background:var(--sg-surface-2);
+}
+.sigav-app .sg-sale-table h4{
+    margin:0 0 2px; font-size:14px; font-weight:600; color:var(--sg-ink); font-family:var(--sg-sans);
+}
+.sigav-app .sg-sale-table p{ margin:0; font-size:12px; color:var(--sg-muted); }
+.sigav-app .sg-sale-table .text-success,
+.sigav-app .sg-sale-table .text-gray-dark{ color:var(--sg-ink) !important; }
+.sigav-app .sg-sale-table .h1{
+    font-family:var(--sg-mono) !important; font-size:18px !important; font-weight:600 !important;
+    color:var(--sg-accent-700) !important; font-variant-numeric:tabular-nums;
+}
+.sigav-app .sg-line-del{
+    display:inline-flex; align-items:center; gap:6px;
+    border:1px solid var(--sg-line); background:var(--sg-surface);
+    color:var(--sg-muted); border-radius:8px; padding:6px 12px;
+    font-family:var(--sg-sans); font-size:12px; font-weight:600; cursor:pointer;
+    box-shadow:var(--sg-shadow-sm);
+    transition: color .15s ease, background .15s ease, border-color .15s ease, transform .12s ease;
+}
+.sigav-app .sg-line-del:hover{ color:var(--sg-danger); background:var(--sg-danger-soft); border-color:#f3cccc; transform:translateY(-1px); }
+
+.sigav-app .sg-sale-empty{
+    text-align:center; padding:34px 16px; color:var(--sg-muted);
+    font-size:13.5px; font-weight:500;
+}
+
+/* Total de la venta en curso */
+.sigav-app .sg-total-badge{
+    font-family:var(--sg-mono); font-weight:600; font-variant-numeric:tabular-nums;
+    color:var(--sg-accent-700); background:var(--sg-accent-soft);
+    border:1px solid #bfe7d5; border-radius:999px; padding:4px 14px; font-size:14px;
+}
+
+/* ---------- Sub-bloques dentro de tarjetas ---------- */
+.sigav-app .sg-subgrid{
+    display:grid; grid-template-columns:1fr 1fr; gap:18px;
+    padding-top:18px; margin-top:6px; border-top:1px dashed var(--sg-line);
+}
+@media (max-width: 767px){ .sigav-app .sg-subgrid{ grid-template-columns:1fr; } }
+.sigav-app .sg-subgrid h4{
+    margin:0 0 12px; font-size:11px; font-weight:600; text-transform:uppercase;
+    letter-spacing:.09em; color:var(--sg-muted);
+}
+.sigav-app .sg-cta-row{
+    display:flex; flex-wrap:wrap; align-items:center; gap:14px;
+    padding-top:20px; margin-top:18px; border-top:1px solid var(--sg-line-2);
+}
+.sigav-app .sg-note{ font-size:12.5px; color:var(--sg-muted); font-style:italic; }
+.sigav-app .sg-note--accent{ color:var(--sg-accent-700); font-style:normal; font-weight:600; }
+
+/* ---------- Alertas ---------- */
+.sigav-app .sg-alert{
+    display:flex; align-items:center; gap:10px;
+    border-radius:var(--sg-r-sm); padding:12px 16px; margin-bottom:18px;
+    font-size:13.5px; font-weight:600;
+    border:1px solid transparent;
+}
+.sigav-app .sg-alert .fa{ font-size:15px; }
+.sigav-app .sg-alert--ok{ color:var(--sg-accent-700); background:var(--sg-accent-soft); border-color:#bfe7d5; }
+.sigav-app .sg-alert--err{ color:var(--sg-danger); background:var(--sg-danger-soft); border-color:#f3cccc; }
+
+/* ---------- iframe factura ---------- */
+.sigav-app #iframe{
+    width:100%; min-height:320px; border:1px solid var(--sg-line);
+    border-radius:var(--sg-r-sm); background:var(--sg-surface-2);
+}
+
+/* ============================================================
+   3 · REPORTES — barra de filtros, gráficos y DataTables
+   Scopeado a .sigav-app. Da consistencia a las 10 pantallas
+   de reportes sin tocar su markup de tabla/JS.
+   ============================================================ */
+
+/* Fila de filtros dentro de una tarjeta */
+.sigav-app .sg-filters{
+    display:flex; flex-wrap:wrap; align-items:flex-end; gap:14px 16px;
+}
+.sigav-app .sg-filters .sg-field{ flex:1 1 200px; min-width:170px; }
+.sigav-app .sg-filters .sg-filter-actions{ flex:0 0 auto; display:flex; gap:10px; align-items:flex-end; }
+.sigav-app .sg-filters .sg-btn{ min-height:40px; }
+
+/* Contenedor de gráfico (Google Charts en reportes legacy) */
+.sigav-app .sg-chart{
+    border:1px solid var(--sg-line); border-radius:var(--sg-r-sm);
+    background:var(--sg-surface); padding:8px; overflow:hidden;
+}
+.sigav-app .sg-chart-grid{ display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); }
+
+/* Neutraliza restos de .block de OneUI que queden dentro de las tarjetas */
+.sigav-app .sg-card .block,
+.sigav-app .sg-card .block-rounded{
+    background:transparent !important; box-shadow:none !important;
+    border:0 !important; margin:0 !important;
+}
+.sigav-app .sg-card .block-content{ padding:0 !important; }
+
+/* ---------- Integración con DataTables ---------- */
+.sigav-app .dataTables_wrapper{ padding-top:4px; font-family:var(--sg-sans); }
+.sigav-app .dt-buttons{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+.sigav-app .dt-button{
+    font-family:var(--sg-sans) !important; font-size:12.5px !important; font-weight:600 !important;
+    color:var(--sg-ink-2) !important; background:var(--sg-surface) !important;
+    border:1px solid var(--sg-line) !important; border-radius:8px !important;
+    padding:7px 14px !important; margin:0 !important; box-shadow:var(--sg-shadow-sm) !important;
+    transition: all .15s ease !important;
+}
+.sigav-app .dt-button:hover{
+    color:var(--sg-accent-700) !important; background:var(--sg-accent-soft) !important;
+    border-color:#bfe7d5 !important; transform:translateY(-1px);
+}
+.sigav-app .dataTables_filter{ margin-bottom:14px; text-align:right; }
+.sigav-app .dataTables_filter label{
+    font-size:12.5px; color:var(--sg-muted); font-weight:600;
+    display:inline-flex; align-items:center; gap:8px;
+}
+.sigav-app .dataTables_filter input{
+    min-height:38px; padding:8px 12px; font-size:13.5px; font-family:var(--sg-sans);
+    color:var(--sg-ink); background:var(--sg-surface);
+    border:1px solid var(--sg-line) !important; border-radius:var(--sg-r-sm);
+    box-shadow:var(--sg-shadow-sm); margin-left:4px; min-width:240px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.sigav-app .dataTables_filter input:focus{ outline:none; border-color:var(--sg-accent) !important; box-shadow:var(--sg-ring); }
+.sigav-app .dataTables_length label{ font-size:12.5px; color:var(--sg-muted); font-weight:600; }
+.sigav-app .dataTables_length select{
+    min-height:34px; padding:4px 8px; border:1px solid var(--sg-line); border-radius:8px;
+    background:var(--sg-surface); color:var(--sg-ink); font-family:var(--sg-sans);
+}
+.sigav-app .dataTables_info{ font-size:12.5px; color:var(--sg-muted); padding-top:14px; }
+.sigav-app .dataTables_paginate{ padding-top:12px; }
+.sigav-app .dataTables_paginate .paginate_button{
+    padding:6px 12px !important; margin-left:4px; font-size:13px;
+    border:1px solid var(--sg-line) !important; border-radius:8px !important;
+    background:var(--sg-surface) !important; color:var(--sg-ink-2) !important;
+    box-shadow:var(--sg-shadow-sm); cursor:pointer;
+}
+.sigav-app .dataTables_paginate .paginate_button.current,
+.sigav-app .dataTables_paginate .paginate_button.current:hover{
+    background:var(--sg-accent) !important; border-color:var(--sg-accent) !important;
+    color:#fff !important; box-shadow:0 4px 10px -4px rgba(14,159,110,.5);
+}
+.sigav-app .dataTables_paginate .paginate_button:hover{
+    background:var(--sg-accent-soft) !important; border-color:#bfe7d5 !important; color:var(--sg-accent-700) !important;
+}
+.sigav-app .dataTables_paginate .paginate_button.disabled,
+.sigav-app .dataTables_paginate .paginate_button.disabled:hover{
+    color:#c2cedb !important; background:var(--sg-surface) !important; cursor:default; transform:none;
+}
+/* Cabeceras ordenables de DataTables sobre .sg-table */
+.sigav-app table.sg-table thead th{ outline:none; }
+.sigav-app table.dataTable thead .sorting,
+.sigav-app table.dataTable thead .sorting_asc,
+.sigav-app table.dataTable thead .sorting_desc{ cursor:pointer; }
+.sigav-app table.sg-table tbody tr:nth-child(even){ background:transparent; }

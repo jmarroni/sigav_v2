@@ -26,8 +26,6 @@ class ReporteController extends Controller
   public function __construct(){
     // Protección mediante middleware de autenticación de Laravel
     $this->middleware('auth');
-
-    }
   }
 
   public function factura(Request $request,$reporte_desde = null,$reporte_hasta = null){
