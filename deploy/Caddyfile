@@ -1,3 +1,4 @@
+# SIGAV v2 — dominio canónico de la sucursal (sirve la app)
 {$APP_DOMAIN} {
 	encode gzip
 	reverse_proxy app:80
@@ -7,4 +8,11 @@
 		Referrer-Policy "strict-origin-when-cross-origin"
 		-Server
 	}
+}
+
+# Apex / aliases → redirigen (308) al dominio canónico.
+# APP_APEX debe estar seteado en el .env (ej: sigav.ar). Acepta varios
+# hosts separados por coma. Si no usás apex, dejá APP_APEX = APP_DOMAIN.
+{$APP_APEX} {
+	redir https://{$APP_DOMAIN}{uri} permanent
 }
