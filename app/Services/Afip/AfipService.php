@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Log;
 
 class AfipService
 {
+    private const ENTORNOS = ['homo', 'prod'];
+
     public function __construct()
     {
         if (! class_exists('Afip')) {
@@ -17,27 +19,25 @@ class AfipService
     /** Construye una instancia del SDK configurada para el entorno dado (o el activo). */
     public function instancia(?string $entorno = null): \Afip
     {
-        $cfg = $entorno
-            ? AfipConfig::where('entorno', $entorno)->firstOrFail()
-            : AfipConfig::activa();
+        if ($entorno !== null) {
+            $this->validarEntorno($entorno);
+            $cfg = AfipConfig::where('entorno', $entorno)->firstOrFail();
+        } else {
+            $cfg = AfipConfig::activa();
+        }
 
         if (! $cfg) {
             throw new \RuntimeException('No hay entorno AFIP activo configurado');
         }
 
-        $dir = $cfg->rutaStorage();
-
-        return new \Afip([
-            'CUIT'       => floatval($cfg->cuit),
-            'production' => $cfg->entorno === 'prod',
-            'res_folder' => $dir,
-            'ta_folder'  => $dir,
-        ]);
+        return $this->instanciaDesde($cfg);
     }
 
     /** Guarda cert/key del entorno en storage (fuera del webroot), con permisos restrictivos. */
     public function guardarCredenciales(string $entorno, string $cert, string $key): void
     {
+        $this->validarEntorno($entorno);
+
         if (strpos($cert, '-----BEGIN') === false || strpos($key, '-----BEGIN') === false) {
             throw new \InvalidArgumentException('El certificado o la clave no parecen tener formato PEM válido');
         }
@@ -47,9 +47,14 @@ class AfipService
             mkdir($dir, 0700, true);
         }
 
-        file_put_contents($dir.'cert', $cert);
+        if (file_put_contents($dir.'cert', $cert) === false) {
+            throw new \RuntimeException("No se pudo escribir el certificado en {$dir}cert");
+        }
         @chmod($dir.'cert', 0600);
-        file_put_contents($dir.'key', $key);
+
+        if (file_put_contents($dir.'key', $key) === false) {
+            throw new \RuntimeException("No se pudo escribir la clave en {$dir}key");
+        }
         @chmod($dir.'key', 0600);
     }
 
@@ -57,8 +62,9 @@ class AfipService
     public function probar(string $entorno): array
     {
         try {
+            $this->validarEntorno($entorno);
             $cfg = AfipConfig::where('entorno', $entorno)->firstOrFail();
-            $afip = $this->instancia($entorno);
+            $afip = $this->instanciaDesde($cfg);
             $num = $afip->ElectronicBilling->GetLastVoucher($cfg->ptovta, $cfg->comprobante);
 
             return ['ok' => true, 'mensaje' => "Conexión OK. Último comprobante autorizado: {$num}"];
@@ -75,7 +81,29 @@ class AfipService
         try {
             return (array) $this->instancia($entorno)->ElectronicBilling->GetVoucherTypes();
         } catch (\Throwable $e) {
+            Log::warning('AFIP tiposComprobante() falló', ['entorno' => $entorno, 'error' => $e->getMessage()]);
+
             return [];
         }
+    }
+
+    /** @throws \InvalidArgumentException si el entorno no es homo/prod (evita path traversal). */
+    private function validarEntorno(string $entorno): void
+    {
+        if (! in_array($entorno, self::ENTORNOS, true)) {
+            throw new \InvalidArgumentException("Entorno AFIP inválido: {$entorno}");
+        }
+    }
+
+    private function instanciaDesde(AfipConfig $cfg): \Afip
+    {
+        $dir = $cfg->rutaStorage();
+
+        return new \Afip([
+            'CUIT'       => floatval($cfg->cuit),
+            'production' => $cfg->entorno === 'prod',
+            'res_folder' => $dir,
+            'ta_folder'  => $dir,
+        ]);
     }
 }

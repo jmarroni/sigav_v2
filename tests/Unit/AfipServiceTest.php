@@ -78,4 +78,44 @@ class AfipServiceTest extends TestCase
         $this->assertFileExists($this->tmp.'/homo/cert');
         $this->assertFileExists($this->tmp.'/homo/key');
     }
+
+    /** @test */
+    public function guardar_credenciales_rechaza_entorno_invalido()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new AfipService())->guardarCredenciales('../../etc', 'x', 'y');
+    }
+
+    /** @test */
+    public function guardar_credenciales_escribe_con_permisos_restrictivos()
+    {
+        (new AfipService())->guardarCredenciales(
+            'homo',
+            "-----BEGIN CERTIFICATE-----\nA\n-----END CERTIFICATE-----\n",
+            "-----BEGIN PRIVATE KEY-----\nB\n-----END PRIVATE KEY-----\n"
+        );
+
+        $perms = substr(sprintf('%o', fileperms($this->tmp.'/homo/cert')), -4);
+        $this->assertSame('0600', $perms);
+    }
+
+    /** @test */
+    public function probar_devuelve_error_cuando_faltan_credenciales()
+    {
+        // Config existe pero NO hay archivos cert/key -> el SDK lanza al construir -> capturado.
+        AfipConfig::create(['entorno' => 'homo', 'cuit' => '20111111112', 'ptovta' => '1', 'comprobante' => '6']);
+
+        $r = (new AfipService())->probar('homo');
+
+        $this->assertFalse($r['ok']);
+        $this->assertArrayHasKey('mensaje', $r);
+    }
+
+    /** @test */
+    public function tipos_comprobante_devuelve_vacio_en_error()
+    {
+        AfipConfig::create(['entorno' => 'homo', 'cuit' => '20111111112']);
+        // Sin cert/key -> el SDK lanza -> [].
+        $this->assertSame([], (new AfipService())->tiposComprobante('homo'));
+    }
 }
