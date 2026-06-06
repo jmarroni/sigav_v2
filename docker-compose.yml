@@ -22,8 +22,10 @@ services:
   db:
     image: mysql:5.7
     container_name: sigav_db
-    ports:
-      - "3307:3306"   # 3307 en el host para no chocar con un MySQL local
+    # Sin publicar puerto al host: el contenedor `app` accede a `db` por la red
+    # interna de compose. (El 3307 del host suele estar ocupado por otros stacks.)
+    expose:
+      - "3306"
     environment:
       MYSQL_DATABASE: laravel
       MYSQL_ROOT_PASSWORD: secret

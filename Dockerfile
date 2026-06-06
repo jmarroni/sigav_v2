@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libicu-dev \
         libxml2-dev \
         libonig-dev \
+        libsqlite3-dev \
         unzip \
         git \
     && rm -rf /var/lib/apt/lists/*
@@ -23,6 +24,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 #  - intl               : formato/localización
 #  - soap               : WebServices AFIP (WSAA/WSFE)
 #  - mbstring           : Laravel core
+#  - pdo_sqlite         : tests (SQLite en memoria via phpunit)
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" \
         pdo_mysql \
@@ -32,7 +34,8 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
         bcmath \
         intl \
         soap \
-        mbstring
+        mbstring \
+        pdo_sqlite
 
 # Apache: docroot en public/ + mod_rewrite (necesario para Laravel y rutas legacy)
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
