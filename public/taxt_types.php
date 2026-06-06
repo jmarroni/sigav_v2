@@ -5,11 +5,12 @@ if (!isset($_COOKIE["kiosco"])) {
 }
 require_once ("conection.php");
 require 'vendor/autoload.php';
-$cuit = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/cuit");
-$ptovta = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/ptovta");
-$comprobante = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/comprobante");
+require_once __DIR__.'/afip_bridge.php';
+$cuit = afip_valor('cuit');
+$ptovta = afip_valor('ptovta');
+$comprobante = afip_valor('comprobante');
 try{
-    $afip = new Afip(array('CUIT' => floatval($cuit), "production" => TRUE));
+    $afip = afip_instance();
     $server_status = $afip->ElectronicBilling->GetTaxTypes();
     echo "<pre>";print_r($server_status);exit();
 } catch (Exception $e) {

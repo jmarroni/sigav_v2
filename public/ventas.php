@@ -9,6 +9,7 @@ $menu["reportes"] = "";
 if (!isset($_COOKIE["descontarstock"])) $_COOKIE["descontarstock"]=0;
 require_once ("conection.php");
 require 'vendor/autoload.php';
+require_once __DIR__.'/afip_bridge.php';
 require ('header.php');
 
 // if (getRol() < 4 && getRol() != 1) {
@@ -193,7 +194,7 @@ $conn->query($sql_update);
                 </div>
 
                 <?php
-                $solicitar = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/solicitar_datos");
+                $solicitar = afip_valor('solicitar_datos');
                 if (intval($solicitar) == 1){ ?>
                 <!-- Datos del cliente (cuando AFIP los solicita) -->
                 <div class="sg-fieldset" style="margin-top:24px;">
@@ -213,9 +214,7 @@ $conn->query($sql_update);
                             <select id="tipo" class="form-control" name="tipo">
                             <?php
                             try{
-                                $cuit = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/cuit");
-
-                                $afip = new Afip(array("CUIT" => $cuit, "production" => TRUE));
+                                $afip = afip_instance();
                                 $document_types = $afip->ElectronicBilling->GetDocumentTypes();
                                 foreach ($document_types as $key => $value) {
                                     if ($value->Desc == "CUIT" || $value->Desc == "CUIL" || $value->Desc == "CDI"){
@@ -247,7 +246,7 @@ $conn->query($sql_update);
                 </div>
                 <?php
                 }
-                $emitir = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/emitir"); ?>
+                $emitir = afip_valor('emitir'); ?>
 
                 <!-- Acciones de la venta -->
                 <div class="sg-cta-row">

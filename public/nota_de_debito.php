@@ -7,6 +7,7 @@ if (!isset($_COOKIE["kiosco"])) {
 header('Content-Type: application/json');
 require_once ("conection.php");
 require 'vendor/autoload.php';
+require_once __DIR__.'/afip_bridge.php';
 use Spipu\Html2Pdf\Html2Pdf;
 $arrSucursal = array();
 if (isset($_COOKIE["sucursal"])){
@@ -21,12 +22,12 @@ if (isset($_COOKIE["sucursal"])){
 
 // DATOS PARA EL COMPROBANTE
 
-$comprobante 		= file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/comprobante");
-$ptovta 			= file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/ptovta");
-$cuit 				= file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/cuit");
-$condicion_iva 		= file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/condicion_iva");
-$inicio_actividades = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/inicio_actividades");
-$ingresos_brutos 	= file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/ingresos_brutos");
+$comprobante 		= afip_valor('comprobante');
+$ptovta 			= afip_valor('ptovta');
+$cuit 				= afip_valor('cuit');
+$condicion_iva 		= afip_valor('condicion_iva');
+$inicio_actividades = afip_valor('inicio_actividades');
+$ingresos_brutos 	= afip_valor('ingresos_brutos');
 
 if (isset($_GET["id"])) $_POST["id"] = intval($_GET["id"]);
 
@@ -71,7 +72,7 @@ if ($resultado_perfil->num_rows > 0) {
 
 $fecha = explode("-",date("Y-m-d"));
 if (count($fecha) < 3) { echo "error"; exit(); }
-$afip = new Afip(array('CUIT' => floatval($cuit), "production" => TRUE));
+$afip = afip_instance();
 $data = array(
 	'CantReg' 		=> 1,  // Cantidad de comprobantes a registrar
 	'PtoVta' 		=> $ptovta,  // Punto de venta
@@ -129,7 +130,7 @@ if($voucher_info === NULL){
 	$nombre_factura = "/notas_credito/".$ptovta."_".$res["CAE"]."_".substr("00000".$res["voucher_number"],-6).".pdf";
 	$facturanro = "NOTA DE DEBITO NRO.";
 
-	$solicitar = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/solicitar_datos"); 
+	$solicitar = afip_valor('solicitar_datos');
 	switch ($iva) {
 		case '1': $texto_iva = "Resp. Inscripto";break;
 		case '2': $texto_iva = "Monotributista";break;

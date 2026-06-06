@@ -9,6 +9,7 @@ ini_set('display_startup_errors', 0);
 // error_reporting(E_ALL);
 require_once ("conection.php");
 require 'vendor/autoload.php';
+require_once __DIR__.'/afip_bridge.php';
 use Spipu\Html2Pdf\Html2Pdf;
 $stockfinal=0;
 $stockanterior=0;
@@ -26,13 +27,13 @@ if (isset($_COOKIE["sucursal"])){
 } else exit();
 // DATOS PARA EL COMPROBANTE
 
-$comprobante 		= file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/comprobante");
-// $ptovta 			= file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/ptovta");
+$comprobante 		= afip_valor('comprobante');
+// $ptovta 			= afip_valor('ptovta');
 $ptovta				= $arrSucursal["pto_vta"];
-$cuit 				= file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/cuit");
-$condicion_iva 		= file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/condicion_iva");
-$inicio_actividades = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/inicio_actividades");
-$ingresos_brutos 	= file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/ingresos_brutos");
+$cuit 				= afip_valor('cuit');
+$condicion_iva 		= afip_valor('condicion_iva');
+$inicio_actividades = afip_valor('inicio_actividades');
+$ingresos_brutos 	= afip_valor('ingresos_brutos');
 
 $documento 			= ($_GET["documento"] != "")?$_GET["documento"]:"";
 $nombre 			= ($_GET["nombre"] != "")?$_GET["nombre"]:"";
@@ -107,7 +108,7 @@ if (isset($_COOKIE["lista_precio"])) $lista_precio = $_COOKIE["lista_precio"];
 else $lista_precio = 1;
 
 // Agarro el estado para la venta
-$emitir = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/emitir");
+$emitir = afip_valor('emitir');
 if (intval($emitir) === 1 ) {
 	$estado = 1;
 } else {
@@ -205,7 +206,7 @@ if ($resultado->num_rows > 0) {
 }
 $fecha = explode("-",$_GET["fecha-facturacion"]);
 if (count($fecha) < 3) { echo "error"; exit(); }
-$afip = new Afip(array('CUIT' => floatval($cuit), "production" => TRUE));
+$afip = afip_instance();
 if (intval($comprobante) != 11){
 	$ImpNeto = round($total / 1.21,2);
 	$impuestoIVA = round($ImpNeto * 0.21,2);
@@ -342,7 +343,7 @@ if($voucher_info === NULL){
 		$facturanro = "PRESUPUESTO NRO.";
 	}
 
-	$solicitar = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/solicitar_datos"); 
+	$solicitar = afip_valor('solicitar_datos');
 	switch ($iva) {
 		case '1': $texto_iva = "Resp. Inscripto";break;
 		case '2': $texto_iva = "Monotributista";break;
