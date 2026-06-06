@@ -4,6 +4,7 @@ if (!isset($_COOKIE["kiosco"])) {
 }
 header('Content-Type: application/json');
 require_once ("conection.php");
+require_once __DIR__.'/afip_bridge.php';
 mysqli_set_charset($conn,"utf8"); 
 if (getRol() < 4 && getRol() != 1) {
     exit();
@@ -77,7 +78,7 @@ if ($resultado->num_rows > 0) {
     echo "0 results";
 }
 
-$emitir = file_get_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/emitir");
+$emitir = afip_valor('emitir');
 if (intval($emitir) === 1 ){ // Habilito la factura online
     $estado = 1;
 }else{

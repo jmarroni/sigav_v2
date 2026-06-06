@@ -42,6 +42,24 @@ function afip_valor($clave)
     return $r && isset($r[$clave]) ? $r[$clave] : null;
 }
 
+/**
+ * Actualiza un valor escalar del entorno ACTIVO en la tabla afip_config.
+ * `$clave` se valida contra una allowlist (no se puede parametrizar el nombre
+ * de columna en SQL). `$valor` va por prepared statement.
+ */
+function afip_set_valor($clave, $valor)
+{
+    $permitidas = ['cuit', 'ptovta', 'comprobante', 'condicion_iva', 'inicio_actividades', 'ingresos_brutos', 'emitir', 'solicitar_datos'];
+    if (! in_array($clave, $permitidas, true)) {
+        throw new Exception('Clave AFIP inválida: '.$clave);
+    }
+    global $conn;
+    $stmt = mysqli_prepare($conn, "UPDATE afip_config SET `$clave` = ? WHERE activo = 1");
+    mysqli_stmt_bind_param($stmt, 's', $valor);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+}
+
 /** Instancia del SDK configurada para el entorno activo. */
 function afip_instance()
 {

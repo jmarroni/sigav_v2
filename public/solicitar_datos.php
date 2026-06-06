@@ -1,7 +1,10 @@
 <?php
-if (intval($_POST["solicitar"]) === 1 || intval($_POST["solicitar"]) === 0 ){
-    if (file_exists(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/solicitar_datos")){
-    file_put_contents(dirname(__FILE__)."/vendor/afipsdk/afip.php/src/Afip_res/solicitar_datos",$_POST["solicitar"]);
-    };
+require_once __DIR__.'/afip_bridge.php';
+
+if (! isset($_COOKIE['kiosco'])) {
+    exit();
 }
-?>
+
+if (isset($_POST['solicitar']) && (intval($_POST['solicitar']) === 1 || intval($_POST['solicitar']) === 0)) {
+    afip_set_valor('solicitar_datos', intval($_POST['solicitar']));
+}
