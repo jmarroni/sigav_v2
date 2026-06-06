@@ -31,7 +31,10 @@ class AfipConfig extends Model
     {
         DB::transaction(function () use ($entorno) {
             static::query()->update(['activo' => false]);
-            static::where('entorno', $entorno)->update(['activo' => true]);
+            $afectados = static::where('entorno', $entorno)->update(['activo' => true]);
+            if ($afectados === 0) {
+                throw new \InvalidArgumentException("Entorno AFIP inválido: {$entorno}");
+            }
         });
     }
 
