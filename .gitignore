@@ -21,3 +21,7 @@ npm-debug.log
 yarn-error.log
 .audit/
 /dump
+
+# Credenciales AFIP (nunca commitear)
+/storage/app/afip/*
+!/storage/app/afip/.gitkeep
