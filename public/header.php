@@ -154,7 +154,7 @@ function getMes($numero){
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-xs-10">
-                                    <a href="configuracion_afip.php" style="color:black;"><div class="font-s13 font-w600">AFIP</div></a>
+                                    <a href="/afip/configuracion" style="color:black;"><div class="font-s13 font-w600">AFIP</div></a>
                                         <div class="font-s13 font-w400 text-muted">Configuracion facturaci&oacute;n electr&oacute;n ica</div>
                                     </div>
                                 </div>
