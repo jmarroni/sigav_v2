@@ -10,6 +10,7 @@ if (!isset($_COOKIE["descontarstock"])) $_COOKIE["descontarstock"]=0;
 require_once ("conection.php");
 require 'vendor/autoload.php';
 require_once __DIR__.'/afip_bridge.php';
+$afip_modo_actual = afip_modo();
 require ('header.php');
 
 // if (getRol() < 4 && getRol() != 1) {
@@ -81,6 +82,9 @@ $conn->query($sql_update);
             <p class="sg-hero__eyebrow">Punto de venta</p>
             <h1>Área de Ventas</h1>
             <p>Se vendieron <b><?php echo $cantidad_de_ventas; ?></b> productos hoy</p>
+            <span class="label <?php echo $afip_modo_actual === 'prod' ? 'label-success' : 'label-warning'; ?>" style="font-size:14px;">
+                AFIP: <?php echo $afip_modo_actual === 'prod' ? 'PRODUCCIÓN' : 'HOMOLOGACIÓN'; ?>
+            </span>
         </div>
 
         <!-- Stats -->
