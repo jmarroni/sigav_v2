@@ -79,7 +79,12 @@ class AfipConfigController extends Controller
             $afip->guardarCredenciales($entorno, $request->input('cert'), $request->input('key'));
             return back()->with('afip_msg', "Credenciales de {$entorno} guardadas.");
         } catch (\InvalidArgumentException $e) {
+            // Mensaje seguro para el usuario (validación PEM / entorno).
             return back()->with('afip_error', $e->getMessage());
+        } catch (\RuntimeException $e) {
+            // Falla de escritura: el mensaje puede contener rutas del server -> log privado.
+            \Illuminate\Support\Facades\Log::error('AFIP subirCredenciales falló', ['entorno' => $entorno, 'error' => $e->getMessage()]);
+            return back()->with('afip_error', 'No se pudieron guardar las credenciales. Verificá los permisos de escritura del servidor.');
         }
     }
 

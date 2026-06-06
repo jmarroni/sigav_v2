@@ -78,11 +78,13 @@ Route::get('usuario/mensaje/{mensaje}','UsuarioController@index');
 Route::delete('usuario/{id}','UsuarioController@delete' );
 Route::get('usuario.getUsuario/{id}', 'UsuarioController@getUsuario');
 // AFIP - configuración de credenciales y switch homologación/producción
-Route::get('afip/configuracion', 'AfipConfigController@index');
-Route::post('afip/configuracion/{entorno}', 'AfipConfigController@guardar')->where('entorno', 'homo|prod');
-Route::post('afip/credenciales/{entorno}', 'AfipConfigController@subirCredenciales')->where('entorno', 'homo|prod');
-Route::post('afip/activar', 'AfipConfigController@activar');
-Route::post('afip/probar/{entorno}', 'AfipConfigController@probar')->where('entorno', 'homo|prod');
+Route::middleware('throttle:20,1')->group(function () {
+    Route::get('afip/configuracion', 'AfipConfigController@index');
+    Route::post('afip/configuracion/{entorno}', 'AfipConfigController@guardar')->where('entorno', 'homo|prod');
+    Route::post('afip/credenciales/{entorno}', 'AfipConfigController@subirCredenciales')->where('entorno', 'homo|prod');
+    Route::post('afip/activar', 'AfipConfigController@activar');
+    Route::post('afip/probar/{entorno}', 'AfipConfigController@probar')->where('entorno', 'homo|prod');
+});
 //Transferencias sucursales
 Route::get('transferencia', 'TransferenciaController@index');
 //Route::post('transferencia.save', 'TransferenciaController@save');
