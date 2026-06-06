@@ -93,3 +93,16 @@ set -a; . /opt/sigav/.env; set +a
 gunzip -c /tmp/restore.sql.gz | docker exec -i sigav_db mysql -uroot -p"$DB_ROOT_PASSWORD" --default-character-set=latin1 "$DB_DATABASE"
 ```
 También hay snapshots diarios del disco (restaurar creando un disco desde el snapshot).
+
+## Credenciales AFIP (post-deploy)
+
+Las credenciales AFIP ya NO viven en el webroot. Se cargan desde la pantalla
+Laravel `/afip/configuracion` (rol >= 2) y se guardan en `storage/app/afip/{homo,prod}/`.
+
+Requisitos en el server:
+- `storage/app/afip/` debe ser escribible por el usuario del web server
+  (el SDK escribe ahí el cache de tokens `TA-*.xml`):
+  `chown -R www-data:www-data storage/app/afip && chmod -R 750 storage/app/afip`
+- Tras el primer deploy: `php artisan migrate && php artisan db:seed --class=AfipConfigSeeder`
+- Cargar credenciales de homologación y producción desde la pantalla.
+- El switch de entorno activo (global) se cambia desde la misma pantalla.
