@@ -1188,21 +1188,23 @@ Expected: PASS (tests de Task 4 y 5).
 ⚠️ **Orden crítico.** Solo después de que la Task 14 pase y de haber cargado **también** las credenciales de producción en la pantalla nueva (sección Producción) si se va a seguir facturando real. Al borrar las credenciales de `public/`, la facturación de producción depende 100% de lo cargado en Laravel.
 
 **Files (eliminar):**
-- `public/configuracion_afip.php`, `public/guardar_certificados.php`, `public/emitir_online.php`, `public/solicitar_datos.php`, `public/assets/js/pages/afip.js`
+- `public/configuracion_afip.php`, `public/guardar_certificados.php`, `public/assets/js/pages/afip.js`
 - Credenciales en `public/AFIP/{cert,key}` y `public/vendor/afipsdk/afip.php/src/Afip_res/{cert,key,cuit,ptovta,comprobante,condicion_iva,inicio_actividades,ingresos_brutos,emitir,solicitar_datos}` y los `TA-*.xml`/`TRA-*.xml`
+
+> **CAMBIO respecto del plan original:** `public/emitir_online.php` y `public/solicitar_datos.php` **NO se eliminan**. Los usa el toggle "Emitir Factura" de la pantalla de ventas en vivo (`ventas.php` → `ventas.js`), y fueron repuntados para escribir en la DB (`afip_config` entorno activo) vía `afip_set_valor()`. Eliminarlos rompería ese toggle. `afip.js` sí se elimina (solo lo usaba `configuracion_afip.php`).
 
 - [ ] **Step 1: Confirmar que no quedan referencias a los .php que se eliminan**
 
 Run:
 ```bash
-grep -rn "configuracion_afip\|guardar_certificados\|emitir_online\|solicitar_datos\|pages/afip.js" public/ resources/ routes/ app/ | grep -v "afip_bridge\|afip/configuracion"
+grep -rn "configuracion_afip\|guardar_certificados\|pages/afip.js" public/ resources/ routes/ app/ | grep -v "afip_bridge\|afip/configuracion"
 ```
-Expected: sin resultados (o solo en archivos que también se eliminan). Reapuntar cualquier referencia restante antes de borrar.
+Expected: sin resultados (o solo en archivos que también se eliminan). Reapuntar cualquier referencia restante antes de borrar. (NO incluir `emitir_online`/`solicitar_datos` en este grep: esos se conservan.)
 
 - [ ] **Step 2: Eliminar los .php reemplazados**
 
 ```bash
-git rm public/configuracion_afip.php public/guardar_certificados.php public/emitir_online.php public/solicitar_datos.php public/assets/js/pages/afip.js
+git rm public/configuracion_afip.php public/guardar_certificados.php public/assets/js/pages/afip.js
 ```
 
 - [ ] **Step 3: Eliminar credenciales del webroot (conservar .wsdl y .htaccess)**

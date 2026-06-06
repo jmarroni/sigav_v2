@@ -214,9 +214,11 @@ todo el área legacy de facturación).
 **Eliminar `.php` reemplazados por Laravel:**
 - `public/configuracion_afip.php`
 - `public/guardar_certificados.php`
-- `public/emitir_online.php`
-- `public/solicitar_datos.php`
 - `public/assets/js/pages/afip.js`
+
+> `public/emitir_online.php` y `public/solicitar_datos.php` se **conservan** (NO se eliminan):
+> el toggle "Emitir Factura" de la pantalla de ventas en vivo los usa, y fueron repuntados
+> para escribir en la DB (`afip_config` entorno activo) vía `afip_set_valor()` del puente.
 
 Antes de borrar: auditar referencias (`header('Location:')`, `action=`, links de menú en
 `header.php`/vistas) y reapuntar al nuevo `afip/configuracion`.
@@ -288,7 +290,9 @@ No hay infraestructura de tests en el repo (ver CLAUDE.md). Plan de verificació
 
 **Eliminados:**
 - `public/configuracion_afip.php`, `public/guardar_certificados.php`,
-  `public/emitir_online.php`, `public/solicitar_datos.php`,
   `public/assets/js/pages/afip.js`
 - Credenciales en `public/AFIP/*` y `public/vendor/.../Afip_res/*` (salvo `.wsdl`/`.htaccess`)
+
+**Modificados (no listados antes):** `public/emitir_online.php`, `public/solicitar_datos.php`
+(repuntados a la DB vía `afip_set_valor()`) y `public/ventas_post.php` (lee `emitir` del puente).
 - (a confirmar) `public/facturarbk26-07-2022.php`
