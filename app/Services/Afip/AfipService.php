@@ -43,8 +43,8 @@ class AfipService
         }
 
         $dir = rtrim(config('afip.storage_path'), '/').'/'.$entorno.'/';
-        if (! is_dir($dir)) {
-            mkdir($dir, 0700, true);
+        if (! is_dir($dir) && ! mkdir($dir, 0700, true) && ! is_dir($dir)) {
+            throw new \RuntimeException("No se pudo crear el directorio {$dir}");
         }
 
         if (file_put_contents($dir.'cert', $cert) === false) {
