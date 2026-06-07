@@ -25,6 +25,15 @@ if (isset($_COOKIE["sucursal"])){
 		$arrSucursal = $resultado_perfil->fetch_assoc();
 	}else{exit();}
 } else exit();
+
+// Normaliza valores "undefined"/"null" que el front (JS) puede mandar como texto
+// cuando un campo del formulario está vacío o ausente.
+foreach ($_GET as $clave => $valor) {
+	if ($valor === 'undefined' || $valor === 'null') {
+		$_GET[$clave] = '';
+	}
+}
+
 // DATOS PARA EL COMPROBANTE
 
 $comprobante 		= afip_valor('comprobante');
@@ -204,8 +213,10 @@ if ($resultado->num_rows > 0) {
 	echo json_encode($devolucion);
 	exit();
 }
-$fecha = explode("-",$_GET["fecha-facturacion"]);
-if (count($fecha) < 3) { echo "error"; exit(); }
+$fecha = explode("-", $_GET["fecha-facturacion"] ?? "");
+if (count($fecha) < 3) {
+	$fecha = explode("-", date("Y-m-d")); // sin fecha válida -> hoy
+}
 $afip = afip_instance();
 if (intval($comprobante) != 11){
 	$ImpNeto = round($total / 1.21,2);
