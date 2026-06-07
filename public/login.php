@@ -1,33 +1,54 @@
 <?php
 include('conection.php');
-if ($_POST){
-    
-    $usuario    = $conn->real_escape_string($_POST["usuario"]);
-    $clave      = $conn->real_escape_string($_POST["clave"]);
 
-    $sql = "Select * FROM usuarios WHERE usuario = '$usuario' AND clave = '".sha1($clave.SEMILLA)."'";
-
-    $resultado_stock = $conn->query($sql) or die("Error: " . $sql . "<br>" . $conn->error);
-    if ($resultado_stock->num_rows > 0) {
-        if ($row_stock = $resultado_stock->fetch_assoc()) {
-            setcookie("kiosco",$row_stock["usuario"],time() + 3600*24,"/");
-            setcookie("sucursal",setSucursal($row_stock["sucursal_id"]),time() + 3600*24,"/");
-            setcookie("rol",setRol($row_stock["rol_id"]),time() + 3600*24,"/");
-            if (!(isset($_COOKIE["lista_precio"]))) setcookie("lista_precio",1,time() + 3600*24,"/");
-            switch ($row_stock["rol_id"]) {
-                case '3':
-                    header('Location: /carga');
-                    break;
-                case '1':
-                case '4':
-                    header('Location: /ventas.php');
-                    break;
-                default:
-                    header('Location: /ventas.php');
-                    break;
-            }
+/**
+ * Verifica la clave ingresada contra el hash guardado.
+ * Soporta bcrypt (lado Laravel, password_hash) y el formato legacy sha1($clave.SEMILLA).
+ */
+if (!function_exists('claveValida')) {
+    function claveValida($clave, $hashGuardado) {
+        if ($hashGuardado === null || $hashGuardado === '') {
+            return false;
         }
-        
+        if (password_verify($clave, $hashGuardado)) {
+            return true; // bcrypt (Laravel)
+        }
+        return hash_equals((string) $hashGuardado, sha1($clave.SEMILLA)); // legacy sha1
+    }
+}
+
+/** Busca un usuario por nombre con consulta preparada (evita inyección SQL). */
+if (!function_exists('buscarUsuarioLogin')) {
+    function buscarUsuarioLogin($conn, $usuario) {
+        $stmt = $conn->prepare("SELECT * FROM usuarios WHERE usuario = ? LIMIT 1");
+        $stmt->bind_param("s", $usuario);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        return $res ? $res->fetch_assoc() : null;
+    }
+}
+
+if ($_POST){
+
+    $row_stock = buscarUsuarioLogin($conn, $_POST["usuario"]);
+
+    if ($row_stock && claveValida($_POST["clave"], $row_stock["clave"])) {
+        setcookie("kiosco",$row_stock["usuario"],time() + 3600*24,"/");
+        setcookie("sucursal",setSucursal($row_stock["sucursal_id"]),time() + 3600*24,"/");
+        setcookie("rol",setRol($row_stock["rol_id"]),time() + 3600*24,"/");
+        if (!(isset($_COOKIE["lista_precio"]))) setcookie("lista_precio",1,time() + 3600*24,"/");
+        switch ($row_stock["rol_id"]) {
+            case '3':
+                header('Location: /carga');
+                break;
+            case '1':
+            case '4':
+                header('Location: /ventas.php');
+                break;
+            default:
+                header('Location: /ventas.php');
+                break;
+        }
     }else{
         $mensaje = "Error por favor verifica usuario y clave";
     }
@@ -36,17 +57,11 @@ if ($_POST){
 if ($_GET){
     header('Access-Control-Allow-Origin: *');
     header('Content-Type: application/json');
-    $usuario    = $conn->real_escape_string($_GET["usuario"]);
-    $clave      = $conn->real_escape_string($_GET["clave"]);
 
-    $sql = "Select * FROM usuarios WHERE usuario = '$usuario' AND clave = '".sha1($clave.SEMILLA)."'";
+    $row_stock = buscarUsuarioLogin($conn, $_GET["usuario"]);
 
-    $resultado_stock = $conn->query($sql) or die("Error: " . $sql . "<br>" . $conn->error);
-    if ($resultado_stock->num_rows > 0) {
-        if ($row_stock = $resultado_stock->fetch_assoc()) {
-            echo '{"token": "'.sha1($row_stock["id"]).'", "sucursal": "'.$row_stock["sucursal_id"].'"}';
-        }
-        
+    if ($row_stock && claveValida($_GET["clave"], $row_stock["clave"])) {
+        echo '{"token": "'.sha1($row_stock["id"]).'", "sucursal": "'.$row_stock["sucursal_id"].'"}';
     }else{
         echo '{"Error": "Usuario y/o Clave incorrectos"}';
     }
