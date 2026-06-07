@@ -25,10 +25,10 @@ class UsuarioController extends Controller
     {
         $mensaje = $request->mensaje;
         $sucursales = Sucursales::all();
-        $usuarios=  Usuario::join("sucursales","sucursales.id", "=", "usuarios.sucursal_id")
-        ->leftjoin("roles","roles.id","=","usuarios.rol_id")
-        ->select("usuarios.id", "usuarios.nombre","usuarios.apellido","usuarios.clave","usuarios.rol_id","usuarios.telefono","sucursales.nombre as nombre_sucursal","roles.nombre as nombre_rol")
-        ->orderBy('nombre')
+        $usuarios=  Usuario::leftJoin("sucursales","sucursales.id", "=", "usuarios.sucursal_id")
+        ->leftJoin("roles","roles.id","=","usuarios.rol_id")
+        ->select("usuarios.id", "usuarios.usuario", "usuarios.nombre","usuarios.apellido","usuarios.rol_id","usuarios.telefono","sucursales.nombre as nombre_sucursal","roles.nombre as nombre_rol")
+        ->orderBy('usuarios.nombre')
         ->get();
         $roles=Rol::all();
         return view("usuarios.accion",compact("mensaje","sucursales","usuarios","roles"));
@@ -37,7 +37,7 @@ class UsuarioController extends Controller
 
     public function save(Request $request)
     {
-        // SEGURIDAD: Validación de inputs
+        // SEGURIDAD: Validación de inputs (mensajes en español para que el error sea claro)
         $validated = $request->validate([
             'usuario' => 'required|string|max:100',
             'nombre' => 'required|string|max:100',
@@ -46,6 +46,20 @@ class UsuarioController extends Controller
             'rol' => 'required|integer|exists:roles,id',
             'sucursales' => 'required|integer|exists:sucursales,id',
             'clave' => 'nullable|string|min:6'
+        ], [
+            'required'         => 'El campo :attribute es obligatorio.',
+            'sucursales.exists' => 'Debés seleccionar una sucursal válida.',
+            'rol.exists'        => 'Debés seleccionar un rol válido.',
+            'clave.min'         => 'La clave debe tener al menos :min caracteres.',
+            'telefono.max'      => 'El teléfono no puede superar los :max caracteres.',
+        ], [
+            'usuario'    => 'usuario',
+            'nombre'     => 'nombre',
+            'apellido'   => 'apellido',
+            'telefono'   => 'teléfono',
+            'rol'        => 'rol',
+            'sucursales' => 'sucursal',
+            'clave'      => 'clave',
         ]);
 
         $accion=0;
