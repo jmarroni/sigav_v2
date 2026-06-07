@@ -85,7 +85,7 @@ if ($resultado_perfil->num_rows > 0) {
 		$datos_factura = $row_perfil;
     }
 }else{
-	$logo = "http://".$_SERVER['HTTP_HOST']."/assets/img/photos/no-image-featured-image.png";
+	$logo = "file://".dirname(__FILE__)."/assets/img/photos/no-image-featured-image.png";
     $nombre_fantasia = "SIGAV";
 }
 
@@ -108,6 +108,7 @@ $data = array(
 	'ImpTrib' 		=> 0,   //Importe total de tributos
 	'MonId' 		=> 'PES', //Tipo de moneda usada en el comprobante (ver tipos disponibles)('PES' para pesos argentinos) 
 	'MonCotiz' 		=> 1,     // Cotización de la moneda usada (1 para pesos argentinos)  
+	'CondicionIVAReceptorId' => afip_cond_iva_receptor($iva), // RG 5616
 	'CbtesAsoc' 	=> array( // ASOCIO LA FACTURA
 		array(
 			'Tipo' 		=> 11, // Tipo de comprobante (ver tipos disponibles) 
@@ -139,9 +140,6 @@ try {
 }catch(Exception $e) {
 	$devolucion["error"] = "Error al generar el comprobante";
 	$devolucion["mensaje"] = "AFIP respondio lo siguiente al intentar comunicarnos: ".$e->getMessage();
-	file_put_contents("errores.dat",$e);
-	$sql_update = "UPDATE ventas SET estado = 5  WHERE id = ".$datos_productos[0]["id"];
-	$conn->query($sql_update);
 	echo json_encode($devolucion);exit();
 }
 

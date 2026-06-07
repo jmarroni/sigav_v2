@@ -108,7 +108,7 @@ if ($resultado_perfil->num_rows > 0) {
 		$datos_factura = $row_perfil;
 	}
 }else{
-	$logo = "http://".$_SERVER['HTTP_HOST']."/assets/img/photos/no-image-featured-image.png";
+	$logo = "file://".dirname(__FILE__)."/assets/img/photos/no-image-featured-image.png";
 	$nombre_fantasia = "SIGAV";
 }
 if (strpos($logo,"127.0.0.1") > 0) $logo = "http://sistema.mercado-artesanal.com.ar/assets/img/photos/no-image-featured-image.png";
@@ -253,6 +253,7 @@ $data = array(
 	'ImpTrib' 		=> 0,   //Importe total de tributos
 	'MonId' 		=> 'PES', //Tipo de moneda usada en el comprobante (ver tipos disponibles)('PES' para pesos argentinos) 
 	'MonCotiz' 		=> 1, // Cotización de la moneda usada (1 para pesos argentinos)  
+	'CondicionIVAReceptorId' => afip_cond_iva_receptor($iva), // RG 5616
 	
 );
 

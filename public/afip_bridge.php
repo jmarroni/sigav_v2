@@ -76,3 +76,19 @@ function afip_instance()
         'ta_folder'  => $dir,
     ));
 }
+
+/**
+ * Mapea la condición IVA interna del receptor (1..4) al CondicionIVAReceptorId
+ * que AFIP exige en el comprobante (RG 5616).
+ * 1=Resp.Inscripto, 2=Monotributista, 3=Exento, 4=Consumidor Final.
+ */
+function afip_cond_iva_receptor($iva)
+{
+    switch ((string) $iva) {
+        case '1': return 1; // IVA Responsable Inscripto
+        case '2': return 6; // Responsable Monotributo
+        case '3': return 4; // IVA Sujeto Exento
+        case '4': return 5; // Consumidor Final
+        default:  return 5; // Consumidor Final
+    }
+}
