@@ -49,8 +49,6 @@ if ($resultado_caja->num_rows > 0) {
 				break;
 		}
 	}
-}else{
-	$cantidad_de_ventas = 0;
 }
 
 //Productos vendidos hoy por el usuario
