@@ -77,6 +77,9 @@ Route::get('usuario/mensaje/{mensaje}','UsuarioController@index');
 // SEGURIDAD: Cambiado de GET a DELETE para prevenir ataques CSRF
 Route::delete('usuario/{id}','UsuarioController@delete' );
 Route::get('usuario.getUsuario/{id}', 'UsuarioController@getUsuario');
+// Notas de Crédito / Débito (pantallas migradas a Laravel; emisión sigue en los procesadores legacy)
+Route::get('notas/credito', 'NotasController@credito');
+Route::get('notas/debito', 'NotasController@debito');
 // AFIP - configuración de credenciales y switch homologación/producción
 Route::middleware('throttle:20,1')->group(function () {
     Route::get('afip/configuracion', 'AfipConfigController@index');
