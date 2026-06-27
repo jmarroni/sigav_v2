@@ -52,6 +52,12 @@ $iva 				= ($_GET["iva"] != "")?$_GET["iva"]:"";
 $direccion			= ($_GET["direccion"] != "")?$_GET["direccion"]:"";
 $descontar_stock    = 1;
 
+// Descuento total (%) aplicado sobre el subtotal ya descontado por linea.
+// Se clampea a [0,100]; no numerico -> 0.
+$descuentoTotalPct = is_numeric($_GET["descuento_total"] ?? null)
+	? max(0, min(100, floatval($_GET["descuento_total"])))
+	: 0;
+
 
 // Me fijo si lo tengo que insertar como cliente o ya autocompleto
 if ($_GET["clientes_id"] == ""){
@@ -164,22 +170,26 @@ if ($resultados_productos_en_carrito->num_rows > 0) {
 
 		}//End if de condición descontar stock
 
-		$sql_insertar_venta = 
+		$descuento_linea = is_numeric($producto_en_carrito["descuento"])
+			? floatval($producto_en_carrito["descuento"]) : 0;
+
+		$sql_insertar_venta =
 		"
-		INSERT INTO ventas 
+		INSERT INTO ventas
+			(productos_id, cantidad, precio, costo, fecha, usuario, sucursal_id, estado, factura_id, tipo_pago, lista_precio, descuento)
 		VALUES(
-			NULL,
 			'{$producto_en_carrito['producto_id']}',
-			'{$producto_en_carrito['cantidad']}', 
-			'{$producto_en_carrito['precio']}', 
-			'{$producto_en_carrito['costo']}', 
-			'".date("Y-m-d H:i:s")."', 
-			'{$_COOKIE["kiosco"]}', 
-			'".getSucursal($_COOKIE["sucursal"])."', 
-			'3', 
-			NULL, 
-			'1612', 
-			'$lista_precio' 
+			'{$producto_en_carrito['cantidad']}',
+			'{$producto_en_carrito['precio']}',
+			'{$producto_en_carrito['costo']}',
+			'".date("Y-m-d H:i:s")."',
+			'{$_COOKIE["kiosco"]}',
+			'".getSucursal($_COOKIE["sucursal"])."',
+			'3',
+			NULL,
+			'1612',
+			'$lista_precio',
+			'$descuento_linea'
 		)";
 
 		if ($conn->query($sql_insertar_venta) === FALSE) {
@@ -195,32 +205,40 @@ $sql = "SELECT v.*, p.nombre as nombre_producto FROM ventas v inner join product
 $item = array();
 $total = 0;
 $datos = array();
+$lineas = array();
 $resultado = $conn->query($sql);
 if ($resultado->num_rows > 0) {
 	// output data of each row
 	while($row = $resultado->fetch_assoc()) {
-		$total += $row["precio"] * $row["cantidad"];
 		$datos_productos[] = $row;
+		$lineas[] = array(
+			'precio'    => floatval($row["precio"]),
+			'cantidad'  => floatval($row["cantidad"]),
+			'descuento' => is_numeric($row["descuento"]) ? floatval($row["descuento"]) : 0,
+		);
 		$update_producto = "UPDATE ventas SET estado = 5 WHERE id = ".$row["id"];
 		if ($conn->query($update_producto) === FALSE) {
 			echo "Error en UPDATE estado venta: " . $update_producto . "<br>" . $conn->error;
 		}
 
 	}
-	//$eliminar_carrito = "DELETE FROM productos_en_carrito WHERE venta_id = '{$_GET['venta_id']}'";	
+	//$eliminar_carrito = "DELETE FROM productos_en_carrito WHERE venta_id = '{$_GET['venta_id']}'";
 }else{
 	$devolucion["error"] = "No existen productos para facturar";
 	echo json_encode($devolucion);
 	exit();
 }
+
+$calc = \App\Ventas\CalculadoraVenta::calcular($lineas, $descuentoTotalPct);
+$total = $calc['total'];
 $fecha = explode("-", $_GET["fecha-facturacion"] ?? "");
 if (count($fecha) < 3) {
 	$fecha = explode("-", date("Y-m-d")); // sin fecha válida -> hoy
 }
 $afip = afip_instance();
 if (intval($comprobante) != 11){
-	$ImpNeto = round($total / 1.21,2);
-	$impuestoIVA = round($ImpNeto * 0.21,2);
+	$ImpNeto = $calc['neto'];
+	$impuestoIVA = $calc['iva'];
 }else{
 	$impuestoIVA = 0;
 	$ImpNeto = $total;
@@ -417,7 +435,8 @@ if($voucher_info === NULL){
 		`direccion`,
 		`documento`,
 		`tipo_documento`,
-		`iva`
+		`iva`,
+		`descuento_total`
 		)
 	VALUES (NULL,
 		'".getSucursal($_COOKIE["sucursal"])."',
@@ -434,7 +453,8 @@ if($voucher_info === NULL){
 		'$direccion',
 		'$documento',
 		'$tipoDocumento',
-		'$iva');";
+		'$iva',
+		'$descuentoTotalPct');";
 
 		if ($conn->query($sql_insert) === TRUE) {
 			$factura_id = $conn->insert_id;
@@ -445,6 +465,33 @@ if($voucher_info === NULL){
 				if ($conn->query($sql_update_venta_factura) === FALSE) {
 					echo json_encode("Error: " . $sql_update_venta_factura . "<br>" . $conn->error);
 					exit();
+				}
+			}
+
+			// Auditoria: registra el descuento total aplicado a esta factura.
+			// mysqli preparado (facturar.php no bootea el kernel de Laravel).
+			if ($descuentoTotalPct > 0) {
+				$sql_log_desc = "INSERT INTO descuentos_logs
+					(usuario, sucursal_id, tipo_operacion, factura_id, descuento_nuevo, monto_descontado, created_at, updated_at)
+					VALUES (?, ?, 'DESCUENTO_TOTAL', ?, ?, ?, ?, ?)";
+				$stmt_log = $conn->prepare($sql_log_desc);
+				if ($stmt_log) {
+					$usuario_log = $_COOKIE["kiosco"];
+					$sucursal_log = getSucursal($_COOKIE["sucursal"]);
+					$monto_desc = $calc['descuentoTotalMonto'];
+					$ahora_log = date("Y-m-d H:i:s");
+					$stmt_log->bind_param(
+						"siiddss",
+						$usuario_log,
+						$sucursal_log,
+						$factura_id,
+						$descuentoTotalPct,
+						$monto_desc,
+						$ahora_log,
+						$ahora_log
+					);
+					$stmt_log->execute();
+					$stmt_log->close();
 				}
 			}
 		} else {
@@ -500,10 +547,12 @@ if($voucher_info === NULL){
 			</tr>
 			");
 		foreach ($datos_productos as $key => $value) {
+			$descLinea = is_numeric($value["descuento"]) ? floatval($value["descuento"]) : 0;
+			$precioUnitDesc = round(floatval($value["precio"]) * (1 - $descLinea / 100), 2);
 			$html .= utf8_encode("<tr>
 				<td style='border-bottom: 1px solid #000;word-wrap: break-word;width:230px;text-align:justify'><i>".$value["nombre_producto"]."</i></td>
 				<td style='border-bottom: 1px solid #000;'>".$value["cantidad"]."</td>
-				<td style='border-bottom: 1px solid #000;'>".number_format(floatval($value["precio"]),2,",",".")."</td>
+				<td style='border-bottom: 1px solid #000;'>".number_format($precioUnitDesc,2,",",".")."</td>
 				</tr>
 				");
 		}
