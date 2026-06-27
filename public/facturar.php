@@ -10,6 +10,10 @@ ini_set('display_startup_errors', 0);
 require_once ("conection.php");
 require 'vendor/autoload.php';
 require_once __DIR__.'/afip_bridge.php';
+// El autoloader cargado arriba es el de public/vendor (SDK AFIP/PDF), que no
+// conoce el namespace App\. CalculadoraVenta es una clase pura sin dependencias,
+// asi que se incluye su archivo directamente.
+require_once __DIR__.'/../app/Ventas/CalculadoraVenta.php';
 use Spipu\Html2Pdf\Html2Pdf;
 $stockfinal=0;
 $stockanterior=0;
