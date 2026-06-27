@@ -104,6 +104,10 @@ $sql = "INSERT INTO productos_en_carrito
         (venta_id, producto_id, estado, fecha, usuario, sucursal_id, cantidad, precio, costo, descuento)
         VALUES (?, ?, 0, ?, ?, ?, ?, ?, ?, ?)";
 $stmt = $conn->prepare($sql);
+if (!$stmt) {
+    echo json_encode(["error" => "Error preparando la sentencia"]);
+    exit();
+}
 $producto_id_carrito = (int)$_POST["id"];
 $cantidad_carrito    = (int)$_POST["cantidad"];
 $fecha_carrito       = date("Y-m-d H:i:s");
