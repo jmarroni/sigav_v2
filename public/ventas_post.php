@@ -61,12 +61,14 @@ $sql = "SELECT p.*,st.stock as stock_sucursal,ip.imagen_url as imagen  FROM prod
 
 $resultado = $conn->query($sql);
 $datos = '{"data":"no data"}';
+$descuento = 0;
 if ($resultado->num_rows > 0) {
     // output data of each row
     while($row = $resultado->fetch_assoc()) {
         $row["precio_unidad"] = $_POST["precio"];//($_COOKIE["lista_precio"] == 1)?$row["precio_unidad"]:$row["precio_mayorista"];
         $costo = $row["costo"];
         $precio = $row["precio_unidad"];
+        $descuento = is_numeric($row["descuento"]) ? max(0, min(100, floatval($row["descuento"]))) : 0;
         $row["stock_sucursal"] =  $row["stock_sucursal"] - $_POST["cantidad"];
         $row["imagen"] = (isset($row["imagen"]))?$row["imagen"]:"http://sistema.mercado-artesanal.com.ar/assets/img/photos/no-image-featured-image.png";
         $datos = $row;
@@ -98,24 +100,32 @@ else $lista_precio = 1;
                                     NULL,1612,
                                     {$lista_precio})";*/
 $ventas_id = (intval($_POST["venta_id"]) != "")?$_POST["venta_id"]:rand(111111,999999);
-$sql = "INSERT INTO productos_en_carrito 
-        VALUES ( 
-            NULL, 
-            '$ventas_id', 
-            '{$_POST["id"]}', 
-            '0', 
-            '".date("Y-m-d H:i:s")."', 
-            '{$_COOKIE["kiosco"]}', 
-            '".getSucursal($_COOKIE["sucursal"])."', 
-            '{$_POST["cantidad"]}', 
-            '$precio', 
-            '$costo' 
-        )";
+$sql = "INSERT INTO productos_en_carrito
+        (venta_id, producto_id, estado, fecha, usuario, sucursal_id, cantidad, precio, costo, descuento)
+        VALUES (?, ?, 0, ?, ?, ?, ?, ?, ?, ?)";
+$stmt = $conn->prepare($sql);
+$producto_id_carrito = (int)$_POST["id"];
+$cantidad_carrito    = (int)$_POST["cantidad"];
+$fecha_carrito       = date("Y-m-d H:i:s");
+$usuario_carrito     = $_COOKIE["kiosco"];
+$sucursal_carrito    = getSucursal($_COOKIE["sucursal"]);
+$stmt->bind_param(
+    "iissiiddd",
+    $ventas_id,
+    $producto_id_carrito,
+    $fecha_carrito,
+    $usuario_carrito,
+    $sucursal_carrito,
+    $cantidad_carrito,
+    $precio,
+    $costo,
+    $descuento
+);
 
 // Agarro la cantidad
 // $datos["cantidad"] = $_POST["cantidad"];
 
-if ($conn->query($sql) === TRUE) {
+if ($stmt->execute()) {
     // QUITAR
     //$sql_update = "UPDATE stock SET stock = (stock - {$_POST["cantidad"]}) WHERE productos_id = ".$_POST["id"]." AND sucursal_id = ".getSucursal($_COOKIE["sucursal"]);
     // HASTA ACA
@@ -132,8 +142,9 @@ if ($conn->query($sql) === TRUE) {
     //   echo "Error en UPDATE: " . $sql . "<br>" . $conn->error;
     //}
 } else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
+    echo "Error: " . $stmt->error;
 }
+$stmt->close();
 
 
 $conn->close();
