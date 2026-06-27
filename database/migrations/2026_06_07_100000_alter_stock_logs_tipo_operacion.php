@@ -12,11 +12,19 @@ class AlterStockLogsTipoOperacion extends Migration
 {
     public function up()
     {
+        // `MODIFY` es sintaxis MySQL; en SQLite (tests) la tabla legacy stock_logs
+        // ni siquiera existe. Se omite fuera de MySQL para no romper RefreshDatabase.
+        if (DB::getDriverName() !== 'mysql') {
+            return;
+        }
         DB::statement('ALTER TABLE stock_logs MODIFY tipo_operacion VARCHAR(50) NULL');
     }
 
     public function down()
     {
+        if (DB::getDriverName() !== 'mysql') {
+            return;
+        }
         DB::statement('ALTER TABLE stock_logs MODIFY tipo_operacion VARCHAR(20) NULL');
     }
 }
