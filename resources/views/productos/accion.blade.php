@@ -79,6 +79,10 @@
                             <label for="precio_reposicion">Precio Reposición <i>(opcional)</i></label>
                             <input type="text" class="form-control prices" name="precio_reposicion" id="precio_reposicion" value="" placeholder="Use . para decimales (5.5)" />
                         </div>
+                        <div class="sg-field">
+                            <label for="descuento">Descuento <i>(% — opcional)</i></label>
+                            <input type="text" class="form-control numbers" name="descuento" id="descuento" value="0" placeholder="Descuento del producto en % (0 a 100)" />
+                        </div>
                     </div>
                 </div>
 
