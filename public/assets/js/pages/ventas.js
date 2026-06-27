@@ -4,6 +4,7 @@
     var precio = 0;
     var devolucion = '';
     var total_ventas = 0;
+    var subtotal_con_descuento = 0;
     //Array para guardar los productos que se van agregando a la factura para poder buscar si ya un producto ha sido agregado
     var detalleProductos = new Array();
     jQuery("document").ready(function(){
@@ -38,7 +39,8 @@
                 '&iva=' + iva +
                 '&venta_id=' + venta_id +
                 '&clientes_id=' + $("#clientes_id").val() + 
-                '&direccion=' + $("#direccion-cliente").val(),                  
+                '&direccion=' + $("#direccion-cliente").val() +
+                '&descuento_total=' + ($("#descuento_total_input").val() || 0),
                 datatype: 'json'
             })
             .done(function (msg) {
@@ -50,6 +52,8 @@
                         $("#tablaProductos").html("");
                         $("#total_ventas").html(0);
                         total_ventas=0;
+                        subtotal_con_descuento = 0;
+                        $("#descuento_total_input").val("0");
                         $("#cantidad").html(0);
                         $("#precio").html(0);
                         $("#iframe")[0].contentWindow.print();
@@ -116,7 +120,8 @@
                 '&clientes_id=' + $("#clientes_id").val() +
                 "&direccion=" + $("#direccion-cliente").val() +
                 '&venta_id=' + venta_id+
-                '&descontar_stock=' + descontar_stock,
+                '&descontar_stock=' + descontar_stock +
+                '&descuento_total=' + ($("#descuento_total_input").val() || 0),
                 datatype: 'json'
             })
             .done(function (msg) {
@@ -130,6 +135,8 @@
                         $("#tablaProductos").html("");
                         $("#total_ventas").html(0);
                         total_ventas=0;
+                        subtotal_con_descuento = 0;
+                        $("#descuento_total_input").val("0");
                         $("#precio").html("0.00");
                         $("#cantidad").val('1');
                     },1000);
@@ -202,6 +209,9 @@
                 $("#precio").html("0.00");
         });
 
+        $("#descuento_total_input").on("keyup change", function(){
+            recalcularTotal();
+        });
 
         function log( message ) {
             $( "<div>" ).text( message ).prependTo( "#log" );
@@ -352,10 +362,14 @@
      '    </td>' +
      '</tr>';
      $("#tablaProductos").append(rowAdd);
-        //Actualizo el total
-        total_ventas = total_ventas + (jsonData.precio_unidad * jQuery("#cantidad").val());
-        $("#total_ventas").html(total_ventas);
-        detalleProductos.push(new Array($("#producto_id").val(),$("#cantidad").val(),$("#precio").val()));
+        //Actualizo el subtotal con el descuento de línea del producto
+        var descProducto = parseFloat(jsonData.descuento) || 0;
+        if (descProducto < 0) descProducto = 0;
+        if (descProducto > 100) descProducto = 100;
+        var lineaConDesc = (jsonData.precio_unidad * jQuery("#cantidad").val()) * (1 - descProducto / 100);
+        subtotal_con_descuento = subtotal_con_descuento + lineaConDesc;
+        recalcularTotal();
+        detalleProductos.push(new Array($("#producto_id").val(), $("#cantidad").val(), $("#precio").val(), lineaConDesc));
     }
 
     function eliminar(ventas,cantidad,producto_id,precio){
@@ -367,14 +381,24 @@
             })
             .done(function (msg) {
                 $("#" + producto_id).hide("slow");
-                total_ventas = total_ventas - (parseFloat(precio)*parseFloat(cantidad));
-                $("#total_ventas").html(total_ventas);
+                subtotal_con_descuento = 0;
+                for (let i = 0; i < detalleProductos.length; i++) {
+                    if (detalleProductos[i][0] != producto_id && detalleProductos[i][3] != null) {
+                        subtotal_con_descuento += parseFloat(detalleProductos[i][3]);
+                    }
+                }
+                recalcularTotal();
                 eliminarProducto(producto_id);
 
-            }).fail(function() { 
+            }).fail(function() {
                 $("#" + producto_id).hide("slow");
-                total_ventas = total_ventas - (parseFloat(precio)*parseFloat(cantidad));
-                $("#total_ventas").html(total_ventas);
+                subtotal_con_descuento = 0;
+                for (let i = 0; i < detalleProductos.length; i++) {
+                    if (detalleProductos[i][0] != producto_id && detalleProductos[i][3] != null) {
+                        subtotal_con_descuento += parseFloat(detalleProductos[i][3]);
+                    }
+                }
+                recalcularTotal();
                 eliminarProducto(producto_id);
             });
         }
@@ -431,10 +455,18 @@
  function eliminarProducto(id)
  {
     var existe=0;
-    for (let index = 0; index < detalleProductos.length; index++) 
+    for (let index = 0; index < detalleProductos.length; index++)
     {
         if (detalleProductos[index][0] == id){
          detalleProductos.splice(index,1);
          }
     }
+}
+
+function recalcularTotal() {
+    var d = parseFloat($("#descuento_total_input").val()) || 0;
+    if (d < 0) d = 0;
+    if (d > 100) d = 100;
+    total_ventas = subtotal_con_descuento * (1 - d / 100);
+    $("#total_ventas").html(total_ventas.toFixed(2));
 }

@@ -158,6 +158,10 @@ $conn->query($sql_update);
         <section class="sg-card">
             <header class="sg-card__head">
                 <div class="sg-card__title"><span class="sg-dot sg-dot--edit"></span><h3>Venta en curso</h3></div>
+                <div class="sg-discount">
+                    <label for="descuento_total_input">Descuento total (%)</label>
+                    <input type="text" class="form-control numbers sg-mono-input" id="descuento_total_input" name="descuento_total_input" value="0" placeholder="0">
+                </div>
                 <span class="sg-total-badge">Total&nbsp; $ <span id="total_ventas">0.00</span></span>
             </header>
             <div class="sg-card__body">
