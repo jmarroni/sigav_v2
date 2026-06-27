@@ -9,4 +9,10 @@ class DescuentoLog extends Model
     protected $table = 'descuentos_logs';
 
     protected $guarded = ['id'];
+
+    protected $casts = [
+        'descuento_anterior' => 'float',
+        'descuento_nuevo'    => 'float',
+        'monto_descontado'   => 'float',
+    ];
 }
