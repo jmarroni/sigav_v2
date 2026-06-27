@@ -114,4 +114,28 @@ class CalculadoraVentaTest extends TestCase
         );
         $this->assertSame($r['total'], round($r['subtotal'] - $r['descuentoTotalMonto'], 2));
     }
+
+    /** @test */
+    public function golden_master_carrito_real_con_descuentos_combinados()
+    {
+        // 2 líneas, una con descuento de línea, más un descuento total.
+        $r = CalculadoraVenta::calcular(
+            [['precio' => 1599.99, 'cantidad' => 2, 'descuento' => 10],
+             ['precio' => 499.50,  'cantidad' => 3, 'descuento' => 0]],
+            5
+        );
+        // Hand-derived:
+        // line1: bruto = round(1599.99*2,2) = 3199.98; lineaConDesc = round(3199.98*0.90,2) = 2879.98
+        // line2: bruto = round(499.50*3,2)  = 1498.50; lineaConDesc = 1498.50
+        // subtotal = 2879.98 + 1498.50 = 4378.48
+        // descuentoTotalMonto = round(4378.48*0.05,2) = 218.92
+        // total = 4378.48 - 218.92 = 4159.56
+        // neto  = round(4159.56/1.21,2) = 3437.65
+        // iva   = round(3437.65*0.21,2) = 721.91
+        $this->assertSame(4378.48, $r['subtotal']);
+        $this->assertSame(218.92,  $r['descuentoTotalMonto']);
+        $this->assertSame(4159.56, $r['total']);
+        $this->assertSame(3437.65, $r['neto']);
+        $this->assertSame(721.91,  $r['iva']);
+    }
 }

@@ -368,7 +368,7 @@
         var descProducto = parseFloat(jsonData.descuento) || 0;
         if (descProducto < 0) descProducto = 0;
         if (descProducto > 100) descProducto = 100;
-        var lineaConDesc = (jsonData.precio_unidad * jQuery("#cantidad").val()) * (1 - descProducto / 100);
+        var lineaConDesc = Math.round((jsonData.precio_unidad * jQuery("#cantidad").val()) * (1 - descProducto / 100) * 100) / 100;
         subtotal_con_descuento = subtotal_con_descuento + lineaConDesc;
         recalcularTotal();
         detalleProductos.push(new Array($("#producto_id").val(), $("#cantidad").val(), $("#precio").val(), lineaConDesc));
