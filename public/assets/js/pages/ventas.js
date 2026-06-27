@@ -53,6 +53,7 @@
                         $("#total_ventas").html(0);
                         total_ventas=0;
                         subtotal_con_descuento = 0;
+                        detalleProductos = [];
                         $("#descuento_total_input").val("0");
                         $("#cantidad").html(0);
                         $("#precio").html(0);
@@ -136,6 +137,7 @@
                         $("#total_ventas").html(0);
                         total_ventas=0;
                         subtotal_con_descuento = 0;
+                        detalleProductos = [];
                         $("#descuento_total_input").val("0");
                         $("#precio").html("0.00");
                         $("#cantidad").val('1');
