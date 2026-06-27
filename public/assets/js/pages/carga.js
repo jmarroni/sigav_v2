@@ -249,6 +249,7 @@ function modificar(identificador){
             $("#descripcion_pr").val(jsonData.descripcion_pr);
             $("#material").val(jsonData.material);
             $("#precio_mayorista").val(jsonData.precio_mayorista);
+            $("#descuento").val(jsonData.descuento != null ? jsonData.descuento : 0);
             if (jsonData.es_comodato) $("#es_comodato").prop('checked',true); else $("#es_comodato").prop('checked',false);;
             $("#proveedor").change();
             document.location.href="#bg-black-op";

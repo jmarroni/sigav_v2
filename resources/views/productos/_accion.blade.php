@@ -66,6 +66,10 @@
                     <label>Precio Reposici&oacute;n <i>(Solo si utiliza)</i></label>
                     <input type="text" class="form-control prices" name="precio_reposicion" id="precio_reposicion" value="" placeholder="Precio reposicion (. para decimales 5.5)" />
                 </div>
+                <div class="col-xs-4">
+                    <label for="descuento">Descuento (%)</label>
+                    <input type="text" class="form-control numbers" name="descuento" id="descuento" value="0" placeholder="Descuento del producto en % (0 a 100)" />
+                </div>
             </div>
             <div class="col-xs-4">
                 <label for="bd-qsettings-name">Cargar Imagen</label>

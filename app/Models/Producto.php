@@ -12,7 +12,7 @@ class Producto extends Model
 	// SEGURIDAD: Removido 'id' de fillable para prevenir mass assignment
 	protected $fillable = ['codigo_barras', 'nombre', 'precio_unidad', 'costo', 'stock', 'stock_minimo',
 		'proveedores_id', 'categorias_id', 'precio_mayorista', 'es_comodato', 'descripcion',
-		'descripcion_pr', 'descripcion_en', 'material', 'precio_reposicion'];
+		'descripcion_pr', 'descripcion_en', 'material', 'precio_reposicion', 'descuento'];
 
 	// Proteger campos sensibles de asignación masiva
 	protected $guarded = ['id', 'usuario', 'fecha'];

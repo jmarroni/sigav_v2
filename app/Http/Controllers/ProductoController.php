@@ -229,10 +229,12 @@ class ProductoController extends Controller
         $productoApi=array();
         $id=0;
         $codigo_barras='';
+        $descuentoAnterior = null;
         $sucursal=Sucursales::getSucursal();
         $stock_logs = new Stock_log();
         if ($request->id != ""){
             $productos = Producto::find($request->id);
+            $descuentoAnterior = $productos->descuento;
             $stock = new Stock();
             $stock->sucursal_id     = Sucursales::getSucursal();
             $stock->productos_id    = $request->id;
@@ -284,6 +286,9 @@ class ProductoController extends Controller
         $productoApi[0]['nombre']       = $request->producto;
         $productos->precio_unidad       = $request->precio_unidad;
         $productoApi[0]['precio_unidad']= $request->precio_unidad;
+        $productos->descuento = is_numeric($request->descuento)
+            ? max(0, min(100, floatval($request->descuento)))
+            : 0;
         $productos->costo               = $request->costo;
         $productoApi[0]['costo']        = $request->costo;
         $productos->stock               = $request->stock;
@@ -303,6 +308,16 @@ class ProductoController extends Controller
         $productos->material            = $request->material;
         $productos->precio_reposicion   = ($request->precio_reposicion == "")?0:$request->precio_reposicion;
         $productos->save();
+        if (floatval($descuentoAnterior) != floatval($productos->descuento)) {
+            $descuentoLog = new \App\Models\DescuentoLog();
+            $descuentoLog->usuario            = $_COOKIE["kiosco"];
+            $descuentoLog->sucursal_id        = $sucursal;
+            $descuentoLog->tipo_operacion     = 'DESCUENTO_PRODUCTO_CONFIG';
+            $descuentoLog->productos_id       = $productos->id;
+            $descuentoLog->descuento_anterior = $descuentoAnterior;
+            $descuentoLog->descuento_nuevo    = $productos->descuento;
+            $descuentoLog->save();
+        }
         $productoApi[0]['id']=$productos->id;
 
        // $id=Producto::latest('id')->first()->id;
@@ -486,6 +501,7 @@ public function searchProducts(request $request)
             $datos[$i]["stock_minimo"]  = $producto->stock_minimo;
             $datos[$i]["codigo_barras"] = $producto->codigo_barras;
             $datos[$i]["stockactual"]   = $producto->stockactual;
+            $datos[$i]["descuento"]     = ($producto->descuento !== null) ? floatval($producto->descuento) : 0;
             $i++;
                         }//endforeach
                     }
