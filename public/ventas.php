@@ -301,7 +301,7 @@ $conn->query($sql_update);
                 <table class="sg-sale-table">
                     <tbody>
                     <?php
-                    $sql = "SELECT v.*,v.fecha as fecha_vta, v.usuario as usuario_vta,pr.*,st.stock as stock_sucursal FROM `ventas` v inner join productos pr on pr.id = v.productos_id left join stock st ON (st.productos_id = pr.id AND st.sucursal_id = ".getSucursal($_COOKIE["sucursal"]).") WHERE v.`fecha` > '".date("Y-m-d")."' ORDER BY v.id DESC";
+                    $sql = "SELECT v.*,v.fecha as fecha_vta, v.usuario as usuario_vta, v.descuento as descuento_venta, pr.*,st.stock as stock_sucursal FROM `ventas` v inner join productos pr on pr.id = v.productos_id left join stock st ON (st.productos_id = pr.id AND st.sucursal_id = ".getSucursal($_COOKIE["sucursal"]).") WHERE v.`fecha` > '".date("Y-m-d")."' ORDER BY v.id DESC";
                     // echo $sql;exit();
                     $resultado = $conn->query($sql);
                     if ($resultado->num_rows > 0) {
@@ -324,12 +324,19 @@ $conn->query($sql_update);
                                     <h4><?php echo $row["nombre"] ?></h4>
                                     <p>Vendido a las <?php echo $row["fecha_vta"] ?> · por <?php echo $row["usuario_vta"] ?></p>
                                 </td>
+                                <?php
+                                    $desc_vta = is_numeric($row["descuento_venta"]) ? floatval($row["descuento_venta"]) : 0;
+                                    $importe_linea = round($row["precio"] * $row["cantidad"] * (1 - $desc_vta / 100), 2);
+                                ?>
                                 <td>
-                                    <p>Precio: <span class="sg-strong">$ <?php echo  $row["precio"] ?></span></p>
+                                    <p>Precio: <span class="sg-strong">$ <?php echo $row["precio"] ?></span></p>
+                                    <?php if ($desc_vta > 0){ ?>
+                                    <p>Descuento: <span class="sg-strong"><?php echo rtrim(rtrim(number_format($desc_vta, 2, '.', ''), '0'), '.'); ?>%</span></p>
+                                    <?php } ?>
                                     <p>Quedan en stock: <?php echo (isset($row["stock_sucursal"]))?$row["stock_sucursal"]:0; ?></p>
                                 </td>
                                 <td class="sg-num">
-                                    <span class="h1">$ <?php echo $row["precio"] * $row["cantidad"]; ?></span>
+                                    <span class="h1">$ <?php echo $importe_linea; ?></span>
                                 </td>
                             </tr>
                         <?php }
