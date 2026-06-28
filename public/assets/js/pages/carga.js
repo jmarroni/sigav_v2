@@ -252,7 +252,13 @@ function modificar(identificador){
             $("#descuento").val(jsonData.descuento != null ? jsonData.descuento : 0);
             if (jsonData.es_comodato) $("#es_comodato").prop('checked',true); else $("#es_comodato").prop('checked',false);;
             $("#proveedor").change();
-            document.location.href="#bg-black-op";
+            // Llevar la vista al formulario para que se note que se cargaron los datos.
+            // (El anchor viejo #bg-black-op ya no existe en el rediseño.)
+            var $form = $("form.sg-form").first();
+            if ($form.length) {
+                $("html, body").animate({ scrollTop: $form.offset().top - 20 }, 400);
+                $("#producto").focus();
+            }
            /* setTimeout(function(){ 
                 $("#categoria").val(jsonData.categorias_id + '_' + jsonData.abreviatura);
             // $("#proveedor").attr("disabled","disabled");
