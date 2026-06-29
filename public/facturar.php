@@ -561,6 +561,22 @@ if($voucher_info === NULL){
 				");
 		}
 
+		// Cuando hay descuento total, las lineas de arriba muestran el precio sin
+		// ese descuento; sin estas filas el Total no cierra contra los renglones.
+		// Se muestran Subtotal y Descuento (N%) para que la factura reconcilie.
+		if ($descuentoTotalPct > 0) {
+			$pctTexto = rtrim(rtrim(number_format($descuentoTotalPct, 2, ",", "."), "0"), ",");
+			$html .= utf8_encode("<tr>
+				<td></td>
+				<td style='border-bottom: 1px solid #000;'>Subtotal</td>
+				<td style='border-bottom: 1px solid #000;'>".number_format($calc['subtotal'],2,",",".")."</td>
+				</tr>
+				<tr>
+				<td></td>
+				<td style='border-bottom: 1px solid #000;'>Descuento ($pctTexto%)</td>
+				<td style='border-bottom: 1px solid #000;'>-".number_format($calc['descuentoTotalMonto'],2,",",".")."</td>
+				</tr>");
+		}
 		$html .= utf8_encode("<tr>
 			<td></td>
 			<td style='border-bottom: 1px solid #000;'>Total</td>
