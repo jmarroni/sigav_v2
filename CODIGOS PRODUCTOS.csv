@@ -1,0 +1,501 @@
+CODIGO;PRODUCTO;STOCK;PRECIO ULTIMA COMPRA;VALOR MINORISTA;VALOR MAYORISTA;PROVEEDOR;VENDIDOS;INGRESOS
+1699541342213;Babucha Slide (M, Azul);1; $34.001,00; $ 74.802,20 ; $ 68.002,00 ;SALPA SRL;;
+1699585081789;Babucha Slide (M, Negro);0; $34.001,00; $ 74.802,20 ; $ 68.002,00 ;SALPA SRL;1;
+1699556974478;Babucha Slide (L, Azul);1; $34.001,00; $ 74.802,20 ; $ 68.002,00 ;SALPA SRL;;
+1699588022246;Babucha Slide (L, Negro);1; $34.001,00; $ 74.802,20 ; $ 68.002,00 ;SALPA SRL;;
+1699504626022;Babucha Snatch (S, Negro);0; $37.873,00; $ 83.320,60 ; $ 75.746,00 ;SALPA SRL;1;
+1699536029136;Babucha Snatch (M, Negro);1; $37.873,00; $ 83.320,60 ; $ 75.746,00 ;SALPA SRL;;
+1699560133359;Babucha Snatch (L, Negro);1; $37.873,00; $ 83.320,60 ; $ 75.746,00 ;SALPA SRL;1;1
+1699587199826;Babucha Snatch (XL, Verde Militar);1; $37.873,00; $ 83.320,60 ; $ 75.746,00 ;SALPA SRL;;
+1699548801577;Babucha Squat (S, Azul);1; $33.396,00; $ 73.471,20 ; $ 66.792,00 ;SALPA SRL;1;
+1699511125488;Babucha Squat (M, Azul);1; $33.396,00; $ 73.471,20 ; $ 66.792,00 ;SALPA SRL;;
+1699594156836;Babucha Squat (M, Negro);1; $33.396,00; $ 73.471,20 ; $ 66.792,00 ;SALPA SRL;;
+1699558894330;Babucha Squat (L, Azul);1; $33.396,00; $ 73.471,20 ; $ 66.792,00 ;SALPA SRL;;
+1699505178704;Bermuda Squat (S, Verde);1; $28.253,50; $ 62.157,70 ; $ 56.507,00 ;SALPA SRL;1;1
+1699500219419;Bermuda Squat (S, Gris Perla);1; $28.253,50; $ 62.157,70 ; $ 56.507,00 ;SALPA SRL;;
+1699569207280;Bermuda Squat (M, Verde);1; $28.253,50; $ 62.157,70 ; $ 56.507,00 ;SALPA SRL;;
+1699500219457;Bermuda Squat (L, Gris Perla);1; $28.253,50; $ 62.157,70 ; $ 56.507,00 ;SALPA SRL;;
+1699529221516;Bermuda Squat (XL, Verde);1; $28.253,50; $ 62.157,70 ; $ 56.507,00 ;SALPA SRL;;
+1699598566921;Biker Gap (S/M, Negro);2; $25.047,00; $ 55.103,40 ; $ 50.094,00 ;SALPA SRL;;1
+1699538515729;Biker Gap (S/M, Rosa);0; $25.047,00; $ 55.103,40 ; $ 50.094,00 ;SALPA SRL;1;
+1699559258148;Biker Gap (L/XL, Rosa);1; $25.047,00; $ 55.103,40 ; $ 50.094,00 ;SALPA SRL;;
+1699595089010;Biker Gap (L/XL, Verde);1; $25.047,00; $ 55.103,40 ; $ 50.094,00 ;SALPA SRL;;
+1699539629838;Biker Jump (S, Azul Marino);1; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;;
+1699516363465;Biker Jump (S, Negro);3; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;;
+1699551161026;Biker Jump (M, Azul Marino);1; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;;
+1699565946763;Biker Jump (M, Bordo);2; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;;2
+1699544381974;Biker Jump (M, Negro);1; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;;
+1699548177146;Biker Jump (L, Bordo);1; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;;1
+1699578105096;Biker Jump (L, Azul Marino);1; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;;
+1699546578273;Biker Jump (L, Negro);1; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;1;1
+1699553885289;Biker Jump GreenMove (S);3; $26.983,00; $ 59.362,60 ; $ 53.966,00 ;SALPA SRL;;
+1699500230209;Biker Nebula (XL);1; $14.950,00; $ 32.890,00 ; $ 29.900,00 ;SALPA SRL;1;
+1699599026462;Biker Pissis (L);1; $18.755,00; $ 41.261,00 ; $ 37.510,00 ;SALPA SRL;1;
+1699511757207;Biker Pissis (M);1; $18.755,00; $ 41.261,00 ; $ 37.510,00 ;SALPA SRL;1;
+1699575417857;Biker Pissis (S);2; $18.755,00; $ 41.261,00 ; $ 37.510,00 ;SALPA SRL;;
+1699556967159;Biker Pissis (XL);2; $18.755,00; $ 41.261,00 ; $ 37.510,00 ;SALPA SRL;;
+1699500213394;Biker Pulse (S, Chocolate);0; $19.299,50; $ 42.458,90 ; $ 38.599,00 ;SALPA SRL;1;
+1699500213417;Biker Pulse (M, Chocolate);1; $19.299,50; $ 42.458,90 ; $ 38.599,00 ;SALPA SRL;;1
+1699500213424;Biker Pulse (M, Uva);2; $19.299,50; $ 42.458,90 ; $ 38.599,00 ;SALPA SRL;1;2
+1699554671003;Biker Tronador (M);1; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;
+1699596582763;Biker Tronador (L);1; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;
+1674499242983;Bolso Salpa (Gris Topo);4; $14.157,00; $ 31.145,40 ; $ 28.314,00 ;SALPA SRL;;2
+1699553636027;Bolso Salpa (Naranja);1; $14.157,00; $ 31.145,40 ; $ 28.314,00 ;SALPA SRL;;
+1699500200202;Bolso Salpa (Negro);0; $14.157,00; $ 31.145,40 ; $ 28.314,00 ;SALPA SRL;1;
+1689364339576;Bolso Salpa Evolucion;0; $15.427,50; $ 33.940,50 ; $ 30.855,00 ;SALPA SRL;1;
+1699539463685;Botella Soft Flask;3; $14.157,00; $ 31.145,40 ; $ 28.314,00 ;SALPA SRL;;
+1699599757236;Buzo Azucena (L, Negro);1; $37.873,00; $ 83.320,60 ; $ 75.746,00 ;SALPA SRL;;1
+1699500200240;Buzo Azucena (L, Fucsia);0; $37.873,00; $ 83.320,60 ; $ 75.746,00 ;SALPA SRL;1;1
+1699532684131;Buzo Cordillera (Homb. S / Muj. M);1; $39.809,00; $ 87.579,80 ; $ 79.618,00 ;SALPA SRL;;
+1699523519640;Buzo Cordillera (Homb. M / Muj. L);0; $39.809,00; $ 87.579,80 ; $ 79.618,00 ;SALPA SRL;1;
+1699500229975;Buzo Blurred (S);1; $34.650,00; $ 76.230,00 ; $ 69.300,00 ;SALPA SRL;;
+1699500229999;Buzo Blurred (L);1; $34.650,00; $ 76.230,00 ; $ 69.300,00 ;SALPA SRL;;
+1699500230216;Buzo Blurred (XL);1; $34.650,00; $ 76.230,00 ; $ 69.300,00 ;SALPA SRL;;
+1699514398193;Buzo Caspio (Homb. S / Muj. M, Gris Claro);2; $44.286,00; $ 97.429,20 ; $ 88.572,00 ;SALPA SRL;;
+1699577235527;Buzo Caspio (Homb. M / Muj. L, Gris Claro);1; $44.286,00; $ 97.429,20 ; $ 88.572,00 ;SALPA SRL;1;1
+1699500213646;Buzo Flex (S, Negro);1; $37.207,50; $ 81.856,50 ; $ 74.415,00 ;SALPA SRL;;
+1699500213653;Buzo Flex (M, Beige);1; $37.207,50; $ 81.856,50 ; $ 74.415,00 ;SALPA SRL;;
+1699500213660;Buzo Flex (M, Negro);1; $37.207,50; $ 81.856,50 ; $ 74.415,00 ;SALPA SRL;;
+1699500213677;Buzo Flex (L, Beige);1; $37.207,50; $ 81.856,50 ; $ 74.415,00 ;SALPA SRL;;
+1699500213707;Buzo Flex (XL, Negro);1; $37.207,50; $ 81.856,50 ; $ 74.415,00 ;SALPA SRL;;
+1699535415978;Buzo Nature (Homb. S / Muj. M);1; $39.809,00; $ 87.579,80 ; $ 79.618,00 ;SALPA SRL;1;
+1699517990707;Buzo Nature (Homb. M / Muj. L);1; $39.809,00; $ 87.579,80 ; $ 79.618,00 ;SALPA SRL;;
+1699500229869;Buzo Nebula (L);1; $34.560,00; $ 76.032,00 ; $ 69.120,00 ;SALPA SRL;;
+1699500229852;Buzo Nebula (M);1; $34.560,00; $ 76.032,00 ; $ 69.120,00 ;SALPA SRL;;
+1699500229845;Buzo Nebula (S);1; $34.560,00; $ 76.032,00 ; $ 69.120,00 ;SALPA SRL;;
+1699590693656;Buzo Slide (L, Azul);1; $37.207,50; $ 81.856,50 ; $ 74.415,00 ;SALPA SRL;;
+1699500399678;Buzo Slide (L, Negro);1; $37.207,50; $ 81.856,50 ; $ 74.415,00 ;SALPA SRL;;
+1699540444000;Buzo Slide (M, Azul);1; $37.207,50; $ 81.856,50 ; $ 74.415,00 ;SALPA SRL;;
+1699592257450;Buzo Slide (M, Negro);1; $37.207,50; $ 81.856,50 ; $ 74.415,00 ;SALPA SRL;;
+1699520672010;Buzo Snatch (L, Negro);1; $37.207,50; $ 81.856,50 ; $ 74.415,00 ;SALPA SRL;;
+1699517183291;Buzo Snatch (M, Negro);1; $37.207,50; $ 81.856,50 ; $ 74.415,00 ;SALPA SRL;;
+1699591437693;Buzo Squat (S, Negro);1; $37.207,50; $ 81.856,50 ; $ 74.415,00 ;SALPA SRL;;
+1699572545652;Buzo Squat (M, Negro);1; $37.207,50; $ 81.856,50 ; $ 74.415,00 ;SALPA SRL;;
+1699589715765;Buzo Squat (L, Negro);0; $37.207,50; $ 81.856,50 ; $ 74.415,00 ;SALPA SRL;1;
+1699543514175;Buzo Squat (XL, Azul);1; $37.207,50; $ 81.856,50 ; $ 74.415,00 ;SALPA SRL;;
+1699591437693;Buzo Traful (M, Negro);1; $62.254,50; $ 136.959,90 ; $ 124.509,00 ;SALPA SRL;;
+1699582517076;Buzo Traful (L, Gris);1; $62.254,50; $ 136.959,90 ; $ 124.509,00 ;SALPA SRL;;
+1699553937209;Calza 3/4 Jump (S, Negro);2; $19.299,50; $ 42.458,90 ; $ 38.599,00 ;SALPA SRL;1;1
+1699530313897;Calza 3/4 Jump (M, Negro);2; $19.299,50; $ 42.458,90 ; $ 38.599,00 ;SALPA SRL;;1
+1699502783987;Calza 3/4 Jump (L, Negro);1; $19.299,50; $ 42.458,90 ; $ 38.599,00 ;SALPA SRL;;
+1699562112628;Calza 3/4 Jump (XL, Negro);0; $19.299,50; $ 42.458,90 ; $ 38.599,00 ;SALPA SRL;1;
+1699540370705;Calza 3/4 Jump GreenMove (M);1; $23.595,00; $ 51.909,00 ; $ 47.190,00 ;SALPA SRL;;
+1699533324715;Calza 3/4 Jump GreenMove (L);1; $23.595,00; $ 51.909,00 ; $ 47.190,00 ;SALPA SRL;;
+1699544299897;Calza Active (M, Azul Francia);1; $35.937,00; $ 79.061,40 ; $ 71.874,00 ;SALPA SRL;;
+1699571548524;Calza Active (L, Azul Francia);1; $35.937,00; $ 79.061,40 ; $ 71.874,00 ;SALPA SRL;;
+1675968665463;Calza Arabia (S, Gris Melange);1; $30.189,50; $ 66.416,90 ; $ 60.379,00 ;SALPA SRL;;
+1699577745453;Calza Arabia (M, Negro);1; $30.189,50; $ 66.416,90 ; $ 60.379,00 ;SALPA SRL;;1
+1699599472351;Calza Arabia (L, Negro);2; $30.189,50; $ 66.416,90 ; $ 60.379,00 ;SALPA SRL;1;2
+1699592136526;Calza Arabia (XL, Negro);1; $30.189,50; $ 66.416,90 ; $ 60.379,00 ;SALPA SRL;;
+1689272192935;Calza Biker Maritimo (L);1; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;;
+1689272192942;Calza Biker Maritimo (XL);1; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;;
+1699500209625;Calza Corta Jump Elemental (M, Negro);0; $14.762,00; $ 32.476,40 ; $ 29.524,00 ;SALPA SRL;1;
+1699500209663;Calza Corta Jump Elemental (XL, Negro);2; $14.762,00; $ 32.476,40 ; $ 29.524,00 ;SALPA SRL;;
+1699551508371;Calza Corta Jump GreenMove (L);1; $19.299,50; $ 42.458,90 ; $ 38.599,00 ;SALPA SRL;2;
+1699544390549;Calza Corta Jump GreenMove (M);0; $19.299,50; $ 42.458,90 ; $ 38.599,00 ;SALPA SRL;2;
+1699572134900;Calza Corta Jump GreenMove (XL);1; $19.299,50; $ 42.458,90 ; $ 38.599,00 ;SALPA SRL;;
+1699500204637;Calza Inca (L, Gris);1; $27.588,00; $ 60.693,60 ; $ 55.176,00 ;SALPA SRL;;
+1699500204613;Calza Inca (M, Gris);1; $27.588,00; $ 60.693,60 ; $ 55.176,00 ;SALPA SRL;;
+1699500204651;Calza Inca (XL, Gris);1; $27.588,00; $ 60.693,60 ; $ 55.176,00 ;SALPA SRL;;
+1699506491413;Calza Jump (S, Azul Marino);3; $22.506,00; $ 49.513,20 ; $ 45.012,00 ;SALPA SRL;;2
+1699546894601;Calza Jump (M, Azul Marino);1; $22.506,00; $ 49.513,20 ; $ 45.012,00 ;SALPA SRL;;
+1699522885326;Calza Jump (L, Azul Marino);1; $22.506,00; $ 49.513,20 ; $ 45.012,00 ;SALPA SRL;;
+1699525128208;Calza Jump (L, Bordo);1; $22.506,00; $ 49.513,20 ; $ 45.012,00 ;SALPA SRL;;1
+1699595974583;Calza Jump (XL, Negro);1; $22.506,00; $ 49.513,20 ; $ 45.012,00 ;SALPA SRL;;
+1699500209700;Calza Jump Elemental (M, Negro);1; $23.111,00; $ 50.844,20 ; $ 46.222,00 ;SALPA SRL;1;2
+1699565413241;Calza Jump Extra Warm (S, Bordo);1; $26.983,00; $ 59.362,60 ; $ 53.966,00 ;SALPA SRL;;1
+1699545253881;Calza Jump Extra Warm (M, Bordo);1; $26.983,00; $ 59.362,60 ; $ 53.966,00 ;SALPA SRL;;2
+1699531619264;Calza Jump Extra Warm (M, Azul Marino);1; $26.983,00; $ 59.362,60 ; $ 53.966,00 ;SALPA SRL;;
+1699531292801;Calza Jump Extra Warm (L, Azul Marino);1; $26.983,00; $ 59.362,60 ; $ 53.966,00 ;SALPA SRL;;
+1699500213554;Calza Mudra (S, Chocolate);0; $23.776,50; $ 52.308,30 ; $ 47.553,00 ;SALPA SRL;1;1
+1699500213585;Calza Mudra (M, Verde);0; $23.776,50; $ 52.308,30 ; $ 47.553,00 ;SALPA SRL;1;
+1699500213578;Calza Mudra (M, Chocolate);1; $23.776,50; $ 52.308,30 ; $ 47.553,00 ;SALPA SRL;;1
+1699500213608;Calza Mudra (L, Verde);1; $23.776,50; $ 52.308,30 ; $ 47.553,00 ;SALPA SRL;;
+1699561955080;Calza Olivia (M, Negro);1; $36.602,50; $ 80.525,50 ; $ 73.205,00 ;SALPA SRL;;
+1699571381770;Calza Olivia (L, Negro);0; $36.602,50; $ 80.525,50 ; $ 73.205,00 ;SALPA SRL;1;
+1699550741526;Calza Olivia (XL, Negro);1; $36.602,50; $ 80.525,50 ; $ 73.205,00 ;SALPA SRL;;
+1699500199629;Calza Soul (M, Gris);2; $31.460,00; $ 69.212,00 ; $ 62.920,00 ;SALPA SRL;1;3
+1699585108530;Campera Arabia (M, Negro);1; $46.222,00; $ 101.688,40 ; $ 92.444,00 ;SALPA SRL;;
+1699585859418;Campera Arabia (L, Negro);1; $46.222,00; $ 101.688,40 ; $ 92.444,00 ;SALPA SRL;;
+1699552792267;Campera Arabia (XL, Negro);1; $46.222,00; $ 101.688,40 ; $ 92.444,00 ;SALPA SRL;;
+1689613202187;Campera Arabia (XL, Gris Melange);1; $46.222,00; $ 101.688,40 ; $ 92.444,00 ;SALPA SRL;;
+1699597005780;Campera Arabia (2XL, Negro);1; $46.222,00; $ 101.688,40 ; $ 92.444,00 ;SALPA SRL;;
+1699500208284;Campera Azucena (S, Negro);1; $43.015,50; $ 94.634,10 ; $ 86.031,00 ;SALPA SRL;;
+1699500208307;Campera Azucena (M, Negro);0; $43.015,50; $ 94.634,10 ; $ 86.031,00 ;SALPA SRL;1;
+1699500202435;Campera Azucena (XL, Beige);1; $43.015,50; $ 94.634,10 ; $ 86.031,00 ;SALPA SRL;;1
+1699517208314;Campera Curl (L, Negro);0; $44.286,00; $ 97.429,20 ; $ 88.572,00 ;SALPA SRL;1;
+1699559321378;Campera Curl (M, Azul);1; $44.286,00; $ 97.429,20 ; $ 88.572,00 ;SALPA SRL;;
+1668622533987;Campera Reclu (L);0; $50.033,50; $ 110.073,70 ; $ 100.067,00 ;SALPA SRL;2;
+1668622533970;Campera Reclu (M);2; $50.033,50; $ 110.073,70 ; $ 100.067,00 ;SALPA SRL;;1
+1699576094798;Campera Tronador (S, Negro);1; $80.288,00; $ 176.633,60 ; $ 160.576,00 ;SALPA SRL;;
+1699525739329;Campera Tronador (M, Negro);0; $80.288,00; $ 176.633,60 ; $ 160.576,00 ;SALPA SRL;1;
+1699548442480;Campera Tronador (XL, Negro);1; $80.288,00; $ 176.633,60 ; $ 160.576,00 ;SALPA SRL;;
+1699532405439;Chaleco Kosten (Homb. L / Muj. XL, Negro);1; $36.602,50; $ 80.525,50 ; $ 69.544,75 ;SALPA SRL;;
+1699578336148;Chaleco Kosten (Homb. M / Muj. L, Negro);1; $36.602,50; $ 80.525,50 ; $ 73.205,00 ;SALPA SRL;;
+1699545890345;Chaleco Kosten (Homb. S / Muj. M, Gris);1; $36.602,50; $ 80.525,50 ; $ 73.205,00 ;SALPA SRL;;
+1699543042876;Chaleco Kosten (Homb. XL / Muj. 2XL, Negro);1; $36.602,50; $ 80.525,50 ; $ 73.205,00 ;SALPA SRL;;
+1689790188052;Cinturon de Hidratacion (S, Negro);1; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;2;1
+1689790188069;Cinturon de Hidratacion (M, Negro);0; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;1;
+1689790188076;Cinturon de Hidratacion (L, Negro);1; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;;
+1699500207775;Cinturon de Hidratacion Trinity (2, Rosa);2; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;;
+;Cuello All Black Microfibra ;1; $3.645,00; $ 8.019,00 ; $ 7.290,00 ;SALPA SRL;1;
+7791118820002;Cuello All Black Extra Warm Negro;4; $4.250,00; $ 9.350,00 ; $ 8.500,00 ;SALPA SRL;1;5
+1699504300090;Cuello Carnaval Micropolar;0; $7.744,00; $ 17.036,80 ; $ 15.488,00 ;SALPA SRL;3;2
+1699548594660;Cuello Fusion Micropolar;0; $7.744,00; $ 17.036,80 ; $ 15.488,00 ;SALPA SRL;1;1
+1699529540976;Cuello Liquid Micropolar;0; $7.744,00; $ 17.036,80 ; $ 15.488,00 ;SALPA SRL;1;
+7791117820003;Cuello Pride;2; $6.413,00; $ 14.108,60 ; $ 12.826,00 ;SALPA SRL;;
+1699549017953;Cuello Soft Microfibra (Lima);2; $6.413,00; $ 14.108,60 ; $ 12.826,00 ;SALPA SRL;1;2
+1699521456985;Cuello Soft Microfibra (Naranja);1; $6.413,00; $ 14.108,60 ; $ 12.826,00 ;SALPA SRL;;
+1699566460107;Cuello Roy Microfibra;0; $5.142,50; $ 11.313,50 ; $ 10.285,00 ;SALPA SRL;6;4
+1661972863056;Gorra Denim Lisa (Negro);1; $19.904,50; $ 43.789,90 ; $ 39.809,00 ;SALPA SRL;;
+7791130290005;Gorra Deportiva Fit;2; $17.363,50; $ 38.199,70 ; $ 34.727,00 ;SALPA SRL;1;
+1699576234323;Gorra Wegs Hard Combinada (Verde Militar);0; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;1;
+1699582802417;Gorra Wegs Hard Combinada (Violeta);0; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;1;
+7791337143722;Guantes All Black (2);2; $8.349,00; $ 18.367,80 ; $ 16.698,00 ;SALPA SRL;5;5
+1699500205962;Guantes All Black Reflex (2);3; $9.030,00; $ 19.866,00 ; $ 18.060,00 ;SALPA SRL;2;5
+1699500205979;Guantes All Black Reflex (3);1; $9.030,00; $ 19.866,00 ; $ 18.060,00 ;SALPA SRL;1;1
+1699509784451;Guantes Carnaval (1);1; $9.675,00; $ 21.285,00 ; $ 19.350,00 ;SALPA SRL;;
+1699541408520;Guantes Carnaval (2);0; $9.675,00; $ 21.285,00 ; $ 19.350,00 ;SALPA SRL;1;
+1699575117603;Guantes Cracker (1);1; $9.675,00; $ 21.285,00 ; $ 19.350,00 ;SALPA SRL;;
+0692727963289;Guantes Cracker (2);1; $9.675,00; $ 21.285,00 ; $ 19.350,00 ;SALPA SRL;;
+7791337543812;Guantes Cute (2);0; $9.619,50; $ 21.162,90 ; $ 19.239,00 ;SALPA SRL;1;
+1699509844391;Guantes Fusion (3);0; $9.675,00; $ 21.285,00 ; $ 19.350,00 ;SALPA SRL;1;
+1699552483127;Guantes Glaciar (2);1; $9.675,00; $ 21.285,00 ; $ 19.350,00 ;SALPA SRL;;
+1679321309964;Guantes Mapping (3);0; $9.675,00; $ 21.285,00 ; $ 19.350,00 ;SALPA SRL;;
+1699545756375;Guantes Record (1, Negro);1; $18.634,00; $ 40.994,80 ; $ 37.268,00 ;SALPA SRL;;
+1699531399272;Guantes Roy (1, Negro);1; $9.619,50; $ 21.162,90 ; $ 19.239,00 ;SALPA SRL;;1
+1699586470988;Guantes Roy (2, Negro);1; $9.619,50; $ 21.162,90 ; $ 19.239,00 ;SALPA SRL;2;3
+7791320541375;Guantes SALPA RACK (2, Negro);1; $9.619,50; $ 21.162,90 ; $ 19.239,00 ;SALPA SRL;2;2
+1699515876331;Guantes Trinity (2, Rosa);1; $9.619,50; $ 21.162,90 ; $ 19.239,00 ;SALPA SRL;;
+1699541807699;Jogger Alihue (Homb. M / Muj. L, Gris Melange);0; $36.602,50; $ 80.525,50 ; $ 73.205,00 ;SALPA SRL;1;
+1699582657826;Jogger Alihue (Homb. S / Muj. M, Gris Melange);1; $36.602,50; $ 80.525,50 ; $ 73.205,00 ;SALPA SRL;;
+1699500199834;Jogger Comfy (Homb. L / Muj. XL, Verde);0; $36.602,50; $ 80.525,50 ; $ 73.205,00 ;SALPA SRL;1;1
+1699529030002;Manguitas Psique (1);0; $9.619,50; $ 21.162,90 ; $ 19.239,00 ;SALPA SRL;1;
+1699509131767;Manguitas Psique (2);1; $9.619,50; $ 21.162,90 ; $ 19.239,00 ;SALPA SRL;;
+1699524031776;Manguitas Record (1);1; $11.555,50; $ 25.422,10 ; $ 23.111,00 ;SALPA SRL;1;1
+1699536198467;Manguitas Record (2);1; $11.555,50; $ 25.422,10 ; $ 23.111,00 ;SALPA SRL;;
+1699583745805;Manguitas Roy (2);2; $9.619,50; $ 21.162,90 ; $ 19.239,00 ;SALPA SRL;;
+1663011226372;Mochila Ultralight (Amarillo y Gris);1; $10.950,50; $ 24.091,10 ; $ 21.901,00 ;SALPA SRL;;
+1664812926959;Mochila Ultralight (Gris Topo y Negro);1; $10.950,50; $ 24.091,10 ; $ 21.901,00 ;SALPA SRL;;
+1699500212861;Musculosa Adho (M, Azul);2; $14.080,00; $ 30.976,00 ; $ 28.160,00 ;SALPA SRL;;
+1699565104903;Musculosa Azara (M, Negro);0; $16.093,00; $ 35.404,60 ; $ 32.186,00 ;SALPA SRL;1;
+1699539633989;Musculosa Azara (L, Negro);1; $16.093,00; $ 35.404,60 ; $ 32.186,00 ;SALPA SRL;;
+1699540930985;Musculosa Azara (XL, Negro);0; $16.093,00; $ 35.404,60 ; $ 32.186,00 ;SALPA SRL;1;
+1699500211840;Musculosa Epuyen (M, Negro);0; $16.093,00; $ 35.404,60 ; $ 32.186,00 ;SALPA SRL;;
+1699500211871;Musculosa Epuyen (L, Negro);1; $16.093,00; $ 35.404,60 ; $ 32.186,00 ;SALPA SRL;;
+1699596550243;Musculosa Jump (M, Celeste);1; $12.850,00; $ 28.270,00 ; $ 25.700,00 ;SALPA SRL;;
+1699516014589;Musculosa Jump (M, Verde Smoke);1; $12.850,00; $ 28.270,00 ; $ 25.700,00 ;SALPA SRL;;
+1699508820556;Musculosa Jump (L, Celeste);1; $12.850,00; $ 28.270,00 ; $ 25.700,00 ;SALPA SRL;;
+1699512902255;Musculosa Jump (L, Negro);1; $12.850,00; $ 28.270,00 ; $ 25.700,00 ;SALPA SRL;;
+1699561611757;Musculosa Jump (L, Verde Smoke);1; $10.000,00; $ 22.000,00 ; $ 20.000,00 ;SALPA SRL;;
+1699507672507;Musculosa Jump (XL, Celeste);1; $12.850,00; $ 28.270,00 ; $ 25.700,00 ;SALPA SRL;;
+1699554885967;Musculosa Jump (XL, Verde Smoke);1; $12.850,00; $ 28.270,00 ; $ 25.700,00 ;SALPA SRL;;
+1699515901712;Musculosa Jump (2XL, Negro);1; $12.850,00; $ 28.270,00 ; $ 25.700,00 ;SALPA SRL;;
+1699500209168;Musculosa Jump Elemental (S, Beige);1; $13.491,50; $ 29.681,30 ; $ 26.983,00 ;SALPA SRL;;
+1699500209199;Musculosa Jump Elemental (M, Beige);0; $13.491,50; $ 29.681,30 ; $ 26.983,00 ;SALPA SRL;1;
+1699500209182;Musculosa Jump Elemental (M, Gris);0; $13.491,50; $ 29.681,30 ; $ 26.983,00 ;SALPA SRL;1;
+1699500209175;Musculosa Jump Elemental (M, Negro);0; $13.491,50; $ 29.681,30 ; $ 26.983,00 ;SALPA SRL;1;
+1699500209229;Musculosa Jump Elemental (L, Beige);0; $13.491,50; $ 29.681,30 ; $ 26.983,00 ;SALPA SRL;1;
+1699500209212;Musculosa Jump Elemental (L, Gris);1; $13.491,50; $ 29.681,30 ; $ 26.983,00 ;SALPA SRL;;
+1699500209205;Musculosa Jump Elemental (L, Negro);0; $13.491,50; $ 29.681,30 ; $ 26.983,00 ;SALPA SRL;1;
+1699500209236;Musculosa Jump Elemental (XL, Negro);1; $13.491,50; $ 29.681,30 ; $ 26.983,00 ;SALPA SRL;;
+1699500209267;Musculosa Jump Elemental (XXL, Negro);1; $13.491,50; $ 29.681,30 ; $ 26.983,00 ;SALPA SRL;;
+1699538643583;Musculosa Millas GreenMove (M);1; $15.427,50; $ 33.940,50 ; $ 30.855,00 ;SALPA SRL;;
+1699542141570;Musculosa Millas GreenMove (L);2; $15.427,50; $ 33.940,50 ; $ 30.855,00 ;SALPA SRL;;
+1699582573706;Musculosa Millas GreenMove (XL);1; $15.427,50; $ 33.940,50 ; $ 30.855,00 ;SALPA SRL;;
+7791293832357;Musculosa Juno (M, Negro);1; $12.208,00; $ 26.857,60 ; $ 24.416,00 ;SALPA SRL;;
+1699542207153;Musculosa Slide (M);1; $14.778,00; $ 32.511,60 ; $ 29.556,00 ;SALPA SRL;;
+1699512575015;Musculosa Slide (L);1; $14.778,00; $ 32.511,60 ; $ 29.556,00 ;SALPA SRL;;
+1699500216340;Musculosa Soul (S, Beige);0; $15.427,50; $ 33.940,50 ; $ 30.855,00 ;SALPA SRL;1;
+1699552436369;Musculosa Soul (M, Gris);0; $15.427,50; $ 33.940,50 ; $ 30.855,00 ;SALPA SRL;1;
+1699500216364;Musculosa Soul (L, Beige);1; $15.427,50; $ 33.940,50 ; $ 30.855,00 ;SALPA SRL;;
+1699593834933;Musculosa Soul (XL, Gris);0; $15.427,50; $ 33.940,50 ; $ 30.855,00 ;SALPA SRL;1;
+1699500214186;Musculosa Turn (L, Azul Marino);1; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;;
+1699500214162;Musculosa Turn (L, Rojo);1; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;;
+1699500214193;Musculosa Turn (XL, Rojo);1; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;;
+1699500214209;Musculosa Turn (XL, Verde);1; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;;
+1699542517450;Pantalon Armonia (M, Crudo);0; $28.858,50; $ 63.488,70 ; $ 57.717,00 ;SALPA SRL;1;1
+1699518042870;Pantalon Armonia (L, Crudo);1; $28.858,50; $ 63.488,70 ; $ 57.717,00 ;SALPA SRL;;
+1699591486455;Pantalon Armonia (XL, Crudo);1; $28.858,50; $ 63.488,70 ; $ 57.717,00 ;SALPA SRL;;
+1699551377137;Pantalon Interior Aconcagua (Homb. S / Muj. M);1; $29.524,00; $ 64.952,80 ; $ 59.048,00 ;SALPA SRL;;
+;Pantalon Interior Aconcagua (Homb. L / Muj. XL);1; $29.524,00; $ 64.952,80 ; $ 59.048,00 ;SALPA SRL;;
+1699500215695;Pantalon Interior Pure (Homb. S / Muj. M, Negro);1; $19.904,50; $ 43.789,90 ; $ 39.809,00 ;SALPA SRL;;
+1699500215701;Pantalon Interior Pure (Homb. M / Muj. L, Negro);1; $19.904,50; $ 43.789,90 ; $ 39.809,00 ;SALPA SRL;;
+1699516604667;Pantalon Alumine (S, Negro);0; $73.749,50; $ 162.248,90 ; $ 147.499,00 ;SALPA SRL;1;1
+1699554633087;Pantalon Alumine (M, Negro);1; $73.749,50; $ 162.248,90 ; $ 147.499,00 ;SALPA SRL;;1
+1699549282740;Pantalon Alumine (L, Negro);1; $73.749,50; $ 162.248,90 ; $ 147.499,00 ;SALPA SRL;;1
+1699500210683;Pantalon Lunge Elemental (M, Gris Perla);1; $28.858,50; $ 63.488,70 ; $ 57.717,00 ;SALPA SRL;;
+1699500210720;Pantalon Lunge Elemental (XL, Gris Perla);1; $28.858,50; $ 63.488,70 ; $ 57.717,00 ;SALPA SRL;;
+1699595652450;Pantalon Penitentes (L, Gris Claro);1; $51.304,00; $ 112.868,80 ; $ 102.608,00 ;SALPA SRL;;
+1699583126512;Pantalon Penitentes (M, Gris Claro);1; $51.304,00; $ 112.868,80 ; $ 102.608,00 ;SALPA SRL;;
+1699581405855;Pantalon Penitentes (XL, Gris Claro);1; $51.304,00; $ 112.868,80 ; $ 102.608,00 ;SALPA SRL;;
+7791328541926;Pantalon Thrust (S);1; $28.253,50; $ 62.157,70 ; $ 56.507,00 ;SALPA SRL;;1
+7791328541933;Pantalon Thrust (M);0; $28.253,50; $ 62.157,70 ; $ 56.507,00 ;SALPA SRL;1;
+7791328541919;Pantalon Thrust (L);1; $28.253,50; $ 62.157,70 ; $ 56.507,00 ;SALPA SRL;1;1
+7791328541940;Pantalon Thrust (XL);1; $28.253,50; $ 62.157,70 ; $ 56.507,00 ;SALPA SRL;;
+1699584758385;Remera Alihue (Homb. XS / Muj. S, Negro);1; $20.570,00; $ 45.254,00 ; $ 41.140,00 ;SALPA SRL;;
+1699535404453;Remera Alihue (Homb. M / Muj. L, Negro);1; $20.570,00; $ 45.254,00 ; $ 41.140,00 ;SALPA SRL;;
+1699542594857;Remera Alihue (Homb. 2XL / Muj. 3XL, Negro);1; $20.570,00; $ 45.254,00 ; $ 41.140,00 ;SALPA SRL;;
+1699500211413;Remera Alumine (M, Rosa);0; $22.506,00; $ 49.513,20 ; $ 45.012,00 ;SALPA SRL;1;1
+1699500211437;Remera Alumine (L, Rosa);2; $22.506,00; $ 49.513,20 ; $ 45.012,00 ;SALPA SRL;;
+1699500211451;Remera Alumine (XL, Rosa);1; $22.506,00; $ 49.513,20 ; $ 45.012,00 ;SALPA SRL;;
+1699500212922;Remera Asana (S, Celeste);1; $16.770,00; $ 36.894,00 ; $ 33.540,00 ;SALPA SRL;;
+1699500212946;Remera Asana (M, Celeste);0; $16.770,00; $ 36.894,00 ; $ 33.540,00 ;SALPA SRL;1;
+1699582002749;Remera Azara (L, Blanco);2; $16.770,00; $ 36.894,00 ; $ 33.540,00 ;SALPA SRL;;
+1696863896998;Remera Ayarza (XL, Negro);1; $16.093,00; $ 35.404,60 ; $ 32.186,00 ;SALPA SRL;1;2
+1699515588968;Remera Core GreenMove (S, Blanco);1; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;;
+1699575103217;Remera Core GreenMove (S, Negro);1; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;;
+1699534355978;Remera Core GreenMove (M, Blanco);2; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;;1
+1699550467242;Remera Core GreenMove (M, Negro);1; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;1;1
+1699551900663;Remera Core GreenMove (L, Blanco);0; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;1;
+1699582575090;Remera Core GreenMove (L, Negro);1; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;;
+1699587526073;Remera Core GreenMove (XL, Negro);1; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;;
+1699500211963;Remera Epuyen (M, Negro);1; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;;
+1699500211970;Remera Epuyen (L, Celeste);1; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;;
+1699500212045;Remera Frey (S, Verde);1; $23.111,00; $ 50.844,20 ; $ 46.222,00 ;SALPA SRL;;
+1699500212052;Remera Frey (M, Verde);0; $23.111,00; $ 50.844,20 ; $ 46.222,00 ;SALPA SRL;1;
+1699500212083;Remera Frey (L, Verde);1; $23.111,00; $ 50.844,20 ; $ 46.222,00 ;SALPA SRL;;
+1699500209489;Remera Hollow Elemental (L, Negro);0; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;1;
+1699500209465;Remera Hollow Elemental (M, Negro);1; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;;
+1699500209502;Remera Hollow Elemental (XL, Negro);1; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;1;
+1699579744706;Remera Jump (M, Negro);0; $16.093,00; $ 35.404,60 ; $ 32.186,00 ;SALPA SRL;1;
+1699597341024;Remera Jump (M, Verde Smoke);1; $16.093,00; $ 35.404,60 ; $ 32.186,00 ;SALPA SRL;;
+1699509187245;Remera Jump (L, Verde Smoke);0; $16.093,00; $ 35.404,60 ; $ 32.186,00 ;SALPA SRL;1;
+1699500209342;Remera Jump Elemental (M, Blanco);0; $16.093,00; $ 35.404,60 ; $ 32.186,00 ;SALPA SRL;1;
+1699500209373;Remera Jump Elemental (L, Blanco);1; $16.093,00; $ 35.404,60 ; $ 32.186,00 ;SALPA SRL;;
+1699541696200;Remera Millas (L, Negro);2; $24.381,50; $ 53.639,30 ; $ 48.763,00 ;SALPA SRL;;1
+1699581398751;Remera Millas (XL, Lima);1; $24.381,50; $ 53.639,30 ; $ 48.763,00 ;SALPA SRL;;
+1699500219136;Remera Peñon (L, Violeta);1; $14.157,00; $ 31.145,40 ; $ 28.314,00 ;SALPA SRL;;
+1699565359471;Remera Peñon (XL, Negro);0; $14.157,00; $ 31.145,40 ; $ 28.314,00 ;SALPA SRL;1;
+1699500214308;Remera Press (S, Negro);1; $19.904,50; $ 43.789,90 ; $ 39.809,00 ;SALPA SRL;;
+1699500214346;Remera Press (L, Negro);1; $19.904,50; $ 43.789,90 ; $ 39.809,00 ;SALPA SRL;;
+1699500216579;Remera Pure Hombre (S, Gris);2; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;1
+1699500216593;Remera Pure Hombre (M, Gris);1; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;
+1699500216616;Remera Pure Hombre (L, Gris);1; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;
+1699500216630;Remera Pure Hombre (XL, Gris);1; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;
+1699500215213;Remera Pure Mujer (S, Negro);2; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;1
+1699500215220;Remera Pure Mujer (M, Negro);2; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;1
+1699500215237;Remera Pure Mujer (L, Negro);1; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;
+7791287830185;Remera Running (L, Negro);2; $11.610,00; $ 25.542,00 ; $ 23.220,00 ;SALPA SRL;;2
+1699545763571;Remera Soul (S, Negro);0; $21.175,00; $ 46.585,00 ; $ 42.350,00 ;SALPA SRL;1;
+1699594482324;Remera Soul (M, Negro);1; $21.175,00; $ 46.585,00 ; $ 42.350,00 ;SALPA SRL;;
+1699571570815;Remera Soul (M, Beige);1; $21.175,00; $ 46.585,00 ; $ 42.350,00 ;SALPA SRL;;1
+1699501451016;Remera Soul (L, Marron);1; $21.175,00; $ 46.585,00 ; $ 42.350,00 ;SALPA SRL;;
+1699570021820;Remera Soul (L, Beige);1; $21.175,00; $ 46.585,00 ; $ 42.350,00 ;SALPA SRL;;1
+1699565230534;Remera Soul (L, Negro);1; $21.175,00; $ 46.585,00 ; $ 42.350,00 ;SALPA SRL;;1
+1699582742263;Remera Soul (XL, Beige);1; $21.175,00; $ 46.585,00 ; $ 42.350,00 ;SALPA SRL;;1
+1699556843774;Remera Traful (S, Negro);1; $20.570,00; $ 45.254,00 ; $ 41.140,00 ;SALPA SRL;;
+1699500200431;Remera Traful (M, Azul Marino);1; $20.570,00; $ 45.254,00 ; $ 41.140,00 ;SALPA SRL;;
+1699574366576;Remera Traful (L, Naranja);1; $20.570,00; $ 45.254,00 ; $ 41.140,00 ;SALPA SRL;;
+1699500200455;Remera Traful (XL, Azul Marino);1; $20.570,00; $ 45.254,00 ; $ 41.140,00 ;SALPA SRL;;
+1699539696632;Remera Traful (XL, Negro);1; $20.570,00; $ 45.254,00 ; $ 41.140,00 ;SALPA SRL;;
+1699597810797;Remera Traful (2XL, Negro);1; $20.570,00; $ 45.254,00 ; $ 41.140,00 ;SALPA SRL;;
+1699500214421;Remera Turn (L, Rojo);0; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;1;
+1699584461025;Remera Turn (XL, Verde Smoke);0; $16.698,00; $ 36.735,60 ; $ 33.396,00 ;SALPA SRL;1;
+7791933600001;Riñonera Flexible Reflex Surtida;2; $9.619,50; $ 21.162,90 ; $ 19.239,00 ;SALPA SRL;;
+1699500234559;Riñonera Flexible Reflex (Gris Topo);1; $9.619,50; $ 21.162,90 ; $ 19.239,00 ;SALPA SRL;;1
+1699500234559;Riñonera Flexible Reflex (Negro);1; $9.619,50; $ 21.162,90 ; $ 19.239,00 ;SALPA SRL;;1
+1699529812363;Rompevientos Aquilon (Homb. M / Muj. L, Negro);1; $60.984,00; $ 134.164,80 ; $ 121.968,00 ;SALPA SRL;;
+1699548646161;Rompevientos Core (S, Negro);0; $56.446,50; $ 124.182,30 ; $ 112.893,00 ;SALPA SRL;1;
+1699560871398;Rompevientos Core (M, Negro);1; $56.446,50; $ 124.182,30 ; $ 107.248,35 ;SALPA SRL;;
+1699553546609;Rompevientos Core (L, Negro);2; $56.446,50; $ 124.182,30 ; $ 112.893,00 ;SALPA SRL;;
+1699514271540;Rompevientos Jump (S, Magenta);1; $34.666,50; $ 76.266,30 ; $ 69.333,00 ;SALPA SRL;1;2
+1699500220458;Rompevientos Jump (M, Coral);0; $34.666,50; $ 76.266,30 ; $ 69.333,00 ;SALPA SRL;1;
+1699527853412;Rompevientos Jump (M, Magenta);2; $34.666,50; $ 76.266,30 ; $ 69.333,00 ;SALPA SRL;;1
+1699534833575;Rompevientos Jump (L, Magenta);1; $34.666,50; $ 76.266,30 ; $ 69.333,00 ;SALPA SRL;1;1
+1699500209526;Rompevientos Jump Elemental (S, Negro);1; $34.666,50; $ 76.266,30 ; $ 69.333,00 ;SALPA SRL;;1
+1699502947853;Rompevientos Millas (M, Azul Francia);1; $56.446,50; $ 124.182,30 ; $ 112.893,00 ;SALPA SRL;1;1
+1699519814865;Rompevientos Millas (L, Azul Francia);1; $56.446,50; $ 124.182,30 ; $ 112.893,00 ;SALPA SRL;1;
+699589487365;Rompevientos Millas (L, Negro);1; $56.446,50; $ 124.182,30 ; $ 112.893,00 ;SALPA SRL;;1
+1699558016404;Rompevientos Millas (XL, Azul Francia);1; $56.446,50; $ 124.182,30 ; $ 112.893,00 ;SALPA SRL;;
+1699513610029;Rompevientos Turn (S, Negro);1; $34.666,50; $ 76.266,30 ; $ 69.333,00 ;SALPA SRL;;1
+1699537983451;Rompevientos Turn (M, Negro);1; $34.666,50; $ 76.266,30 ; $ 69.333,00 ;SALPA SRL;;1
+1699502472669;Rompevientos Turn (M, Esmeralda);1; $34.666,50; $ 76.266,30 ; $ 69.333,00 ;SALPA SRL;;1
+1699500214841;Rompevientos Turn (M, Azul Marino);1; $34.666,50; $ 76.266,30 ; $ 69.333,00 ;SALPA SRL;1;1
+1699550773787;Rompevientos Turn (L, Esmeralda);1; $34.666,50; $ 76.266,30 ; $ 69.333,00 ;SALPA SRL;;
+1699571647043;Rompevientos Turn (L, Negro);1; $34.666,50; $ 76.266,30 ; $ 69.333,00 ;SALPA SRL;;1
+1699581998098;Rompevientos Turn (XL, Negro);2; $34.666,50; $ 76.266,30 ; $ 69.333,00 ;SALPA SRL;;2
+1699500210492;Rompevientos Turn Elemental (XL, Gris);1; $34.666,50; $ 76.266,30 ; $ 69.333,00 ;SALPA SRL;;1
+7791117404142;Rompevientos Ultralight (Homb. S / Muj. M, Azul Marino);1; $30.189,50; $ 66.416,90 ; $ 60.379,00 ;SALPA SRL;;
+7791117424232;Rompevientos Ultralight (Homb. XL / Muj. 2XL, Negro);1; $30.189,50; $ 66.416,90 ; $ 60.379,00 ;SALPA SRL;;1
+1675171182832;Rompevientos Zonda (L, Negro);0; $33.396,00; $ 73.471,20 ; $ 66.792,00 ;SALPA SRL;1;
+1699542416531;Set Aconcagua (Homb. L / Muj. XL) PANTALON INTERIOR;0; $50.400,00; $ 110.880,00 ; $ 100.800,00 ;SALPA SRL;;
+1664278669551;Short Agnes (L, Azul Marino);1; $21.285,00; $ 46.827,00 ; $ 42.570,00 ;SALPA SRL;;
+1699513070038;Short Azara (M, Negro);1; $19.299,50; $ 42.458,90 ; $ 38.599,00 ;SALPA SRL;;
+1699527526026;Short Azara (S, Azul);0; $19.299,50; $ 42.458,90 ; $ 38.599,00 ;SALPA SRL;1;
+1699514484285;Short Azara (XL, Azul);1; $19.299,50; $ 42.458,90 ; $ 38.599,00 ;SALPA SRL;;
+1664215133220;Short Eloise (M, Azul Francia);1; $21.285,00; $ 46.827,00 ; $ 42.570,00 ;SALPA SRL;;
+1699500213202;Short Impetu (S, Gris Perla);0; $28.253,50; $ 62.157,70 ; $ 56.507,00 ;SALPA SRL;1;
+1699500213226;Short Impetu (M, Gris Perla);0; $28.253,50; $ 62.157,70 ; $ 56.507,00 ;SALPA SRL;2;
+1699500213219;Short Impetu (M, Negro);1; $28.253,50; $ 62.157,70 ; $ 56.507,00 ;SALPA SRL;;
+1699500213240;Short Impetu (L, Gris Perla);1; $28.253,50; $ 62.157,70 ; $ 56.507,00 ;SALPA SRL;;
+1699567162017;Short Millas (M, Negro);1; $35.332,00; $ 77.730,40 ; $ 70.664,00 ;SALPA SRL;;
+1699538120473;Short Millas (L, Negro);1; $35.332,00; $ 77.730,40 ; $ 70.664,00 ;SALPA SRL;;
+1699500215862;Short Pollera Drive (S, Beige);1; $22.506,00; $ 49.513,20 ; $ 45.012,00 ;SALPA SRL;;
+1699500238038;Short Pollera Drive (S, Verde Militar);1; $22.506,00; $ 49.513,20 ; $ 45.012,00 ;SALPA SRL;;1
+1699500215886;Short Pollera Drive (M, Beige);1; $22.506,00; $ 49.513,20 ; $ 45.012,00 ;SALPA SRL;2;2
+1699500215909;Short Pollera Drive (L, Beige);1; $22.506,00; $ 49.513,20 ; $ 45.012,00 ;SALPA SRL;;
+1699500215893;Short Pollera Drive (L, Vison);0; $22.506,00; $ 49.513,20 ; $ 45.012,00 ;SALPA SRL;1;
+1699500215923;Short Pollera Drive (XL, Beige);1; $22.506,00; $ 49.513,20 ; $ 45.012,00 ;SALPA SRL;;
+7791307936989;Short Turn (S, Gris);1; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;
+1663099705370;Short Turn (S, Azul Marino);2; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;
+7791307636865;Short Turn (S, Negro);1; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;
+7791307937009;Short Turn (M, Gris);1; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;1;1
+7791307636889;Short Turn (M, Negro);0; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;1;
+7791308037043;Short Turn (M, Azul Francia);1; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;
+1663099705394;Short Turn (L, Azul Marino);1; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;
+7791307936972;Short Turn (L, Gris);1; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;
+1699500214988;Short Turn (XL, Rojo);1; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;
+7791307936972;Short Ultra (L);0; $21.175,00; $ 46.585,00 ; $ 42.350,00 ;SALPA SRL;1;
+1691145037557;Short Ultra (XL);1; $21.175,00; $ 46.585,00 ; $ 42.350,00 ;SALPA SRL;;
+1699509618084;Termica Aconcagua (Homb. L / Muj. XL, Gris);0; $28.100,00; $ 61.820,00 ; $ 56.200,00 ;SALPA SRL;1;1
+1679580926650;Termica Elite GreenMove (Homb. M / Muj. L, Papaya);1; $19.299,50; $ 42.458,90 ; $ 38.599,00 ;SALPA SRL;;1
+1679580926667;Termica Elite GreenMove (Homb. L / Muj. XL, Papaya);1; $19.299,50; $ 42.458,90 ; $ 38.599,00 ;SALPA SRL;;
+1699500212113;Termica Epuyen (S, Celeste);1; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;;
+1699500212120;Termica Epuyen (M, Celeste);0; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;;
+1699500212137;Termica Epuyen (L, Celeste);0; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;1;
+1699500212144;Termica Epuyen (XL, Celeste);1; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;;
+1699500200554;Termica Kick (Homb. L / Muj. XL, Azul Marino);0; $17.363,50; $ 38.199,70 ; $ 34.727,00 ;SALPA SRL;1;1
+1699500216746;Termica Lacar Elemental  (Homb. XS / Muj. S, Negro);2; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;
+7791315840049;Termica Panal Venture (Homb. XL / Muj. 2XL, Lacre Siena);3; $21.175,00; $ 46.585,00 ; $ 42.350,00 ;SALPA SRL;;
+1699588252636;Termica Puelo (M, Beige);1; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;3;3
+1699500229616;Termica Puelo (M, Negro);0; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;2;2
+1699526519593;Termica Puelo (M, Bermellon);0; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;5;4
+1699557228846;Termica Puelo (L, Beige);0; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;2;2
+1699513444730;Termica Puelo (L, Bermellon);0; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;1;3
+1699500229630;Termica Puelo (XL, Negro);1; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;;1
+1699522459732;Termica Puelo (XL, Beige);1; $17.968,50; $ 39.530,70 ; $ 35.937,00 ;SALPA SRL;;2
+1699500219501;Termica Pure (Homb. XS / Muj. S, Gris);1; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;1;1
+1699500219518;Termica Pure (Homb. S / Muj. M, Gris);1; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;
+7791315539882;Termica Pro Tecnica Extra Warm (Homb. XS / Muj. S, Blanco);2; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;;1
+7791315539868;Termica Pro Tecnica Extra Warm (Homb. M / Muj. L, Blanco);0; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;1;
+7791315539875;Termica Pro Tecnica Extra Warm (Homb. L / Muj. XL, Blanco);0; $21.840,50; $ 48.049,10 ; $ 43.681,00 ;SALPA SRL;1;
+1699500217002;Termica Pro Kick Elemental (Homb. S / Muj. M, Gris);0; $19.299,50; $ 42.458,90 ; $ 38.599,00 ;SALPA SRL;1;1
+7791135115396;Toalla Secado Rapido Chica (Azul Francia);1; $11.555,50; $ 25.422,10 ; $ 23.111,00 ;SALPA SRL;;
+7791129670009;Toalla Secado Rapido Chica (Azul Marino);2; $11.555,50; $ 25.422,10 ; $ 23.111,00 ;SALPA SRL;;
+7791913500000;Toalla Secado Rapido Grande (Azul Francia);1; $15.427,50; $ 33.940,50 ; $ 30.855,00 ;SALPA SRL;;
+1688059086085;Top Core (S);1; $19.904,50; $ 43.789,90 ; $ 39.809,00 ;SALPA SRL;;1
+1688059086092;Top Core (M);0; $19.904,50; $ 43.789,90 ; $ 39.809,00 ;SALPA SRL;1;
+1688059086108;Top Core (L);2; $19.904,50; $ 43.789,90 ; $ 39.809,00 ;SALPA SRL;;
+1699500212557;Top Climb (L);1; $17.363,50; $ 38.199,70 ; $ 34.727,00 ;SALPA SRL;;
+1699500212571;Top Climb (XL);1; $17.363,50; $ 38.199,70 ; $ 34.727,00 ;SALPA SRL;;
+1699528007005;Top Core GreenMove (M);1; $26.983,00; $ 59.362,60 ; $ 53.966,00 ;SALPA SRL;1;1
+1699582771294;Top Core GreenMove (L);1; $26.983,00; $ 59.362,60 ; $ 53.966,00 ;SALPA SRL;;
+1699565021446;Top Gap (S/M, Negro);1; $20.570,00; $ 45.254,00 ; $ 41.140,00 ;SALPA SRL;;
+1699587776829;Top Gap (L/XL, Negro);1; $20.570,00; $ 45.254,00 ; $ 41.140,00 ;SALPA SRL;;
+1699500212687;Top Mudra (S, Verde);0; $18.634,00; $ 40.994,80 ; $ 37.268,00 ;SALPA SRL;1;
+1699500212700;Top Mudra (M, Verde);2; $18.634,00; $ 40.994,80 ; $ 37.268,00 ;SALPA SRL;;
+1699500212717;Top Mudra (L, Chocolate);1; $18.634,00; $ 40.994,80 ; $ 37.268,00 ;SALPA SRL;;
+1699500229753;Top Nebula (S);1; $23.716,00; $ 52.175,20 ; $ 47.432,00 ;SALPA SRL;;
+1699500229760;Top Nebula (M);1; $23.716,00; $ 52.175,20 ; $ 47.432,00 ;SALPA SRL;;
+1699500208093;Top Pissis Elemental (M, Negro);0; $17.363,50; $ 38.199,70 ; $ 34.727,00 ;SALPA SRL;1;
+1699500208109;Top Pissis Elemental (L, Negro);1; $17.363,50; $ 38.199,70 ; $ 34.727,00 ;SALPA SRL;1;2
+1699500208116;Top Pissis Elemental (XL, Negro);1; $17.363,50; $ 38.199,70 ; $ 34.727,00 ;SALPA SRL;;
+1699500208123;Top Pissis Elemental (XXL, Negro);1; $17.363,50; $ 38.199,70 ; $ 34.727,00 ;SALPA SRL;1;
+1699500212601;Top Pulse (S, Uva);1; $19.904,50; $ 43.789,90 ; $ 39.809,00 ;SALPA SRL;;
+1699500212618;Top Pulse (M, Uva);1; $19.904,50; $ 43.789,90 ; $ 39.809,00 ;SALPA SRL;2;2
+1699500212625;Top Pulse (M, Chocolate);1; $19.904,50; $ 43.789,90 ; $ 39.809,00 ;SALPA SRL;2;2
+1699525694499;Vaso Soft Cup;2; $13.491,50; $ 29.681,30 ; $ 26.983,00 ;SALPA SRL;;
+1699500200660;Vincha All Black (Azul Marino);1; $4.537,50; $ 9.982,50 ; $ 9.075,00 ;SALPA SRL;1;
+1699500200653;Vincha All Black (Bordo);2; $4.537,50; $ 9.982,50 ; $ 9.075,00 ;SALPA SRL;;
+1699500200646;Vincha All Black (Negro);1; $4.537,50; $ 9.982,50 ; $ 9.075,00 ;SALPA SRL;1;
+1699500218498;Vincha All Black Elemental;2; $4.537,50; $ 9.982,50 ; $ 9.075,00 ;SALPA SRL;;
+1699500229876;Vincha Nebula;3; $2.515,00; $ 5.533,00 ; $ 5.030,00 ;SALPA SRL;;
+1699578961630;Vincha Record;2; $5.805,00; $ 12.771,00 ; $ 11.610,00 ;SALPA SRL;;
+1671048378223;Vincha Trail Reflex;1; $3.870,00; $ 8.514,00 ; $ 7.740,00 ;SALPA SRL;;
+;;;;;;;;
+6927595722169;NATUREHIKE HAMACA SIMPLE AZUL NH17D012-C;1; $ 25.285,09 ; $ 67.308,91 ; $ 61.189,92 ;NAKA OUTDOORS CO SRL;;
+6924442444496;AONIJIE CHALECO 5,5L MINT GREEN #E885;1; $ 32.998,00 ; $ 87.840,68 ; $ 79.855,16 ;NAKA OUTDOORS CO SRL;;
+6924442416813;AONIJIE CHALECO 5,5L GREY #E885;1; $ 32.998,00 ; $ 87.840,68 ; $ 79.855,16 ;NAKA OUTDOORS CO SRL;;
+6924442417018;AONIJIE CHALECO 5L ROSE #E913S;0; $ 28.539,00 ; $ 75.970,82 ; $ 69.064,38 ;NAKA OUTDOORS CO SRL;1;
+6924442416097;AONIJIE CHALECO 5L MINT GREEN #E913S;0; $ 28.539,00 ; $ 75.970,82 ; $ 69.064,38 ;NAKA OUTDOORS CO SRL;1;
+6924442416080;AONIJIE CHALECO 5L BLACK #E913S;1; $ 28.539,00 ; $ 75.970,82 ; $ 69.064,38 ;NAKA OUTDOORS CO SRL;1;1
+6924442416059;AONIJIE CHALECO 5L BLUE #E913S;1; $ 28.539,00 ; $ 75.970,82 ; $ 69.064,38 ;NAKA OUTDOORS CO SRL;;
+6924442443000;AONIJIE CUELLO DEPORTIVO RUN #ZP-E4907 YELOW;2; $ 2.214,00 ; $ 5.893,67 ; $ 5.357,88 ;NAKA OUTDOORS CO SRL;;
+6924442442997;AONIJIE CUELLO DEPORTIVO RUN #ZP-E4907 BLUE;4; $ 2.214,00 ; $ 5.893,67 ; $ 5.357,88 ;NAKA OUTDOORS CO SRL;1;2
+6924442442973;AONIJIE CUELLO DEPORTIVO RUN #ZP-E4907;2; $ 2.213,55 ; $ 5.892,47 ; $ 5.356,79 ;NAKA OUTDOORS CO SRL;3;3
+6924442462513;AONIJIE BASTONES DE TRAIL CARB. Y ALUM. 4 SECC. 110 CM BLUE #E4210;1; $ 90.882,17 ; $ 241.928,34 ; $ 219.934,85 ;NAKA OUTDOORS CO SRL;1;3
+6924442462490;AONIJIE BASTONES DE TRAIL CARB. Y ALUM. 4 SECC. 110 CM YELLOW #E4210;0; $ 90.967,00 ; $ 242.154,15 ; $ 220.140,14 ;NAKA OUTDOORS CO SRL;1;
+6924442462506;AONIJIE BASTONES DE TRAIL CARB. Y ALUM. 4 SECC. 120 CM #E4210;1; $ 90.967,00 ; $ 242.154,15 ; $ 220.140,14 ;NAKA OUTDOORS CO SRL;;
+6924442462537;AONIJIE BASTONES DE TRAIL CARBONO 4 SECC. 110 CM BLACK #E4204;1; $ 123.857,04 ; $ 329.707,44 ; $ 284.747,33 ;NAKA OUTDOORS CO SRL;;
+6924442466993;AONIJIE BASTONES TREKKING ALUM 3 SECC 105-135 CM PINK #E4215-010;1; $ 40.213,31 ; $ 107.047,83 ; $ 97.316,21 ;NAKA OUTDOORS CO SRL;;1
+6924442466979;AONIJIE BASTONES TREKKING ALUM 3 SECC 105-135 CM GREEN #E4215-016;1; $ 40.213,31 ; $ 107.047,83 ; $ 97.316,21 ;NAKA OUTDOORS CO SRL;;1
+6975641885573;NATURHIKE BASTONES TREKKING ALUM 3 SECC 56-120 CM GREEN ST01;1; $ 30.531,67 ; $ 81.275,31 ; $ 73.886,64 ;NAKA OUTDOORS CO SRL;;1
+6924442461554;AONIJIE VISERA SECADO RAPIDO WHITE #E4619;1; $ 17.580,00 ; $ 46.797,96 ; $ 42.543,60 ;NAKA OUTDOORS CO SRL;1;1
+6924442474448;AONIJIE VISERA SECADO RAPIDO BLACK #E4619;1; $ 17.580,00 ; $ 46.797,96 ; $ 42.543,60 ;NAKA OUTDOORS CO SRL;1;2
+6924442465095;AONIJIE VISERA SECADO RAPIDO CELESTE #E4619;1; $ 17.580,00 ; $ 46.797,96 ; $ 42.543,60 ;NAKA OUTDOORS CO SRL;;1
+6924442465101;AONIJIE VISERA SECADO RAPIDO ORANGE #E4619;1; $ 17.580,00 ; $ 46.797,96 ; $ 42.543,60 ;NAKA OUTDOORS CO SRL;;
+6924442474462;AONIJIE VISERA SECADO RAPIDO YELLOW #E4619;1; $ 17.580,00 ; $ 46.797,96 ; $ 42.543,60 ;NAKA OUTDOORS CO SRL;;
+6924442469284;AONIJIE VISERA RUNNER BLACK #E4113;2; $ 14.493,00 ; $ 38.580,37 ; $ 35.073,06 ;NAKA OUTDOORS CO SRL;;
+6924442444212;AONIJIE VISERA RUNNER BLACK #E4113;1; $ 14.493,00 ; $ 38.580,37 ; $ 35.073,06 ;NAKA OUTDOORS CO SRL;;
+6924442438488;AONIJIE VISERA RUNNER PINK #E4113;2; $ 14.493,00 ; $ 38.580,37 ; $ 35.073,06 ;NAKA OUTDOORS CO SRL;;
+6924442461431;AONIJIE MEDIA FIVE FINGER SOCK X3 (S) BL/YLLW/LGREY #E4839;1; $ 24.080,00 ; $ 21.366,99 ; $ 19.424,53 ;NAKA OUTDOORS CO SRL;2;
+6924442461448;AONIJIE MEDIA FIVE FINGER SOCK X3 (M) BL/YLLW/LGREY #E4839;0; $ 24.080,00 ; $ 21.366,99 ; $ 19.424,53 ;NAKA OUTDOORS CO SRL;2;
+6924442461455;AONIJIE MEDIA FIVE FINGER SOCK X3 (L) BL/YLLW/LGREY #E4839;2; $ 24.080,00 ; $ 21.366,99 ; $ 19.424,53 ;NAKA OUTDOORS CO SRL;;
+6924442438778;AONIJIE MEDIA FIVE FINGER X3 (S) COL.VARIOS (C.MAX/ #4802;1; $ 23.411,00 ; $ 20.773,36 ; $ 18.884,87 ;NAKA OUTDOORS CO SRL;2;
+6924442438792;AONIJIE MEDIA FIVE FINGER X3 (M) COL.VARIOS (C.MAX/ #4802;3; $ 23.411,00 ; $ 20.773,36 ; $ 18.884,87 ;NAKA OUTDOORS CO SRL;;
+6924442438808;AONIJIE MEDIA FIVE FINGER X3 (L) COL.VARIOS (C.MAX/ #4802;1; $ 23.411,00 ; $ 20.773,36 ; $ 18.884,87 ;NAKA OUTDOORS CO SRL;2;
+6924442466139;AONIJIE MEDIA FIVE FINGER LONG (S) RED (COOLMAX/NYL #E4846;1; $ 12.263,00 ; $ 32.644,11 ; $ 29.676,46 ;NAKA OUTDOORS CO SRL;;
+6924442465835;AONIJIE MEDIA FIVE FINGER LONG (S) GREEN (COOLMAX/N #E4846;1; $ 12.263,00 ; $ 32.644,11 ; $ 29.676,46 ;NAKA OUTDOORS CO SRL;;
+6924442466115;AONIJIE MEDIA FIVE FINGER LONG (M) BLUE (COOLMAX/NY #E4846;1; $ 12.263,00 ; $ 32.644,11 ; $ 29.676,46 ;NAKA OUTDOORS CO SRL;;
+6924442466092;AONIJIE MEDIA FIVE FINGER LONG (M) GREEN (COOLMAX/N #E4846;1; $ 12.263,00 ; $ 32.644,11 ; $ 29.676,46 ;NAKA OUTDOORS CO SRL;;
+6924442467167;AONIJIE MEDIA FIVE FINGER LONG (M) BIRDS (COOLMAX/N) #E4846;2; $ 12.263,00 ; $ 32.644,11 ; $ 29.676,46 ;NAKA OUTDOORS CO SRL;1;
+6924442466108;AONIJIE MEDIA FIVE FINGER LONG (L) GREEN (COOLMAX/N #E4846;1; $ 12.263,00 ; $ 32.644,11 ; $ 29.676,46 ;NAKA OUTDOORS CO SRL;;
+6924442466122;AONIJIE MEDIA FIVE FINGER LONG (L) BLUE (COOLMAX/NY #E4846;1; $ 12.263,00 ; $ 32.644,11 ; $ 29.676,46 ;NAKA OUTDOORS CO SRL;;
+6924442465170;AONIJIE MEDIA DEPORTIVA PACK X3 (S) BLACK #E4845;1; $ 18.952,00 ; $ 16.816,74 ; $ 15.287,95 ;NAKA OUTDOORS CO SRL;;
+6924442465149;AONIJIE MEDIA DEPORTIVA PACK X3 (S) LIGHT GREY #E4845;1; $ 18.952,00 ; $ 16.816,74 ; $ 15.287,95 ;NAKA OUTDOORS CO SRL;;
+6924442465156;AONIJIE MEDIA DEPORTIVA PACK X3 (M) LIGHT GREY #E4845;1; $ 18.952,00 ; $ 16.816,74 ; $ 15.287,95 ;NAKA OUTDOORS CO SRL;;
+6924442462735;AONIJIE MANGAS PROTECTOR SOLAR SECADO RAPIDO WHITE #E4121;2; $ 3.099,00 ; $ 8.249,54 ; $ 7.499,58 ;NAKA OUTDOORS CO SRL;;
+6924442462728;AONIJIE MANGAS PROTECTOR SOLAR SECADO RAPIDO BLACK #E4121;1; $ 3.099,00 ; $ 8.249,54 ; $ 7.499,58 ;NAKA OUTDOORS CO SRL;1;
+6924442449217;AONIJIE POLAINAS ULTRALIVIANAS TRAIL RUNNING M GRE #E4417;1; $ 16.053,00 ; $ 42.733,09 ; $ 38.848,26 ;NAKA OUTDOORS CO SRL;1;1
+6924442449194;AONIJIE POLAINAS ULTRALIVIANAS TRAIL RUNNING M BLU #E4417;2; $ 16.053,00 ; $ 42.733,09 ; $ 38.848,26 ;NAKA OUTDOORS CO SRL;;2
+6924442449200;AONIJIE POLAINAS ULTRALIVIANAS TRAIL RUNNING L BLU #E4417;1; $ 16.053,00 ; $ 42.733,09 ; $ 38.848,26 ;NAKA OUTDOORS CO SRL;;1
+6924442440290;AONIJIE PANTORRILLERA RUNNING COMPRESION GRADUADA (S) #E4405;2; $ 19.083,00 ; $ 50.798,95 ; $ 46.180,86 ;NAKA OUTDOORS CO SRL;;2
+6924442440306;AONIJIE PANTORRILLERA RUNNING COMPRESION GRADUADA (M) #E4405;2; $ 19.083,00 ; $ 50.798,95 ; $ 46.180,86 ;NAKA OUTDOORS CO SRL;;2
+6924442432349;AONIJIE FAJA DE HIDRATACION + SOFT FLASK 250 ML W938S (S/M, NEGRO-AZUL);0; $ 16.945,00 ; $ 45.107,59 ; $ 41.006,90 ;NAKA OUTDOORS CO SRL;1;1
+6924442432318;AONIJIE FAJA DE HIDRATACION + SOFT FLASK 250 ML W938S (M/L, NEGRO);0; $ 16.945,00 ; $ 45.107,59 ; $ 41.006,90 ;NAKA OUTDOORS CO SRL;1;1
+6924442447831;AONIJIE RIÑONERA PEQUEÑA PINK #W8129;2; $ 10.625,00 ; $ 28.283,75 ; $ 25.712,50 ;NAKA OUTDOORS CO SRL;;
+6924442447749;AONIJIE RIÑONERA PEQUEÑA BLACK #W8129;2; $ 10.625,00 ; $ 28.283,75 ; $ 25.712,50 ;NAKA OUTDOORS CO SRL;;
+6924442440153;AONIJIE RIÑONERA ELASTIZADA ULTRALIVIANA (S/M, AZUL) #W8101;1; $ 18.952,00 ; $ 50.450,22 ; $ 43.570,65 ;NAKA OUTDOORS CO SRL;;1
+6924442440139;AONIJIE RIÑONERA ELASTIZADA ULTRALIVIANA (M/L, NEGRA) #W8101 ;0; $ 18.952,00 ; $ 50.450,22 ; $ 45.863,84 ;NAKA OUTDOORS CO SRL;1;1
+6924442432363;AONIJIE RIÑONERA MULTIFUNCIONAL LIVIANA S/M BLACK #W8121;0; $ 16.822,95 ; $ 44.782,69 ; $ 40.711,54 ;NAKA OUTDOORS CO SRL;1;
+6924442464401;AONIJIE RIÑONERA PORTA BASTONES S LIGHT GREEN #W8116;0; $ 13.824,00 ; $ 36.799,49 ; $ 33.454,08 ;NAKA OUTDOORS CO SRL;1;
+6924442464418;AONIJIE RIÑONERA PORTA BASTONES M LIGHT GREEN #W8116;0; $ 13.824,00 ; $ 36.799,49 ; $ 33.454,08 ;NAKA OUTDOORS CO SRL;1;
+6924442413300;AONIJIE RIÑONERA PORTA BASTONES S BLACK #W8116;2; $ 13.824,00 ; $ 36.799,49 ; $ 33.454,08 ;NAKA OUTDOORS CO SRL;;2
+6924442413270;AONIJIE RIÑONERA PORTA BASTONES M BLACK #W8116;1; $ 13.824,00 ; $ 36.799,49 ; $ 33.454,08 ;NAKA OUTDOORS CO SRL;1;2
+6924442467013;AONIJIE PORTA BASTONES BLACK WHITE #E4432;1; $ 18.952,00 ; $ 50.450,22 ; $ 45.863,84 ;NAKA OUTDOORS CO SRL;;
+6924442469567;AONIJIE PORTA BASTONES EXTERNO WHITE #E4433;3; $ 12.932,00 ; $ 34.424,98 ; $ 31.295,44 ;NAKA OUTDOORS CO SRL;;
+6924442442287;AONIJIE SOFT FLASK 500ML BLUE #SD30;2; $ 9.083,17 ; $ 24.179,40 ; $ 21.981,27 ;NAKA OUTDOORS CO SRL;2;3
+6924442442270;AONIJIE SOFT FLASK 250ML BLUE #SD30;4; $ 8.203,57 ; $ 21.837,90 ; $ 19.852,64 ;NAKA OUTDOORS CO SRL;;
+6924442407019;AONIJIE SOFTFLASK 600ML BLUE #SD13;1; $ 14.014,04 ; $ 37.305,37 ; $ 33.913,98 ;NAKA OUTDOORS CO SRL;1;
+6924442448098;AONIJIE MANTA TERMICA REFORZADA 210 x 130CM;2; $ 2.899,00 ; $ 7.717,14 ; $ 7.015,58 ;NAKA OUTDOORS CO SRL;;1
+6924442415205;AONIJIE MANTA TERMICA EMERGENCIA 210 x 160CM;1; $ 2.230,00 ; $ 5.936,26 ; $ 5.396,60 ;NAKA OUTDOORS CO SRL;;2
+6924442433537;AONIJIE LINTERNA FRONTAL USB RECARGABLE GREY #E403;1; $ 24.525,56 ; $ 65.287,04 ; $ 59.351,86 ;NAKA OUTDOORS CO SRL;;
+6924442433339;AONIJIE LINTERNA FRONTAL A PILA AAA X3 BLACK #E403;1; $ 20.000,00 ; $ 53.240,00 ; $ 48.400,00 ;NAKA OUTDOORS CO SRL;;
+;;;;;;;;
+L751201725TURQU;SOX RUNNING DOBLE CAPA TE172C;6; $ 5.440,00 ; $ 14.481,28 ; $ 13.164,80 ;SOX PIGÜE SA;;
+L751201505NEGRB;SOX RUNNING COMPRESION TE150C;11; $ 4.720,00 ; $ 12.564,64 ; $ 11.422,40 ;SOX PIGÜE SA;;
+L751202154CORAL;SOX TRAIL RUNNING COMPRESION TE215C;4; $ 4.800,00 ; $ 12.777,60 ; $ 11.616,00 ;SOX PIGÜE SA;2;
+L751200926GRISM;SOX TRAIL RUNNING COMPRESION TE92C;6; $ 4.800,00 ; $ 12.777,60 ; $ 11.616,00 ;SOX PIGÜE SA;;
+L122300375NEGRO;SOX ESTABILIZADORA DE TOBILLO FU37B;6; $ 9.000,00 ; $ 23.958,00 ; $ 21.780,00 ;SOX PIGÜE SA;;
+L751400194NEGRO;SOX TRAIL RUNNING COMPRESION TALLE 4 NEGRO ME19C INV26 1/2;6; $ 7.769,00 ; $ 20.681,08 ; $ 18.800,98 ;SOX PIGÜE SA;1;
+L751202153NEGRO;SOX TRAIL RUNNING COMPRESION TALLE 3 NEGRO TE215C INV26 1/2;6; $ 7.769,00 ; $ 20.681,08 ; $ 18.800,98 ;SOX PIGÜE SA;1;
+L752202324NARAN;SOX TRAIL RUNNING COMPRESION TE232B;5; $ 5.900,00 ; $ 15.705,80 ; $ 14.278,00 ;SOX PIGÜE SA;;
+L101101585NEGRO;SOX YOGASOX DE158C TALLE 4;5; $ 3.300,00 ; $ 8.784,60 ; $ 7.990,00 ;SOX PIGÜE SA;;
+L101101586NEGRO;SOX YOGASOX DE158C TALLE 5;3; $ 3.300,00 ; $ 8.784,60 ; $ 7.990,00 ;SOX PIGÜE SA;;
+L101101586GRIS0;SOX YOGASOX DE158C TALLE 5;3; $ 3.301,00 ; $ 8.787,26 ; $ 7.990,00 ;SOX PIGÜE SA;;
+L542100012NEGRO;REMERA TERMICA TALLE XS NEGRO REM EXTREME M.LARGA DAM  ;1; $ 27.851,24 ; $ 74.140,00 ; $ 67.400,00 ;SOX PIGÜE SA;;
+L542100014NEGRO;REMERA TERMICA TALLE M NEGRO REM EXTREME M.LARGA DAM  ;1; $ 27.851,24 ; $ 74.140,00 ; $ 67.400,00 ;SOX PIGÜE SA;;
+L532200013MARIN;REMERA TERMICA TALLE S MARINO REME TERM M.LARG HOMBR   ;1; $ 22.561,98 ; $ 60.060,00 ; $ 54.600,00 ;SOX PIGÜE SA;;
+L532200015MARIN;REMERA TERMICA TALLE L MARINO REME TERM M.LARG HOMBR   ;1; $ 22.561,98 ; $ 60.060,00 ; $ 54.600,00 ;SOX PIGÜE SA;;
+L532100012MOLIN;REMERA TERMICA TALLE XS MOLINE REME TERM M.LARGA MUJER   ;1; $ 22.561,98 ; $ 60.060,00 ; $ 54.600,00 ;SOX PIGÜE SA;;
+L532100013MOLIN;REMERA TERMICA TALLE S MOLINE REME TERM M.LARGA MUJER   ;2; $ 22.561,98 ; $ 60.060,00 ; $ 54.600,00 ;SOX PIGÜE SA;;
+L532100014MOLIN;REMERA TERMICA TALLE M MOLINE REME TERM M.LARGA MUJER   ;1; $ 22.561,98 ; $ 60.060,00 ; $ 54.600,00 ;SOX PIGÜE SA;;
+L532100012NEBLA;REMERA TERMICA TALLE XS NEGRO BLANCO REME TERM M.LARGA MUJER   ;2; $ 22.561,98 ; $ 60.060,00 ; $ 54.600,00 ;SOX PIGÜE SA;;
+L532100013NEBLA;REMERA TERMICA TALLE S NEGRO BLANCO REME TERM M.LARGA MUJER   ;2; $ 22.561,98 ; $ 60.060,00 ; $ 54.600,00 ;SOX PIGÜE SA;;
+L532100013VERDE;REMERA TERMICA TALLE S VERDE REME TERM M.LARGA MUJER   ;1; $ 22.561,98 ; $ 60.060,00 ; $ 54.600,00 ;SOX PIGÜE SA;;
+L532200013NEGRO;REMERA TERMICA TALLE S NEGRO REME TERM M.LARG HOMBR   ;1; $ 22.561,98 ; $ 60.060,00 ; $ 54.600,00 ;SOX PIGÜE SA;;
+L532200014NEGRO;REMERA TERMICA TALLE M NEGRO REME TERM M.LARG HOMBR   ;1; $ 22.561,98 ; $ 60.060,00 ; $ 54.600,00 ;SOX PIGÜE SA;;
+;;;;;;;;
+7798387061860;WATERDOG GUANTES M/L;2; $ 9.200,00 ; $ 24.490,40 ; $ 22.264,00 ;JLS OUTDOOR;;
+7799025093182;WATERDOG GUANTES XL/XXL;2; $ 9.200,00 ; $ 24.490,40 ; $ 22.264,00 ;JLS OUTDOOR;;
