@@ -210,4 +210,23 @@ class MercadoPagoServiceTest extends TestCase
         $this->assertSame(500, $r['total']);
         $this->assertStringContainsString('máximo', $r['mensaje']);
     }
+
+    /** @test */
+    public function resuelto_por_el_contenedor_de_laravel_usa_un_client_con_base_uri()
+    {
+        // Regresión: sin el binding contextual en AppServiceProvider, el
+        // contenedor auto-resuelve `?Client $client = null` construyendo un
+        // `new Client()` vacío (porque Client es instanciable), en vez de
+        // pasar null y dejar que el constructor arme el suyo con base_uri.
+        // Eso rompía toda llamada real (controllers) con
+        // "The scheme "" is not allowed by the protocols request option.",
+        // aunque los tests que instancian el service a mano nunca lo notaban.
+        $servicio = app(MercadoPagoService::class);
+
+        $cliente = (function () {
+            return $this->client;
+        })->call($servicio);
+
+        $this->assertSame('https://api.mercadopago.com/', (string) $cliente->getConfig('base_uri'));
+    }
 }
