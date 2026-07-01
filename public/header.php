@@ -162,6 +162,22 @@ function getMes($numero){
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-xs-10">
+                                    <a href="/mercadopago/configuracion" style="color:black;"><div class="font-s13 font-w600">Mercado Pago</div></a>
+                                        <div class="font-s13 font-w400 text-muted">Cuenta y token por sucursal</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-xs-10">
+                                    <a href="/mercadopago/movimientos" style="color:black;"><div class="font-s13 font-w600">Movimientos MP</div></a>
+                                        <div class="font-s13 font-w400 text-muted">Cobros sincronizados de Mercado Pago</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-xs-10">
                                     <a href="perfil.php" style="color:black;"><div class="font-s13 font-w600">PERFIL</div></a>
                                         <div class="font-s13 font-w400 text-muted">Logo, nombre fantasia, etc.</div>
                                     </div>
