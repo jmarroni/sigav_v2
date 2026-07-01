@@ -6,7 +6,7 @@ use App\Models\MercadoPagoConfig;
 use App\Models\MercadoPagoPago;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Log;
 
 class MercadoPagoService
@@ -15,7 +15,11 @@ class MercadoPagoService
 
     public function __construct(?Client $client = null)
     {
-        $this->client = $client ?? new Client(['base_uri' => 'https://api.mercadopago.com/']);
+        $this->client = $client ?? new Client([
+            'base_uri' => 'https://api.mercadopago.com/',
+            'timeout' => 10,
+            'connect_timeout' => 5,
+        ]);
     }
 
     /** Prueba que el Access Token de la sucursal sea válido contra GET /users/me. */
@@ -35,7 +39,7 @@ class MercadoPagoService
             $nick = $data['nickname'] ?? $data['email'] ?? 'cuenta';
 
             return ['ok' => true, 'mensaje' => "Conexión OK ({$nick})."];
-        } catch (RequestException $e) {
+        } catch (GuzzleException $e) {
             Log::error('MercadoPago probarConexion falló', ['sucursal_id' => $sucursalId, 'error' => $e->getMessage()]);
 
             return ['ok' => false, 'mensaje' => 'No se pudo conectar con Mercado Pago. Verificá el token.'];
@@ -100,7 +104,7 @@ class MercadoPagoService
                     $cortado = true;
                 }
             }
-        } catch (RequestException $e) {
+        } catch (GuzzleException $e) {
             Log::error('MercadoPago sincronizarPagos falló', ['sucursal_id' => $sucursalId, 'error' => $e->getMessage()]);
 
             return ['ok' => false, 'mensaje' => 'No se pudo sincronizar con Mercado Pago.', 'nuevos' => $nuevos, 'total' => $total];

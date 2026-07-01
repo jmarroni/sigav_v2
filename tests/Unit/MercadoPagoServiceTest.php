@@ -6,6 +6,7 @@ use App\Models\MercadoPagoConfig;
 use App\Services\MercadoPago\MercadoPagoService;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request as Psr7Request;
@@ -77,6 +78,23 @@ class MercadoPagoServiceTest extends TestCase
 
         $this->assertFalse($r['ok']);
         $this->assertStringNotContainsString('invalid token', $r['mensaje']);
+    }
+
+    /** @test */
+    public function probar_conexion_maneja_fallas_de_conexion_sin_filtrar_detalle()
+    {
+        $this->configConToken(1, 'TEST-TOKEN');
+        $servicio = $this->servicioConRespuestas([
+            new ConnectException(
+                'cURL error 6: Could not resolve host: api.mercadopago.com',
+                new Psr7Request('GET', 'users/me')
+            ),
+        ]);
+
+        $r = $servicio->probarConexion(1);
+
+        $this->assertFalse($r['ok']);
+        $this->assertStringNotContainsString('resolve host', $r['mensaje']);
     }
 
     /** @test */
