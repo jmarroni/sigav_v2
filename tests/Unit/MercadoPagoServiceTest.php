@@ -141,6 +141,33 @@ class MercadoPagoServiceTest extends TestCase
     }
 
     /** @test */
+    public function sincronizar_pagos_con_el_mismo_mp_payment_id_en_sucursales_distintas_no_se_deduplica()
+    {
+        $this->configConToken(1, 'TEST-TOKEN-1');
+        $this->configConToken(2, 'TEST-TOKEN-2');
+        $pagoMp = [
+            'id' => 555555,
+            'date_created' => '2026-06-01T10:00:00.000-03:00',
+            'transaction_amount' => 250,
+            'status' => 'approved',
+        ];
+        $desde = \Carbon\Carbon::parse('2026-06-01');
+        $hasta = \Carbon\Carbon::parse('2026-06-30');
+
+        $servicioSucursal1 = $this->servicioConRespuestas([new Response(200, [], json_encode(['results' => [$pagoMp]]))]);
+        $r1 = $servicioSucursal1->sincronizarPagos(1, $desde, $hasta);
+        $this->assertSame(1, $r1['nuevos']);
+
+        $servicioSucursal2 = $this->servicioConRespuestas([new Response(200, [], json_encode(['results' => [$pagoMp]]))]);
+        $r2 = $servicioSucursal2->sincronizarPagos(2, $desde, $hasta);
+        $this->assertSame(1, $r2['nuevos']);
+
+        $this->assertSame(2, \App\Models\MercadoPagoPago::count());
+        $this->assertSame(1, \App\Models\MercadoPagoPago::where('sucursal_id', 1)->where('mp_payment_id', '555555')->count());
+        $this->assertSame(1, \App\Models\MercadoPagoPago::where('sucursal_id', 2)->where('mp_payment_id', '555555')->count());
+    }
+
+    /** @test */
     public function sincronizar_pagos_corta_al_llegar_al_tope_de_paginas_y_lo_avisa()
     {
         $this->configConToken(1, 'TEST-TOKEN');
