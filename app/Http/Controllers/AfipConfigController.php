@@ -3,25 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\AfipConfig;
-use App\Models\Usuario;
 use App\Services\Afip\AfipService;
 use Illuminate\Http\Request;
 
 class AfipConfigController extends Controller
 {
+    use \App\Http\Controllers\Concerns\AutorizaRolAdmin;
+
     public function __construct()
     {
         $this->middleware('auth');
-    }
-
-    /** Gate por rol (>= 2), replicando configuracion_afip.php legacy. */
-    private function autorizar(): void
-    {
-        $kiosco = $_COOKIE['kiosco'] ?? null;
-        $u = $kiosco ? Usuario::where('usuario', $kiosco)->first() : null;
-        if (! $u || (int) $u->rol_id < 2) {
-            abort(403, 'No autorizado');
-        }
     }
 
     public function index(AfipService $afip)
