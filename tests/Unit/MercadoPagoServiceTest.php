@@ -78,4 +78,91 @@ class MercadoPagoServiceTest extends TestCase
         $this->assertFalse($r['ok']);
         $this->assertStringNotContainsString('invalid token', $r['mensaje']);
     }
+
+    /** @test */
+    public function sincronizar_pagos_sin_token_no_pega_a_la_red()
+    {
+        MercadoPagoConfig::create(['sucursal_id' => 1, 'activo' => true]);
+        $servicio = $this->servicioConRespuestas([]);
+
+        $r = $servicio->sincronizarPagos(1, \Carbon\Carbon::parse('2026-06-01'), \Carbon\Carbon::parse('2026-06-30'));
+
+        $this->assertFalse($r['ok']);
+        $this->assertSame(0, $r['nuevos']);
+    }
+
+    /** @test */
+    public function sincronizar_pagos_crea_un_registro_por_pago_nuevo()
+    {
+        $this->configConToken(1, 'TEST-TOKEN');
+        $pagoMp = [
+            'id' => 123456,
+            'date_approved' => '2026-06-01T10:00:00.000-03:00',
+            'transaction_amount' => 1500.50,
+            'status' => 'approved',
+            'payment_type_id' => 'account_money',
+            'payer' => ['email' => 'cliente@test.com'],
+        ];
+        $servicio = $this->servicioConRespuestas([
+            new Response(200, [], json_encode(['results' => [$pagoMp]])),
+        ]);
+
+        $r = $servicio->sincronizarPagos(1, \Carbon\Carbon::parse('2026-06-01'), \Carbon\Carbon::parse('2026-06-30'));
+
+        $this->assertTrue($r['ok']);
+        $this->assertSame(1, $r['nuevos']);
+        $this->assertSame(1, \App\Models\MercadoPagoPago::count());
+        $this->assertSame('approved', \App\Models\MercadoPagoPago::first()->estado);
+        $this->assertSame('cliente@test.com', \App\Models\MercadoPagoPago::first()->comprador);
+    }
+
+    /** @test */
+    public function sincronizar_pagos_no_duplica_si_se_corre_dos_veces()
+    {
+        $this->configConToken(1, 'TEST-TOKEN');
+        $pagoMp = [
+            'id' => 123456,
+            'date_created' => '2026-06-01T10:00:00.000-03:00',
+            'transaction_amount' => 500,
+            'status' => 'approved',
+        ];
+        $desde = \Carbon\Carbon::parse('2026-06-01');
+        $hasta = \Carbon\Carbon::parse('2026-06-30');
+
+        $servicio1 = $this->servicioConRespuestas([new Response(200, [], json_encode(['results' => [$pagoMp]]))]);
+        $r1 = $servicio1->sincronizarPagos(1, $desde, $hasta);
+        $this->assertSame(1, $r1['nuevos']);
+
+        $servicio2 = $this->servicioConRespuestas([new Response(200, [], json_encode(['results' => [$pagoMp]]))]);
+        $r2 = $servicio2->sincronizarPagos(1, $desde, $hasta);
+        $this->assertSame(0, $r2['nuevos']);
+
+        $this->assertSame(1, \App\Models\MercadoPagoPago::count());
+    }
+
+    /** @test */
+    public function sincronizar_pagos_corta_al_llegar_al_tope_de_paginas_y_lo_avisa()
+    {
+        $this->configConToken(1, 'TEST-TOKEN');
+        $respuestas = [];
+        for ($pagina = 0; $pagina < 10; $pagina++) {
+            $resultados = [];
+            for ($i = 0; $i < 50; $i++) {
+                $resultados[] = [
+                    'id' => ($pagina * 50) + $i,
+                    'date_created' => '2026-06-01T10:00:00.000-03:00',
+                    'transaction_amount' => 100,
+                    'status' => 'approved',
+                ];
+            }
+            $respuestas[] = new Response(200, [], json_encode(['results' => $resultados]));
+        }
+        $servicio = $this->servicioConRespuestas($respuestas);
+
+        $r = $servicio->sincronizarPagos(1, \Carbon\Carbon::parse('2026-06-01'), \Carbon\Carbon::parse('2026-06-30'));
+
+        $this->assertTrue($r['ok']);
+        $this->assertSame(500, $r['total']);
+        $this->assertStringContainsString('máximo', $r['mensaje']);
+    }
 }
