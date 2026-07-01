@@ -92,6 +92,7 @@
 }
 #header-navbar .btn-image:hover{ border-color:#cfdae3 !important; background:#fff !important; }
 #header-navbar .btn-image img{
+    position:static; top:auto; left:auto;
     width:28px; height:28px; border-radius:50%; object-fit:cover;
     border:2px solid var(--sg-surface);
 }
