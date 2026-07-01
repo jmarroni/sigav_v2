@@ -250,7 +250,7 @@ function getMes($numero){
                 <li> 
                     <!-- Layout API, functionality initialized in App() -> uiLayoutApi() -->
                     <button class="btn btn-default btn-image" data-toggle="layout" data-action="side_overlay_toggle" type="button">
-                        <img src="/assets/img/avatars/avatar9.jpg" alt="Avatar"><i class="fa fa-ellipsis-v" style="margin-left:-10px;"></i>&nbsp;<?php echo $_COOKIE["kiosco"]; ?>&nbsp;
+                        <img src="/assets/img/avatars/avatar9.jpg" alt="Avatar"><i class="fa fa-ellipsis-v"></i>&nbsp;<?php echo $_COOKIE["kiosco"]; ?>&nbsp;
                     </button>
                 </li>
             </ul>
