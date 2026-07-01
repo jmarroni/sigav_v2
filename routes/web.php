@@ -88,6 +88,14 @@ Route::middleware('throttle:20,1')->group(function () {
     Route::post('afip/activar', 'AfipConfigController@activar');
     Route::post('afip/probar/{entorno}', 'AfipConfigController@probar')->where('entorno', 'homo|prod');
 });
+// Mercado Pago - configuración de cuenta por sucursal y vista de movimientos
+Route::middleware('throttle:20,1')->group(function () {
+    Route::get('mercadopago/configuracion', 'MercadoPagoConfigController@index');
+    Route::post('mercadopago/configuracion/{sucursal_id}', 'MercadoPagoConfigController@guardar')->where('sucursal_id', '[0-9]+');
+    Route::post('mercadopago/probar/{sucursal_id}', 'MercadoPagoConfigController@probar')->where('sucursal_id', '[0-9]+');
+    Route::post('mercadopago/movimientos/sincronizar/{sucursal_id}', 'MercadoPagoMovimientosController@sincronizar')->where('sucursal_id', '[0-9]+');
+});
+Route::get('mercadopago/movimientos', 'MercadoPagoMovimientosController@index');
 //Transferencias sucursales
 Route::get('transferencia', 'TransferenciaController@index');
 //Route::post('transferencia.save', 'TransferenciaController@save');
