@@ -323,4 +323,94 @@ class MercadoPagoServiceTest extends TestCase
         $this->assertFalse($r['ok']);
         $this->assertStringNotContainsString('secreto', $r['mensaje']);
     }
+
+    /** @test */
+    public function buscar_pago_por_referencia_sin_token_no_pega_a_la_red()
+    {
+        MercadoPagoConfig::create(['sucursal_id' => 1, 'activo' => true]);
+        $servicio = $this->servicioConRespuestas([]);
+
+        $r = $servicio->buscarPagoPorReferencia(1, 'QR-1-abc');
+
+        $this->assertFalse($r['ok']);
+        $this->assertFalse($r['pagado']);
+    }
+
+    /** @test */
+    public function buscar_pago_aprobado_lo_guarda_y_devuelve_pagado()
+    {
+        $this->configConToken(1, 'TEST-TOKEN');
+        $servicio = $this->servicioConRespuestas([
+            new Response(200, [], json_encode(['results' => [[
+                'id' => 999888,
+                'status' => 'approved',
+                'date_approved' => '2026-07-01T12:00:00.000-03:00',
+                'transaction_amount' => 1500.50,
+                'payment_type_id' => 'account_money',
+                'payer' => ['email' => 'cliente@test.com'],
+            ]]])),
+        ]);
+
+        $r = $servicio->buscarPagoPorReferencia(1, 'QR-1-abc');
+
+        $this->assertTrue($r['ok']);
+        $this->assertTrue($r['pagado']);
+        $this->assertSame(1500.50, $r['monto']);
+        $this->assertSame('999888', $r['mp_payment_id']);
+        $this->assertSame(1, \App\Models\MercadoPagoPago::count());
+        $this->assertSame('approved', \App\Models\MercadoPagoPago::first()->estado);
+    }
+
+    /** @test */
+    public function buscar_pago_pendiente_no_lo_guarda_y_devuelve_no_pagado()
+    {
+        $this->configConToken(1, 'TEST-TOKEN');
+        $servicio = $this->servicioConRespuestas([
+            new Response(200, [], json_encode(['results' => [[
+                'id' => 999888,
+                'status' => 'pending',
+                'date_created' => '2026-07-01T12:00:00.000-03:00',
+                'transaction_amount' => 1500.50,
+            ]]])),
+        ]);
+
+        $r = $servicio->buscarPagoPorReferencia(1, 'QR-1-abc');
+
+        $this->assertTrue($r['ok']);
+        $this->assertFalse($r['pagado']);
+        $this->assertSame(0, \App\Models\MercadoPagoPago::count());
+    }
+
+    /** @test */
+    public function buscar_pago_sin_resultados_devuelve_no_pagado()
+    {
+        $this->configConToken(1, 'TEST-TOKEN');
+        $servicio = $this->servicioConRespuestas([
+            new Response(200, [], json_encode(['results' => []])),
+        ]);
+
+        $r = $servicio->buscarPagoPorReferencia(1, 'QR-1-inexistente');
+
+        $this->assertTrue($r['ok']);
+        $this->assertFalse($r['pagado']);
+    }
+
+    /** @test */
+    public function buscar_pago_error_de_api_no_filtra_detalle()
+    {
+        $this->configConToken(1, 'TEST-TOKEN');
+        $servicio = $this->servicioConRespuestas([
+            new ClientException(
+                'Unauthorized',
+                new Psr7Request('GET', 'v1/payments/search'),
+                new Response(401, [], json_encode(['message' => 'detalle interno secreto']))
+            ),
+        ]);
+
+        $r = $servicio->buscarPagoPorReferencia(1, 'QR-1-abc');
+
+        $this->assertFalse($r['ok']);
+        $this->assertFalse($r['pagado']);
+        $this->assertStringNotContainsString('secreto', $r['mensaje']);
+    }
 }

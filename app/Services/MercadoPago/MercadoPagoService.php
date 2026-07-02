@@ -149,6 +149,47 @@ class MercadoPagoService
         }
     }
 
+    /** Consulta si ya hay un pago aprobado con esa referencia; si lo hay, lo cachea localmente. */
+    public function buscarPagoPorReferencia(int $sucursalId, string $ref): array
+    {
+        $config = MercadoPagoConfig::where('sucursal_id', $sucursalId)->first();
+
+        if (! $config || ! $config->access_token) {
+            return ['ok' => false, 'pagado' => false, 'mensaje' => 'No hay token cargado.'];
+        }
+
+        try {
+            $res = $this->client->request('GET', 'v1/payments/search', [
+                'headers' => ['Authorization' => 'Bearer '.$config->access_token],
+                'query' => [
+                    'external_reference' => $ref,
+                    'sort' => 'date_created',
+                    'criteria' => 'desc',
+                ],
+            ]);
+            $data = json_decode((string) $res->getBody(), true);
+
+            foreach ($data['results'] ?? [] as $pago) {
+                if (($pago['status'] ?? '') === 'approved') {
+                    $registro = $this->guardarPago($sucursalId, $pago);
+
+                    return [
+                        'ok' => true,
+                        'pagado' => true,
+                        'monto' => (float) $registro->monto,
+                        'mp_payment_id' => $registro->mp_payment_id,
+                    ];
+                }
+            }
+
+            return ['ok' => true, 'pagado' => false];
+        } catch (GuzzleException $e) {
+            Log::error('MercadoPago buscarPagoPorReferencia falló', ['sucursal_id' => $sucursalId, 'error' => $e->getMessage()]);
+
+            return ['ok' => false, 'pagado' => false, 'mensaje' => 'No se pudo consultar el estado del pago.'];
+        }
+    }
+
     /** Upsert de un pago de MP en la cache local (clave compuesta sucursal + mp_payment_id). */
     private function guardarPago(int $sucursalId, array $pago): MercadoPagoPago
     {
