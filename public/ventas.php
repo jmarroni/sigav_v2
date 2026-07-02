@@ -163,6 +163,7 @@ $conn->query($sql_update);
                     <input type="text" class="form-control numbers sg-mono-input" id="descuento_total_input" name="descuento_total_input" value="0" placeholder="0">
                 </div>
                 <span class="sg-total-badge">Total&nbsp; $ <span id="total_ventas">0.00</span></span>
+                <button type="button" class="btn btn-sm btn-success" id="cobrar_mp" style="margin-left:8px;">Cobrar con MP</button>
             </header>
             <div class="sg-card__body">
                 <div class="sg-table-wrap">
@@ -268,6 +269,19 @@ $conn->query($sql_update);
             </div>
         </section>
 
+        <!-- Cobro con QR de Mercado Pago -->
+        <section class="sg-card" id="panel_qr_mp" style="display:none;">
+            <header class="sg-card__head">
+                <div class="sg-card__title"><span class="sg-dot"></span><h3>Cobro con Mercado Pago</h3></div>
+                <span class="sg-total-badge">$ <span id="monto_qr_mp">0.00</span></span>
+            </header>
+            <div class="sg-card__body" style="text-align:center;">
+                <div id="qr_mp" style="display:inline-block; padding:16px; background:#fff;"></div>
+                <p id="estado_qr_mp" style="font-size:16px; font-weight:600; margin-top:12px;">Esperando pago&hellip;</p>
+                <button type="button" class="btn btn-default" id="cancelar_qr_mp">Cancelar</button>
+            </div>
+        </section>
+
         <!-- Factura emitida -->
         <section class="sg-card" id="factura_iframe" style="display:none;">
             <header class="sg-card__head">
@@ -357,5 +371,6 @@ $conn->query($sql_update);
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="/assets/js/qr/qrcode.js"></script>
     <script src="/assets/js/pages/ventas.js?v=<?php echo rand(); ?>"></script>
 <?php require ("footer.php"); ?>

@@ -215,6 +215,54 @@
             recalcularTotal();
         });
 
+        // Cobrar con MP: crea el link de pago por el total actual y lo muestra como QR.
+        jQuery("#cobrar_mp").click(function(){
+            var monto = parseFloat($("#total_ventas").html()) || 0;
+            if (monto <= 0) { alert("No hay monto para cobrar."); return; }
+
+            // Handshake CSRF: cualquier GET a Laravel setea la sesión y la cookie XSRF-TOKEN
+            // (esta página legacy no tiene el token embebido).
+            $.get("/mercadopago/qr/estado", { ref: "handshake" }).always(function(){
+                $.ajax({
+                    url: "/mercadopago/qr",
+                    method: "POST",
+                    headers: { "X-XSRF-TOKEN": leerCookie("XSRF-TOKEN") },
+                    data: { monto: monto },
+                    dataType: "json"
+                }).done(function(r){
+                    if (!r.ok) { alert(r.mensaje || "No se pudo generar el QR."); return; }
+
+                    detenerQrMp();
+                    $("#monto_qr_mp").html(monto.toFixed(2));
+                    $("#estado_qr_mp").html("Esperando pago&hellip;").css("color", "");
+                    new QRCode(document.getElementById("qr_mp"), {
+                        text: r.init_point,
+                        width: 220,
+                        height: 220,
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                    $("#panel_qr_mp").show();
+
+                    qrMpPoll = setInterval(function(){
+                        $.get("/mercadopago/qr/estado", { ref: r.ref }).done(function(e){
+                            if (e.pagado) {
+                                clearInterval(qrMpPoll); qrMpPoll = null;
+                                if (qrMpTimeout) { clearTimeout(qrMpTimeout); qrMpTimeout = null; }
+                                $("#estado_qr_mp").html("&#10003; Pago acreditado").css("color", "#1e9e64");
+                            }
+                            // Errores transitorios (e.ok false) no cortan el polling.
+                        });
+                    }, 4000);
+                    // La preferencia expira a los 30 min: cortamos el polling ahí.
+                    qrMpTimeout = setTimeout(detenerQrMp, 30 * 60 * 1000);
+                }).fail(function(){
+                    alert("No se pudo generar el QR. Probá de nuevo.");
+                });
+            });
+        });
+
+        jQuery("#cancelar_qr_mp").click(detenerQrMp);
+
         function log( message ) {
             $( "<div>" ).text( message ).prependTo( "#log" );
             $( "#log" ).scrollTop( 0 );
@@ -471,4 +519,20 @@ function recalcularTotal() {
     if (d > 100) d = 100;
     total_ventas = subtotal_con_descuento * (1 - d / 100);
     $("#total_ventas").html(total_ventas.toFixed(2));
+}
+
+// --- Cobro con QR de Mercado Pago ---
+var qrMpPoll = null;
+var qrMpTimeout = null;
+
+function leerCookie(nombre) {
+    var match = document.cookie.match(new RegExp('(^|;\\s*)' + nombre + '=([^;]*)'));
+    return match ? decodeURIComponent(match[2]) : null;
+}
+
+function detenerQrMp() {
+    if (qrMpPoll) { clearInterval(qrMpPoll); qrMpPoll = null; }
+    if (qrMpTimeout) { clearTimeout(qrMpTimeout); qrMpTimeout = null; }
+    $("#panel_qr_mp").hide();
+    $("#qr_mp").empty();
 }
