@@ -220,6 +220,10 @@
             var monto = parseFloat($("#total_ventas").html()) || 0;
             if (monto <= 0) { alert("No hay monto para cobrar."); return; }
 
+            // Deshabilitamos el botón para evitar doble click (dos preferencias de MP).
+            var $btn = $("#cobrar_mp");
+            $btn.prop("disabled", true);
+
             // Handshake CSRF: cualquier GET a Laravel setea la sesión y la cookie XSRF-TOKEN
             // (esta página legacy no tiene el token embebido).
             $.get("/mercadopago/qr/estado", { ref: "handshake" }).always(function(){
@@ -230,6 +234,7 @@
                     data: { monto: monto },
                     dataType: "json"
                 }).done(function(r){
+                    $btn.prop("disabled", false);
                     if (!r.ok) { alert(r.mensaje || "No se pudo generar el QR."); return; }
 
                     detenerQrMp();
@@ -248,6 +253,10 @@
                             if (e.pagado) {
                                 clearInterval(qrMpPoll); qrMpPoll = null;
                                 if (qrMpTimeout) { clearTimeout(qrMpTimeout); qrMpTimeout = null; }
+                                // El monto acreditado lo confirma MP (no el monto local con el que se generó el QR).
+                                if (e.monto !== undefined && e.monto !== null) {
+                                    $("#monto_qr_mp").html(parseFloat(e.monto).toFixed(2));
+                                }
                                 $("#estado_qr_mp").html("&#10003; Pago acreditado").css("color", "#1e9e64");
                             }
                             // Errores transitorios (e.ok false) no cortan el polling.
@@ -256,6 +265,7 @@
                     // La preferencia expira a los 30 min: cortamos el polling ahí.
                     qrMpTimeout = setTimeout(detenerQrMp, 30 * 60 * 1000);
                 }).fail(function(){
+                    $btn.prop("disabled", false);
                     alert("No se pudo generar el QR. Probá de nuevo.");
                 });
             });
