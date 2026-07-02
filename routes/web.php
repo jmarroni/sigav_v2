@@ -94,8 +94,11 @@ Route::middleware('throttle:20,1')->group(function () {
     Route::post('mercadopago/configuracion/{sucursal_id}', 'MercadoPagoConfigController@guardar')->where('sucursal_id', '[0-9]+');
     Route::post('mercadopago/probar/{sucursal_id}', 'MercadoPagoConfigController@probar')->where('sucursal_id', '[0-9]+');
     Route::post('mercadopago/movimientos/sincronizar/{sucursal_id}', 'MercadoPagoMovimientosController@sincronizar')->where('sucursal_id', '[0-9]+');
+    Route::post('mercadopago/qr', 'MercadoPagoQrController@crear');
 });
 Route::get('mercadopago/movimientos', 'MercadoPagoMovimientosController@index');
+// Polling del estado del QR: fuera del grupo 20,1 (a ~4s son ~15 req/min y lo agotaría).
+Route::get('mercadopago/qr/estado', 'MercadoPagoQrController@estado')->middleware('throttle:30,1');
 //Transferencias sucursales
 Route::get('transferencia', 'TransferenciaController@index');
 //Route::post('transferencia.save', 'TransferenciaController@save');
