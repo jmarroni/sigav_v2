@@ -289,7 +289,11 @@ class MercadoPagoServiceTest extends TestCase
         $this->assertSame(1, $body['items'][0]['quantity']);
         $this->assertSame(1500.51, $body['items'][0]['unit_price']);
         $this->assertSame($r['ref'], $body['external_reference']);
-        $this->assertRegExp('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}[+-]\d{2}:\d{2}$/', $body['date_of_expiration']);
+        // La expiración real de una preferencia es expires + expiration_date_to
+        // (date_of_expiration pertenece a la API de pagos; MP lo ignoraba silenciosamente).
+        $this->assertTrue($body['expires']);
+        $this->assertArrayNotHasKey('date_of_expiration', $body);
+        $this->assertRegExp('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}[+-]\d{2}:\d{2}$/', $body['expiration_date_to']);
     }
 
     /** @test */

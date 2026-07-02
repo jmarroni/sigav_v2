@@ -130,7 +130,10 @@ class MercadoPagoService
                         'currency_id' => 'ARS',
                     ]],
                     'external_reference' => $ref,
-                    'date_of_expiration' => Carbon::now()->addMinutes(30)->format('Y-m-d\TH:i:s.000P'),
+                    // La API de preferencias usa expires/expiration_date_to
+                    // (date_of_expiration es de la API de pagos y MP lo ignora acá).
+                    'expires' => true,
+                    'expiration_date_to' => Carbon::now()->addMinutes(30)->format('Y-m-d\TH:i:s.000P'),
                 ],
             ]);
             $data = json_decode((string) $res->getBody(), true);
