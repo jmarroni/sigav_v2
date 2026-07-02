@@ -4,6 +4,7 @@ namespace App\Services\MercadoPago;
 
 use App\Models\MercadoPagoConfig;
 use App\Models\MercadoPagoPago;
+use App\Models\Sucursales;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -80,18 +81,7 @@ class MercadoPagoService
                 $total += count($resultados);
 
                 foreach ($resultados as $pago) {
-                    $registro = MercadoPagoPago::updateOrCreate(
-                        ['sucursal_id' => $sucursalId, 'mp_payment_id' => (string) $pago['id']],
-                        [
-                            'fecha' => $pago['date_approved'] ?? $pago['date_created'],
-                            'monto' => $pago['transaction_amount'] ?? 0,
-                            'monto_neto' => $pago['transaction_details']['net_received_amount'] ?? null,
-                            'estado' => $pago['status'] ?? 'unknown',
-                            'medio_pago' => $pago['payment_type_id'] ?? null,
-                            'comprador' => $pago['payer']['email'] ?? null,
-                            'payload_raw' => $pago,
-                        ]
-                    );
+                    $registro = $this->guardarPago($sucursalId, $pago);
                     if ($registro->wasRecentlyCreated) {
                         $nuevos++;
                     }
@@ -116,5 +106,75 @@ class MercadoPagoService
         }
 
         return ['ok' => true, 'mensaje' => $mensaje, 'nuevos' => $nuevos, 'total' => $total];
+    }
+
+    /** Genera un link de pago (Checkout Pro) por el monto exacto y devuelve la URL para el QR. */
+    public function crearPreferencia(int $sucursalId, float $monto): array
+    {
+        $config = MercadoPagoConfig::where('sucursal_id', $sucursalId)->first();
+
+        if (! $config || ! $config->access_token) {
+            return ['ok' => false, 'mensaje' => 'No hay token cargado.'];
+        }
+
+        $ref = 'QR-'.$sucursalId.'-'.uniqid();
+
+        try {
+            $res = $this->client->request('POST', 'checkout/preferences', [
+                'headers' => ['Authorization' => 'Bearer '.$config->access_token],
+                'json' => [
+                    'items' => [[
+                        'title' => $this->tituloVenta($sucursalId),
+                        'quantity' => 1,
+                        'unit_price' => round($monto, 2),
+                        'currency_id' => 'ARS',
+                    ]],
+                    'external_reference' => $ref,
+                    'date_of_expiration' => Carbon::now()->addMinutes(30)->format('Y-m-d\TH:i:s.000P'),
+                ],
+            ]);
+            $data = json_decode((string) $res->getBody(), true);
+
+            if (empty($data['init_point'])) {
+                Log::error('MercadoPago crearPreferencia sin init_point', ['sucursal_id' => $sucursalId]);
+
+                return ['ok' => false, 'mensaje' => 'No se pudo generar el QR. Probá de nuevo.'];
+            }
+
+            return ['ok' => true, 'ref' => $ref, 'init_point' => $data['init_point']];
+        } catch (GuzzleException $e) {
+            Log::error('MercadoPago crearPreferencia falló', ['sucursal_id' => $sucursalId, 'error' => $e->getMessage()]);
+
+            return ['ok' => false, 'mensaje' => 'No se pudo generar el QR. Probá de nuevo.'];
+        }
+    }
+
+    /** Upsert de un pago de MP en la cache local (clave compuesta sucursal + mp_payment_id). */
+    private function guardarPago(int $sucursalId, array $pago): MercadoPagoPago
+    {
+        return MercadoPagoPago::updateOrCreate(
+            ['sucursal_id' => $sucursalId, 'mp_payment_id' => (string) $pago['id']],
+            [
+                'fecha' => $pago['date_approved'] ?? $pago['date_created'],
+                'monto' => $pago['transaction_amount'] ?? 0,
+                'monto_neto' => $pago['transaction_details']['net_received_amount'] ?? null,
+                'estado' => $pago['status'] ?? 'unknown',
+                'medio_pago' => $pago['payment_type_id'] ?? null,
+                'comprador' => $pago['payer']['email'] ?? null,
+                'payload_raw' => $pago,
+            ]
+        );
+    }
+
+    /** Título del ítem del checkout. `sucursales` es tabla legacy sin migración: en tests no existe -> fallback. */
+    private function tituloVenta(int $sucursalId): string
+    {
+        try {
+            $nombre = Sucursales::where('id', $sucursalId)->value('nombre');
+
+            return $nombre ? "Venta {$nombre}" : 'Venta';
+        } catch (\Throwable $e) {
+            return 'Venta';
+        }
     }
 }

@@ -229,4 +229,66 @@ class MercadoPagoServiceTest extends TestCase
 
         $this->assertSame('https://api.mercadopago.com/', (string) $cliente->getConfig('base_uri'));
     }
+
+    /** @test */
+    public function crear_preferencia_sin_token_no_pega_a_la_red()
+    {
+        MercadoPagoConfig::create(['sucursal_id' => 1, 'activo' => true]);
+        $servicio = $this->servicioConRespuestas([]);
+
+        $r = $servicio->crearPreferencia(1, 1500.50);
+
+        $this->assertFalse($r['ok']);
+        $this->assertSame('No hay token cargado.', $r['mensaje']);
+    }
+
+    /** @test */
+    public function crear_preferencia_devuelve_init_point_y_referencia()
+    {
+        $this->configConToken(1, 'TEST-TOKEN');
+        $servicio = $this->servicioConRespuestas([
+            new Response(201, [], json_encode([
+                'id' => '123-abc',
+                'init_point' => 'https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=123-abc',
+            ])),
+        ]);
+
+        $r = $servicio->crearPreferencia(1, 1500.50);
+
+        $this->assertTrue($r['ok']);
+        $this->assertSame('https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=123-abc', $r['init_point']);
+        $this->assertStringStartsWith('QR-1-', $r['ref']);
+    }
+
+    /** @test */
+    public function crear_preferencia_sin_init_point_en_la_respuesta_devuelve_error_generico()
+    {
+        $this->configConToken(1, 'TEST-TOKEN');
+        $servicio = $this->servicioConRespuestas([
+            new Response(201, [], json_encode(['id' => '123-abc'])),
+        ]);
+
+        $r = $servicio->crearPreferencia(1, 100);
+
+        $this->assertFalse($r['ok']);
+        $this->assertSame('No se pudo generar el QR. Probá de nuevo.', $r['mensaje']);
+    }
+
+    /** @test */
+    public function crear_preferencia_error_de_api_no_filtra_detalle()
+    {
+        $this->configConToken(1, 'TEST-TOKEN');
+        $servicio = $this->servicioConRespuestas([
+            new ClientException(
+                'Bad Request',
+                new Psr7Request('POST', 'checkout/preferences'),
+                new Response(400, [], json_encode(['message' => 'detalle interno secreto']))
+            ),
+        ]);
+
+        $r = $servicio->crearPreferencia(1, 100);
+
+        $this->assertFalse($r['ok']);
+        $this->assertStringNotContainsString('secreto', $r['mensaje']);
+    }
 }
