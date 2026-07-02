@@ -261,6 +261,38 @@ class MercadoPagoServiceTest extends TestCase
     }
 
     /** @test */
+    public function crear_preferencia_envia_el_payload_correcto_a_mp()
+    {
+        $this->configConToken(1, 'TEST-TOKEN');
+
+        $historial = [];
+        $mock = new MockHandler([
+            new Response(201, [], json_encode(['init_point' => 'https://mp.test/checkout'])),
+        ]);
+        $handlerStack = HandlerStack::create($mock);
+        $handlerStack->push(\GuzzleHttp\Middleware::history($historial));
+        $client = new Client(['handler' => $handlerStack, 'base_uri' => 'https://api.mercadopago.com/']);
+        $servicio = new MercadoPagoService($client);
+
+        $r = $servicio->crearPreferencia(1, 1500.505);
+
+        $this->assertTrue($r['ok']);
+        $this->assertCount(1, $historial);
+
+        $request = $historial[0]['request'];
+        $this->assertSame('POST', $request->getMethod());
+        $this->assertSame('/checkout/preferences', $request->getUri()->getPath());
+        $this->assertSame('Bearer TEST-TOKEN', $request->getHeaderLine('Authorization'));
+
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertSame('ARS', $body['items'][0]['currency_id']);
+        $this->assertSame(1, $body['items'][0]['quantity']);
+        $this->assertSame(1500.51, $body['items'][0]['unit_price']);
+        $this->assertSame($r['ref'], $body['external_reference']);
+        $this->assertRegExp('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}[+-]\d{2}:\d{2}$/', $body['date_of_expiration']);
+    }
+
+    /** @test */
     public function crear_preferencia_sin_init_point_en_la_respuesta_devuelve_error_generico()
     {
         $this->configConToken(1, 'TEST-TOKEN');
