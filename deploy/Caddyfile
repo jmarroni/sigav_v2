@@ -10,9 +10,18 @@
 	}
 }
 
-# Apex / aliases → redirigen (308) al dominio canónico.
+# Apex (sigav.ar) → sitio institucional estático.
 # APP_APEX debe estar seteado en el .env (ej: sigav.ar). Acepta varios
 # hosts separados por coma. Si no usás apex, dejá APP_APEX = APP_DOMAIN.
 {$APP_APEX} {
-	redir https://{$APP_DOMAIN}{uri} permanent
+	encode gzip
+	root * /srv/institucional
+	file_server
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
 }

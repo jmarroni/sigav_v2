@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SIGAV — Sistema de gestión para comercios con sucursales</title>
+<meta name="description" content="Punto de venta, stock por sucursal y facturación electrónica ARCA en un solo sistema. Cobro con QR de Mercado Pago integrado. Pedí una demo.">
+<meta property="og:title" content="SIGAV — Vendé, facturá y controlá el stock de todas tus sucursales">
+<meta property="og:description" content="Sistema de gestión para comercios minoristas con una o varias sucursales. POS, stock, facturación ARCA y Mercado Pago.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sigav.ar/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230E8A4F'/%3E%3Cg fill='%23fff'%3E%3Crect x='7' y='8' width='2' height='16'/%3E%3Crect x='11' y='8' width='1.5' height='16'/%3E%3Crect x='14.5' y='8' width='3' height='16'/%3E%3Crect x='19.5' y='8' width='1.5' height='16'/%3E%3Crect x='23' y='8' width='2' height='16'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F5EF;
+  --paper-2:#EFEDE3;
+  --ink:#171B21;
+  --muted:#5C6572;
+  --line:#E1DFD2;
+  --green:#0E8A4F;
+  --green-ink:#0A6B3D;
+  --green-soft:#E3F2E9;
+  --green-neon:#2BD97E;
+  --dark:#10151C;
+  --ticket:#FFFFFF;
+  --radius:14px;
+  --font-sans:"Archivo",system-ui,-apple-system,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,monospace;
+  --shadow-lg:0 24px 60px -18px rgba(23,27,33,.28);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-sans);
+  background:var(--paper);
+  color:var(--ink);
+  font-size:1.0625rem;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--green);color:#fff}
+img,svg{max-width:100%}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+section{scroll-margin-top:84px}
+
+/* ---------- utilidades tipográficas ---------- */
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:.75rem;
+  font-weight:600;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--green-ink);
+  display:flex;align-items:center;gap:10px;
+}
+.eyebrow::before{content:"";display:inline-block;width:26px;height:2px;background:var(--green)}
+h2{
+  font-weight:800;
+  font-stretch:112%;
+  font-size:clamp(1.7rem,3.2vw,2.5rem);
+  line-height:1.12;
+  letter-spacing:-.015em;
+  margin:14px 0 12px;
+}
+.lead{color:var(--muted);max-width:56ch}
+.mono{font-family:var(--font-mono)}
+
+/* ---------- botones ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  font-weight:700;font-size:.98rem;text-decoration:none;
+  padding:13px 24px;border-radius:10px;border:1.5px solid transparent;
+  transition:transform .16s ease,box-shadow .16s ease,background .16s ease,color .16s ease;
+  cursor:pointer;
+}
+.btn:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.btn-primary{background:var(--green);color:#fff;box-shadow:0 10px 24px -10px rgba(14,138,79,.55)}
+.btn-primary:hover{background:var(--green-ink);transform:translateY(-2px)}
+.btn-ghost{border-color:var(--ink);color:var(--ink)}
+.btn-ghost:hover{background:var(--ink);color:var(--paper)}
+.btn-light{background:var(--green-neon);color:var(--dark)}
+.btn-light:hover{background:#4ae694;transform:translateY(-2px)}
+
+/* ---------- header ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:66px}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none}
+.brand-mark{width:34px;height:34px;border-radius:8px;background:var(--green);display:grid;place-items:center}
+.brand-name{font-weight:900;font-stretch:118%;font-size:1.25rem;letter-spacing:.02em}
+.nav{display:flex;gap:26px;align-items:center}
+.nav a:not(.btn){text-decoration:none;font-weight:600;font-size:.95rem;color:var(--muted)}
+.nav a:not(.btn):hover{color:var(--ink)}
+.nav .btn{padding:9px 18px}
+@media(max-width:760px){.nav a:not(.btn){display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding:72px 0 40px;position:relative;overflow:hidden}
+.hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(720px 480px at 78% 18%,rgba(0,0,0,.5),transparent 72%);
+}
+.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center;position:relative}
+.hero h1{
+  font-weight:850;
+  font-stretch:115%;
+  font-size:clamp(2.3rem,4.6vw,3.9rem);
+  line-height:1.04;
+  letter-spacing:-.02em;
+  margin:18px 0 20px;
+}
+.hero h1 em{font-style:normal;color:var(--green-ink);
+  background:linear-gradient(transparent 62%,var(--green-soft) 62%)}
+.hero .lead{font-size:1.14rem;margin-bottom:30px}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.hero-note{margin-top:18px;font-family:var(--font-mono);font-size:.82rem;color:var(--muted)}
+@media(max-width:900px){
+  .hero .wrap{grid-template-columns:1fr;gap:44px}
+  .hero{padding-top:48px}
+}
+
+/* ---------- ticket (elemento firma) ---------- */
+.ticket-scene{display:flex;justify-content:center;position:relative}
+.ticket-slot{
+  position:relative;padding-top:14px;
+}
+.ticket-slot::before{ /* ranura de impresora */
+  content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:118%;height:14px;border-radius:7px;background:var(--ink);
+  box-shadow:inset 0 -3px 6px rgba(255,255,255,.14);
+}
+.ticket{
+  width:310px;background:var(--ticket);
+  padding:22px 22px 8px;
+  font-family:var(--font-mono);font-size:.8rem;line-height:1.55;color:var(--ink);
+  box-shadow:var(--shadow-lg);
+  transform:rotate(-1.4deg);
+  animation:print 1.2s cubic-bezier(.2,.7,.3,1) both;
+  animation-delay:.25s;
+}
+@keyframes print{from{clip-path:inset(0 0 96% 0)}to{clip-path:inset(0 0 0 0)}}
+.ticket-tear{
+  width:310px;height:12px;margin-top:-1px;
+  background:radial-gradient(circle at 9px -3px,transparent 9px,var(--ticket) 9.5px);
+  background-size:18.3px 12px;
+  filter:drop-shadow(0 14px 12px rgba(23,27,33,.16));
+  transform:rotate(-1.4deg);
+}
+.t-head{text-align:center;margin-bottom:10px}
+.t-head .t-logo{font-weight:600;letter-spacing:.28em;font-size:.92rem}
+.t-head small{color:var(--muted);font-size:.72rem;display:block}
+.t-sep{border:none;border-top:1.5px dashed var(--line);margin:9px 0}
+.t-row{display:flex;justify-content:space-between;gap:12px}
+.t-row span:last-child{white-space:nowrap}
+.t-desc{color:var(--green-ink)}
+.t-total{font-weight:600;font-size:1rem}
+.t-qr{display:flex;align-items:center;gap:12px;margin:10px 0 4px}
+.t-qr svg{flex:none}
+.t-qr p{font-size:.72rem;line-height:1.45;color:var(--muted)}
+.t-ok{
+  display:flex;align-items:center;gap:8px;
+  background:var(--green-soft);color:var(--green-ink);
+  font-weight:600;font-size:.75rem;
+  padding:7px 10px;border-radius:6px;margin:8px 0 6px;
+}
+.t-ok .dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(14,138,79,.45)}55%{box-shadow:0 0 0 7px rgba(14,138,79,0)}}
+.t-foot{text-align:center;color:var(--muted);font-size:.7rem;padding-bottom:8px}
+.barcode{display:flex;justify-content:center;gap:2.5px;align-items:flex-end;height:26px;margin:8px 0 4px}
+.barcode i{display:block;background:var(--ink);width:2px;height:100%}
+.barcode i:nth-child(3n){width:4px}.barcode i:nth-child(4n){height:82%}.barcode i:nth-child(5n){width:1.5px}
+
+/* ---------- dolores ---------- */
+.pains{padding:74px 0}
+.pain-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:34px}
+.pain{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:24px 24px 20px;
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.pain:hover{transform:translateY(-3px);box-shadow:0 18px 36px -18px rgba(23,27,33,.22)}
+.pain .no{
+  font-family:var(--font-mono);font-size:.95rem;color:#B0433A;
+  text-decoration:line-through;text-decoration-thickness:1.5px;
+  display:block;margin-bottom:8px;
+}
+.pain .si{font-weight:650;line-height:1.4}
+.pain .si::before{content:"✓ ";color:var(--green);font-weight:900}
+@media(max-width:760px){.pain-grid{grid-template-columns:1fr}}
+
+/* ---------- funcionalidades (bento) ---------- */
+.features{padding:30px 0 80px}
+.bento{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
+.cell{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:26px;position:relative;overflow:hidden;
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.cell:hover{transform:translateY(-3px);box-shadow:0 18px 36px -18px rgba(23,27,33,.22);border-color:#cfcdbd}
+.cell h3{font-weight:800;font-stretch:108%;font-size:1.14rem;margin-bottom:6px;letter-spacing:-.01em}
+.cell p{color:var(--muted);font-size:.94rem}
+.cell.big{grid-row:span 2;display:flex;flex-direction:column;gap:14px}
+.cell .tag{
+  font-family:var(--font-mono);font-size:.68rem;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--green-ink);background:var(--green-soft);
+  padding:4px 9px;border-radius:5px;align-self:flex-start;display:inline-block;margin-bottom:10px;
+}
+.mini{
+  margin-top:auto;background:var(--paper);border:1px solid var(--line);border-radius:10px;
+  font-family:var(--font-mono);font-size:.74rem;padding:14px 16px;
+}
+.mini .mrow{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--line)}
+.mini .mrow:last-child{border-bottom:none}
+.mini .ok{color:var(--green-ink);font-weight:600}
+.mini .warn{color:#B0433A;font-weight:600}
+.qr-mini{display:flex;gap:14px;align-items:center;margin-top:auto;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.qr-mini p{font-family:var(--font-mono);font-size:.72rem;color:var(--muted)}
+.qr-mini .ok{color:var(--green-ink);font-weight:600;display:block}
+@media(max-width:900px){.bento{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.bento{grid-template-columns:1fr}.cell.big{grid-row:auto}}
+
+/* ---------- cómo funciona ---------- */
+.how{padding:70px 0;background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
+.step{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px}
+.step .stamp{
+  font-family:var(--font-mono);font-weight:600;font-size:.78rem;color:var(--green-ink);
+  border:1.5px dashed var(--green);border-radius:999px;padding:4px 12px;display:inline-block;margin-bottom:14px;
+  transform:rotate(-2deg);
+}
+.step h3{font-weight:800;font-size:1.1rem;margin-bottom:6px}
+.step p{color:var(--muted);font-size:.94rem}
+@media(max-width:760px){.steps{grid-template-columns:1fr}}
+
+/* ---------- franja oscura ---------- */
+.trust{background:var(--dark);color:#EDF2EE;padding:84px 0}
+.trust .eyebrow{color:var(--green-neon)}
+.trust .eyebrow::before{background:var(--green-neon)}
+.trust h2{max-width:22ch}
+.trust .lead{color:#9AA6B2}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
+.stat{border-top:2px solid var(--green-neon);padding-top:18px}
+.stat b{font-weight:850;font-stretch:112%;font-size:1.5rem;display:block;line-height:1.25;letter-spacing:-.01em}
+.stat span{color:#9AA6B2;font-size:.92rem}
+@media(max-width:760px){.stats{grid-template-columns:1fr}}
+
+/* ---------- rubros ---------- */
+.rubros{padding:74px 0 30px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.chip{
+  font-family:var(--font-mono);font-size:.85rem;font-weight:500;
+  border:1.5px solid var(--ink);border-radius:999px;padding:8px 18px;background:#fff;
+  transition:background .15s,color .15s;
+}
+.chip:hover{background:var(--ink);color:var(--paper)}
+.chip.plus{border-style:dashed;color:var(--muted);border-color:var(--muted)}
+
+/* ---------- FAQ ---------- */
+.faq{padding:60px 0 80px}
+.faq-list{margin-top:30px;border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{
+  cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:20px;
+  padding:20px 4px;font-weight:700;font-size:1.05rem;
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--font-mono);font-size:1.4rem;color:var(--green-ink);transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{padding:0 4px 20px;color:var(--muted);max-width:70ch}
+
+/* ---------- contacto ---------- */
+.contact{padding:80px 0 90px;background:var(--paper-2);border-top:1px solid var(--line)}
+.contact .wrap{display:grid;grid-template-columns:1fr 1.1fr;gap:56px;align-items:start}
+.contact-info h2{max-width:16ch}
+.contact-mail{
+  font-family:var(--font-mono);font-size:.95rem;margin-top:22px;
+  display:flex;flex-direction:column;gap:8px;color:var(--muted);
+}
+.contact-mail a{color:var(--green-ink);font-weight:600;text-decoration:none;border-bottom:1.5px dashed var(--green)}
+.form{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:32px;box-shadow:0 20px 50px -30px rgba(23,27,33,.3);
+}
+.form .frow{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form label{display:block;font-weight:600;font-size:.85rem;margin:0 0 6px}
+.form .field{margin-bottom:18px}
+.form input,.form select,.form textarea{
+  width:100%;font:inherit;font-size:.95rem;color:var(--ink);
+  border:1.5px solid var(--line);border-radius:9px;padding:11px 13px;background:var(--paper);
+}
+.form input:focus,.form select:focus,.form textarea:focus{outline:none;border-color:var(--green);background:#fff}
+.form textarea{resize:vertical;min-height:88px}
+.form .btn{width:100%;justify-content:center;font-size:1.02rem}
+.form-msg{font-family:var(--font-mono);font-size:.8rem;color:var(--green-ink);margin-top:12px;min-height:1.2em}
+@media(max-width:860px){.contact .wrap{grid-template-columns:1fr}.form .frow{grid-template-columns:1fr}}
+
+/* ---------- footer ---------- */
+footer{background:var(--dark);color:#9AA6B2;padding:40px 0}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+footer .brand-name{color:#fff}
+footer nav{display:flex;gap:20px}
+footer a{color:#9AA6B2;text-decoration:none;font-size:.9rem}
+footer a:hover{color:#fff}
+footer .mono{font-size:.78rem}
+
+/* ---------- reveal on scroll ---------- */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .reveal{opacity:1;transform:none;transition:none}
+  .ticket{animation:none}
+  .t-ok .dot{animation:none}
+  *{transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><rect x="3" y="4" width="2" height="16"/><rect x="7" y="4" width="1.5" height="16"/><rect x="10.5" y="4" width="3" height="16"/><rect x="15.5" y="4" width="1.5" height="16"/><rect x="19" y="4" width="2" height="16"/></svg>
+      </span>
+      <span class="brand-name">SIGAV</span>
+    </a>
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="#funcionalidades">Funcionalidades</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#preguntas">Preguntas</a>
+      <a class="btn btn-primary" href="#contacto">Pedir demo</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Punto de venta · Stock · Facturación</p>
+      <h1>Vendé, facturá y controlá el stock de <em>todas tus sucursales</em> desde un solo sistema.</h1>
+      <p class="lead">SIGAV es el sistema de gestión que usan comercios reales todos los días: cobrás en segundos, la factura sale sola y sabés cuánto hay de cada producto en cada local.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#contacto">Pedir una demo</a>
+        <a class="btn btn-ghost" href="#funcionalidades">Ver funcionalidades</a>
+      </div>
+      <p class="hero-note">// Funciona en el navegador. Sin instalaciones raras en cada caja.</p>
+    </div>
+    <div class="ticket-scene" aria-hidden="true">
+      <div class="ticket-slot">
+        <div class="ticket">
+          <div class="t-head">
+            <div class="t-logo">S I G A V</div>
+            <small>SUCURSAL CENTRO — CAJA 1</small>
+            <small>TICKET #04217 · 14:32</small>
+          </div>
+          <hr class="t-sep">
+          <div class="t-row"><span>2× Remera algodón</span><span>$18.000</span></div>
+          <div class="t-row"><span>1× Gorra trekking</span><span>$9.500</span></div>
+          <div class="t-row"><span>1× Medias térmicas</span><span>$6.200</span></div>
+          <div class="t-row t-desc"><span>Descuento 10%</span><span>−$3.370</span></div>
+          <hr class="t-sep">
+          <div class="t-row t-total"><span>TOTAL</span><span>$30.330</span></div>
+          <hr class="t-sep">
+          <div class="t-qr">
+            <svg width="52" height="52" viewBox="0 0 21 21" shape-rendering="crispEdges"><rect width="21" height="21" fill="#fff"/><path fill="#171B21" d="M0 0h7v1H0zM14 0h7v1h-7zM0 1h1v1H0zM6 1h1v1H6zM9 1h2v1H9zM14 1h1v1h-1zM20 1h1v1h-1zM0 2h1v1H0zM2 2h3v1H2zM6 2h1v1H6zM8 2h1v1H8zM11 2h2v1h-2zM14 2h1v1h-1zM16 2h3v1h-3zM20 2h1v1h-1zM0 3h1v1H0zM2 3h3v1H2zM6 3h1v1H6zM9 3h1v1H9zM12 3h1v1h-1zM14 3h1v1h-1zM16 3h3v1h-3zM20 3h1v1h-1zM0 4h1v1H0zM2 4h3v1H2zM6 4h1v1H6zM8 4h2v1H8zM11 4h1v1h-1zM14 4h1v1h-1zM16 4h3v1h-3zM20 4h1v1h-1zM0 5h1v1H0zM6 5h1v1H6zM9 5h2v1H9zM14 5h1v1h-1zM20 5h1v1h-1zM0 6h7v1H0zM8 6h1v1H8zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h7v1h-7zM9 7h2v1H9zM12 7h1v1h-1zM0 8h2v1H0zM3 8h2v1H3zM6 8h2v1H6zM10 8h2v1h-2zM13 8h3v1h-3zM17 8h2v1h-2zM1 9h1v1H1zM4 9h1v1H4zM8 9h2v1H8zM11 9h1v1h-1zM14 9h2v1h-2zM18 9h2v1h-2zM0 10h1v1H0zM2 10h2v1H2zM5 10h2v1H5zM9 10h1v1H9zM12 10h3v1h-3zM16 10h1v1h-1zM19 10h2v1h-2zM1 11h2v1H1zM6 11h2v1H6zM10 11h2v1h-2zM13 11h1v1h-1zM15 11h2v1h-2zM18 11h1v1h-1zM0 12h2v1H0zM4 12h1v1H4zM7 12h2v1H7zM11 12h2v1h-2zM14 12h2v1h-2zM17 12h3v1h-3zM8 13h2v1H8zM12 13h1v1h-1zM15 13h1v1h-1zM18 13h2v1h-2zM0 14h7v1H0zM8 14h1v1H8zM10 14h2v1h-2zM14 14h1v1h-1zM16 14h2v1h-2zM0 15h1v1H0zM6 15h1v1H6zM9 15h1v1H9zM12 15h3v1h-3zM17 15h1v1h-1zM19 15h2v1h-2zM0 16h1v1H0zM2 16h3v1H2zM6 16h1v1H6zM8 16h2v1H8zM11 16h1v1h-1zM13 16h4v1h-4zM18 16h1v1h-1zM0 17h1v1H0zM2 17h3v1H2zM6 17h1v1H6zM9 17h2v1H9zM12 17h1v1h-1zM14 17h2v1h-2zM17 17h2v1h-2zM0 18h1v1H0zM2 18h3v1H2zM6 18h1v1H6zM8 18h1v1H8zM10 18h2v1h-2zM13 18h2v1h-2zM16 18h1v1h-1zM19 18h1v1h-1zM0 19h1v1H0zM6 19h1v1H6zM9 19h1v1H9zM11 19h3v1h-3zM15 19h2v1h-2zM18 19h2v1h-2zM0 20h7v1H0zM8 20h2v1H8zM12 20h2v1h-2zM15 20h1v1h-1zM17 20h3v1h-3z"/></svg>
+            <p>Escaneá y pagá<br>con <b>Mercado Pago</b></p>
+          </div>
+          <div class="t-ok"><span class="dot"></span> Pago acreditado — recién</div>
+          <div class="t-row" style="font-size:.72rem;color:var(--muted)"><span>Factura C emitida</span><span>ARCA ✓</span></div>
+          <div class="barcode" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <p class="t-foot">GRACIAS POR SU COMPRA</p>
+        </div>
+        <div class="ticket-tear"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DOLORES ================= -->
+<section class="pains" id="problemas">
+  <div class="wrap">
+    <p class="eyebrow reveal">El problema</p>
+    <h2 class="reveal">Si tenés más de una caja, esto te suena.</h2>
+    <div class="pain-grid">
+      <div class="pain reveal">
+        <span class="no">"¿Me fijás si queda en el otro local?"</span>
+        <p class="si">Stock de todas las sucursales en tiempo real, desde cualquier caja.</p>
+      </div>
+      <div class="pain reveal">
+        <span class="no">Facturar después, a mano, cuando hay tiempo.</span>
+        <p class="si">La factura electrónica ARCA sale directo desde la venta, en el momento.</p>
+      </div>
+      <div class="pain reveal">
+        <span class="no">"¿Te llegó la transferencia?" mirando el celular.</span>
+        <p class="si">El QR de Mercado Pago está integrado: el sistema avisa solo cuando se acredita.</p>
+      </div>
+      <div class="pain reveal">
+        <span class="no">Cerrar la caja con calculadora y papelitos.</span>
+        <p class="si">Cierre de caja por sucursal y reportes de venta con dos clics.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FUNCIONALIDADES ================= -->
+<section class="features" id="funcionalidades">
+  <div class="wrap">
+    <p class="eyebrow reveal">Funcionalidades</p>
+    <h2 class="reveal">Todo lo que pasa en el mostrador, en un solo lugar.</h2>
+    <p class="lead reveal">Ventas, cobros, stock, facturación e integraciones. Sin planillas paralelas ni sistemas que no se hablan entre sí.</p>
+
+    <div class="bento">
+      <div class="cell big reveal">
+        <div>
+          <span class="tag">Cobros</span>
+          <h3>QR de Mercado Pago integrado</h3>
+          <p>El QR aparece en la pantalla de venta y el sistema detecta solo cuando el pago se acredita. Nada de revisar el celular ni pedir comprobantes.</p>
+        </div>
+        <div class="qr-mini">
+          <svg width="46" height="46" viewBox="0 0 21 21" shape-rendering="crispEdges"><rect width="21" height="21" fill="#fff"/><path fill="#171B21" d="M0 0h7v1H0zM14 0h7v1h-7zM0 1h1v1H0zM6 1h1v1H6zM9 1h2v1H9zM14 1h1v1h-1zM20 1h1v1h-1zM0 2h1v1H0zM2 2h3v1H2zM6 2h1v1H6zM8 2h1v1H8zM11 2h2v1h-2zM14 2h1v1h-1zM16 2h3v1h-3zM20 2h1v1h-1zM0 3h1v1H0zM2 3h3v1H2zM6 3h1v1H6zM9 3h1v1H9zM12 3h1v1h-1zM14 3h1v1h-1zM16 3h3v1h-3zM20 3h1v1h-1zM0 4h1v1H0zM2 4h3v1H2zM6 4h1v1H6zM8 4h2v1H8zM11 4h1v1h-1zM14 4h1v1h-1zM16 4h3v1h-3zM20 4h1v1h-1zM0 5h1v1H0zM6 5h1v1H6zM9 5h2v1H9zM14 5h1v1h-1zM20 5h1v1h-1zM0 6h7v1H0zM8 6h1v1H8zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h7v1h-7zM9 7h2v1H9zM12 7h1v1h-1zM0 8h2v1H0zM3 8h2v1H3zM6 8h2v1H6zM10 8h2v1h-2zM13 8h3v1h-3zM17 8h2v1h-2zM1 9h1v1H1zM4 9h1v1H4zM8 9h2v1H8zM11 9h1v1h-1zM14 9h2v1h-2zM18 9h2v1h-2zM0 10h1v1H0zM2 10h2v1H2zM5 10h2v1H5zM9 10h1v1H9zM12 10h3v1h-3zM16 10h1v1h-1zM19 10h2v1h-2zM1 11h2v1H1zM6 11h2v1H6zM10 11h2v1h-2zM13 11h1v1h-1zM15 11h2v1h-2zM18 11h1v1h-1zM0 12h2v1H0zM4 12h1v1H4zM7 12h2v1H7zM11 12h2v1h-2zM14 12h2v1h-2zM17 12h3v1h-3zM8 13h2v1H8zM12 13h1v1h-1zM15 13h1v1h-1zM18 13h2v1h-2zM0 14h7v1H0zM8 14h1v1H8zM10 14h2v1h-2zM14 14h1v1h-1zM16 14h2v1h-2zM0 15h1v1H0zM6 15h1v1H6zM9 15h1v1H9zM12 15h3v1h-3zM17 15h1v1h-1zM19 15h2v1h-2zM0 16h1v1H0zM2 16h3v1H2zM6 16h1v1H6zM8 16h2v1H8zM11 16h1v1h-1zM13 16h4v1h-4zM18 16h1v1h-1zM0 17h1v1H0zM2 17h3v1H2zM6 17h1v1H6zM9 17h2v1H9zM12 17h1v1h-1zM14 17h2v1h-2zM17 17h2v1h-2zM0 18h1v1H0zM2 18h3v1H2zM6 18h1v1H6zM8 18h1v1H8zM10 18h2v1h-2zM13 18h2v1h-2zM16 18h1v1h-1zM19 18h1v1h-1zM0 19h1v1H0zM6 19h1v1H6zM9 19h1v1H9zM11 19h3v1h-3zM15 19h2v1h-2zM18 19h2v1h-2zM0 20h7v1H0zM8 20h2v1H8zM12 20h2v1h-2zM15 20h1v1h-1zM17 20h3v1h-3z"/></svg>
+          <p><span class="ok">✓ Pago acreditado $30.330</span>La venta se cierra sola.</p>
+        </div>
+      </div>
+
+      <div class="cell big reveal">
+        <div>
+          <span class="tag">Stock</span>
+          <h3>Stock por sucursal, en tiempo real</h3>
+          <p>Cada venta descuenta stock del local correcto. Consultás cualquier sucursal desde cualquier caja, y transferís mercadería con seguimiento.</p>
+        </div>
+        <div class="mini">
+          <div class="mrow"><span>Remera algodón M</span><span></span></div>
+          <div class="mrow"><span>· Centro</span><span class="ok">12 u.</span></div>
+          <div class="mrow"><span>· Norte</span><span class="ok">3 u.</span></div>
+          <div class="mrow"><span>· Sur</span><span class="warn">0 u. → transferir</span></div>
+        </div>
+      </div>
+
+      <div class="cell big reveal">
+        <div>
+          <span class="tag">Facturación</span>
+          <h3>Factura electrónica ARCA</h3>
+          <p>Facturas y notas de crédito emitidas directo desde la venta, con los datos del cliente. Sin salir del sistema ni cargar nada dos veces.</p>
+        </div>
+        <div class="mini">
+          <div class="mrow"><span>FC C 0021-00004217</span><span class="ok">CAE ✓</span></div>
+          <div class="mrow"><span>NC C 0021-00000089</span><span class="ok">CAE ✓</span></div>
+          <div class="mrow"><span>Emisión</span><span>al instante</span></div>
+        </div>
+      </div>
+
+      <div class="cell reveal">
+        <h3>Ventas con descuentos</h3>
+        <p>Descuento por producto o sobre el total, reflejado en el ticket y el presupuesto.</p>
+      </div>
+      <div class="cell reveal">
+        <h3>Mercado Libre</h3>
+        <p>Publicá y sincronizá tus productos con tu cuenta de Mercado Libre.</p>
+      </div>
+      <div class="cell reveal">
+        <h3>Presupuestos en PDF</h3>
+        <p>Con tu logo y tus precios, listos para mandar por WhatsApp al cliente.</p>
+      </div>
+      <div class="cell reveal">
+        <h3>Cierres de caja y reportes</h3>
+        <p>Cierre por sucursal y reportes de ventas para saber qué y cuánto vendés.</p>
+      </div>
+      <div class="cell reveal">
+        <h3>Etiquetas con código de barras</h3>
+        <p>Imprimí etiquetas de góndola desde el sistema y escanealas en la caja.</p>
+      </div>
+      <div class="cell reveal">
+        <h3>Usuarios, roles y permisos</h3>
+        <p>Cada empleado ve lo que le corresponde, en su sucursal. Clientes y proveedores incluidos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CÓMO FUNCIONA ================= -->
+<section class="how" id="como-funciona">
+  <div class="wrap">
+    <p class="eyebrow reveal">Cómo funciona</p>
+    <h2 class="reveal">Arrancás en días, no en meses.</h2>
+    <div class="steps">
+      <div class="step reveal">
+        <span class="stamp">PASO 1</span>
+        <h3>Nos contactás</h3>
+        <p>Nos contás cómo trabaja tu comercio: sucursales, rubro, cómo cobrás y facturás hoy.</p>
+      </div>
+      <div class="step reveal">
+        <span class="stamp">PASO 2</span>
+        <h3>Lo configuramos con vos</h3>
+        <p>Cargamos tus productos, sucursales y usuarios. Dejamos la facturación y Mercado Pago funcionando.</p>
+      </div>
+      <div class="step reveal">
+        <span class="stamp">PASO 3</span>
+        <h3>Empezás a vender</h3>
+        <p>Tu equipo cobra desde el primer día, con soporte directo de quienes desarrollamos el sistema.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONFIANZA ================= -->
+<section class="trust">
+  <div class="wrap">
+    <p class="eyebrow reveal">Por qué SIGAV</p>
+    <h2 class="reveal">Hecho para el mostrador, no para la demo.</h2>
+    <p class="lead reveal">SIGAV no es un producto de laboratorio: se construyó y se ajusta todos los días sobre la operación real de comercios que venden, facturan y mueven stock entre sucursales.</p>
+    <div class="stats">
+      <div class="stat reveal"><b>En comercios reales desde 2019</b><span>procesando ventas todos los días</span></div>
+      <div class="stat reveal"><b>Multi-sucursal de verdad</b><span>stock, cajas, permisos y transferencias por local</span></div>
+      <div class="stat reveal"><b>Soporte directo</b><span>hablás con quienes desarrollamos el sistema, sin call center</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RUBROS ================= -->
+<section class="rubros">
+  <div class="wrap">
+    <p class="eyebrow reveal">Para quién es</p>
+    <h2 class="reveal">Pensado para el comercio minorista argentino.</h2>
+    <p class="lead reveal">Y si tu rubro necesita algo particular, lo adaptamos: por ejemplo, para ópticas armamos el circuito completo de pedidos al laboratorio.</p>
+    <div class="chips reveal">
+      <span class="chip">Indumentaria</span>
+      <span class="chip">Ópticas</span>
+      <span class="chip">Kioscos y regalerías</span>
+      <span class="chip">Deportes y outdoor</span>
+      <span class="chip">Ferreterías</span>
+      <span class="chip">Librerías</span>
+      <span class="chip plus">+ tu rubro, a medida</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="faq" id="preguntas">
+  <div class="wrap">
+    <p class="eyebrow reveal">Preguntas frecuentes</p>
+    <h2 class="reveal">Lo que todos preguntan antes de la demo.</h2>
+    <div class="faq-list reveal">
+      <details>
+        <summary>¿Necesito instalar algo en cada computadora?</summary>
+        <p>No. SIGAV funciona en el navegador: cualquier computadora de la caja con internet ya sirve. Nosotros nos encargamos de que tu sistema esté online, con respaldo diario de tus datos.</p>
+      </details>
+      <details>
+        <summary>¿Emite factura electrónica de ARCA (ex AFIP)?</summary>
+        <p>Sí. Facturas y notas de crédito electrónicas salen directo desde la pantalla de venta, con CAE al instante. Nosotros dejamos configurados tus certificados y punto de venta.</p>
+      </details>
+      <details>
+        <summary>¿Cómo funciona el cobro con Mercado Pago?</summary>
+        <p>Al cobrar, el sistema genera un QR en pantalla. El cliente lo escanea, paga, y SIGAV detecta la acreditación automáticamente y cierra la venta. No hace falta mirar el celular ni conciliar a mano.</p>
+      </details>
+      <details>
+        <summary>¿Qué pasa con mis datos?</summary>
+        <p>Tus datos son tuyos. El sistema corre en un servidor propio con copias de seguridad diarias, y si algún día querés irte, te llevás tu información.</p>
+      </details>
+      <details>
+        <summary>¿Cuánto cuesta?</summary>
+        <p>Depende de la cantidad de sucursales y de lo que necesites configurar. Pedí una demo y te pasamos un presupuesto claro, sin sorpresas ni letra chica.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACTO ================= -->
+<section class="contact" id="contacto">
+  <div class="wrap">
+    <div class="contact-info">
+      <p class="eyebrow reveal">Contacto</p>
+      <h2 class="reveal">Pedí una demo y velo funcionando con tus productos.</h2>
+      <p class="lead reveal">Contanos cómo trabaja tu comercio y coordinamos una demostración. Sin compromiso.</p>
+      <div class="contact-mail reveal">
+        <span>// también podés escribirnos directo:</span>
+        <span><a href="mailto:desarrollo@bairesai.com">desarrollo@bairesai.com</a></span>
+        <!-- TODO WhatsApp: cuando haya número, agregar acá y en el hero:
+             <a href="https://wa.me/549XXXXXXXXXX?text=Hola,%20quiero%20una%20demo%20de%20SIGAV">WhatsApp</a> -->
+      </div>
+    </div>
+    <form class="form reveal" id="demoForm" novalidate>
+      <div class="frow">
+        <div class="field">
+          <label for="f-nombre">Tu nombre</label>
+          <input id="f-nombre" name="nombre" type="text" required autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="f-comercio">Nombre del comercio</label>
+          <input id="f-comercio" name="comercio" type="text" required autocomplete="organization">
+        </div>
+      </div>
+      <div class="frow">
+        <div class="field">
+          <label for="f-sucursales">Cantidad de sucursales</label>
+          <select id="f-sucursales" name="sucursales">
+            <option>1</option>
+            <option>2 a 3</option>
+            <option>4 a 10</option>
+            <option>Más de 10</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-telefono">Teléfono / WhatsApp</label>
+          <input id="f-telefono" name="telefono" type="tel" required autocomplete="tel">
+        </div>
+      </div>
+      <div class="field">
+        <label for="f-mensaje">Contanos algo de tu comercio (opcional)</label>
+        <textarea id="f-mensaje" name="mensaje" placeholder="Rubro, cómo facturás hoy, qué te gustaría resolver…"></textarea>
+      </div>
+      <button class="btn btn-primary" type="submit">Quiero una demo</button>
+      <p class="form-msg" id="formMsg" role="status"></p>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><rect x="3" y="4" width="2" height="16"/><rect x="7" y="4" width="1.5" height="16"/><rect x="10.5" y="4" width="3" height="16"/><rect x="15.5" y="4" width="1.5" height="16"/><rect x="19" y="4" width="2" height="16"/></svg>
+      </span>
+      <span class="brand-name">SIGAV</span>
+    </a>
+    <nav aria-label="Enlaces del pie">
+      <a href="#funcionalidades">Funcionalidades</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#preguntas">Preguntas</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+    <span class="mono">© <span id="year"></span> SIGAV · Argentina</span>
+  </div>
+</footer>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// Reveal on scroll
+(function(){
+  var els = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    els.forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  els.forEach(function(el){ io.observe(el); });
+})();
+
+// Formulario → abre el correo con los datos cargados (sin backend)
+(function(){
+  var form = document.getElementById('demoForm');
+  var msg = document.getElementById('formMsg');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if (!form.reportValidity()) return;
+    var d = new FormData(form);
+    var body = 'Hola, quiero una demo de SIGAV.\n\n' +
+      'Nombre: ' + d.get('nombre') + '\n' +
+      'Comercio: ' + d.get('comercio') + '\n' +
+      'Sucursales: ' + d.get('sucursales') + '\n' +
+      'Teléfono: ' + d.get('telefono') + '\n' +
+      (d.get('mensaje') ? '\n' + d.get('mensaje') + '\n' : '');
+    var subject = 'Demo SIGAV — ' + d.get('comercio');
+    location.href = 'mailto:desarrollo@bairesai.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    msg.textContent = '✓ Se abrió tu correo con los datos cargados. Si no se abrió, escribinos a desarrollo@bairesai.com';
+  });
+})();
+</script>
+</body>
+</html>
