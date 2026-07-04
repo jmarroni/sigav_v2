@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Catalogo\CatalogoCsvParser;
+use App\Catalogo\CategoriaClasificador;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -72,7 +73,7 @@ class ImportarCatalogo extends Command
             $this->line('');
             $this->warn('DRY-RUN: no se escribió nada.');
             $this->line('Se BORRARÍAN (limpieza total): ' . implode(', ', self::TABLAS_WIPE));
-            $this->line('Se crearían ' . count($proveedores) . ' proveedores + ' . count($proveedores) . ' categorías y ' . count($productos) . ' productos.');
+            $this->line('Se crearían ' . count($proveedores) . ' proveedores, las categorías por tipo de prenda necesarias y ' . count($productos) . ' productos.');
             $this->line('');
             $this->line('Ejemplos de productos a crear:');
             foreach (array_slice($productos, 0, 3) as $p) {
@@ -128,30 +129,26 @@ class ImportarCatalogo extends Command
             }
             $this->info('Catálogo y datos transaccionales de prueba borrados.');
 
-            // 2. Proveedores + 3. categorías (una por proveedor)
-            $provIds = [];        // nombre -> proveedores_id
-            $catRef = [];         // nombre -> "{cat_id}_{abrev}"
-            $abrevUsadas = [];
+            // 2. Proveedores (nombre normalizado a ASCII para evitar mojibate en latin1)
+            $provIds = [];        // nombre CSV -> proveedores_id
             foreach ($proveedores as $nombre) {
-                $provId = DB::table('proveedores')->insertGetId(['nombre' => $nombre]);
-                $provIds[$nombre] = $provId;
-
-                $abrev = $this->abreviatura($nombre, $abrevUsadas);
-                $abrevUsadas[$abrev] = true;
-                $catId = DB::table('categorias')->insertGetId([
-                    'nombre'      => $nombre,
-                    'abreviatura' => $abrev,
-                    'habilitada'  => 1,
-                    'usuario'     => 'import',
+                $provIds[$nombre] = DB::table('proveedores')->insertGetId([
+                    'nombre' => $this->aAscii($nombre),
                 ]);
-                $catRef[$nombre] = $catId . '_' . $abrev;
             }
-            $this->info(count($proveedores) . ' proveedores y categorías creados.');
+            $this->info(count($proveedores) . ' proveedores creados.');
+
+            // 3. Categorías por TIPO DE PRENDA (se aseguran on-demand por producto).
+            $catRef = [];         // nombre categoria -> "{cat_id}_{abrev}"
 
             // 4. Productos + stock
             $bar = $this->output->createProgressBar(count($productos));
             foreach ($productos as $p) {
                 $prov = $p['proveedor'];
+                [$catNombre, $catAbrev] = CategoriaClasificador::clasificar($p['nombre']);
+                if (!isset($catRef[$catNombre])) {
+                    $catRef[$catNombre] = $this->asegurarCategoria($catNombre, $catAbrev);
+                }
                 $productoId = DB::table('productos')->insertGetId([
                     'codigo_barras'     => $p['codigo_barras'],
                     'nombre'            => $p['nombre'],
@@ -162,7 +159,7 @@ class ImportarCatalogo extends Command
                     'stock'             => $p['stock'],
                     'stock_minimo'      => 0,
                     'proveedores_id'    => $provIds[$prov] ?? null,
-                    'categorias_id'     => $catRef[$prov] ?? '',
+                    'categorias_id'     => $catRef[$catNombre],
                     'es_comodato'       => 0,
                     'descuento'         => 0,
                     'descripcion'       => $p['nombre'],
@@ -191,23 +188,43 @@ class ImportarCatalogo extends Command
     }
 
     /**
-     * Abreviatura de categoría a partir del nombre del proveedor: primera
-     * palabra en mayúsculas, solo alfanumérico, única dentro del set.
-     *
-     * @param array<string, bool> $usadas
+     * Asegura una categoría por tipo de prenda y devuelve "{id}_{abrev}".
+     * La reusa por nombre si ya existe (respetando su abreviatura), o la crea
+     * evitando colisión de abreviatura.
      */
-    private function abreviatura(string $nombre, array $usadas): string
+    private function asegurarCategoria(string $nombre, string $abrev): string
     {
-        $primera = strtok(trim($nombre), ' ') ?: $nombre;
-        $base = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $primera) ?: 'CAT');
-        $base = substr($base, 0, 15);
+        $cat = DB::table('categorias')->whereRaw('LOWER(nombre) = ?', [mb_strtolower($nombre)])->first();
+        if ($cat) {
+            return $cat->id . '_' . ($cat->abreviatura ?: $abrev);
+        }
 
-        $abrev = $base;
+        $ab = $abrev;
         $i = 1;
-        while (isset($usadas[$abrev])) {
-            $abrev = substr($base, 0, 13) . $i;
+        while (DB::table('categorias')->where('abreviatura', $ab)->exists()) {
+            $ab = substr($abrev, 0, 3) . $i;
             $i++;
         }
-        return $abrev;
+
+        $id = DB::table('categorias')->insertGetId([
+            'nombre'      => $nombre,
+            'abreviatura' => $ab,
+            'habilitada'  => 1,
+            'usuario'     => 'import',
+        ]);
+        return $id . '_' . $ab;
+    }
+
+    /** Translitera a ASCII (sin acentos/ñ, sin mojibake) para tablas latin1. */
+    private function aAscii(string $s): string
+    {
+        $map = [
+            'á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u','ü'=>'u','ñ'=>'n',
+            'Á'=>'A','É'=>'E','Í'=>'I','Ó'=>'O','Ú'=>'U','Ü'=>'U','Ñ'=>'N',
+            'à'=>'a','è'=>'e','ì'=>'i','ò'=>'o','ù'=>'u','â'=>'a','ê'=>'e',
+        ];
+        $s = strtr($s, $map);
+        $s = preg_replace('/[^\x20-\x7E]/', '', $s);
+        return trim(preg_replace('/\s+/', ' ', $s));
     }
 }
