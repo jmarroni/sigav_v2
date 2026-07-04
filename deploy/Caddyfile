@@ -16,7 +16,9 @@
 {$APP_APEX} {
 	encode gzip
 	root * /srv/institucional
-	file_server
+	file_server {
+		hide *.md
+	}
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options "nosniff"
