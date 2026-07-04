@@ -67,7 +67,7 @@ require ('header.php'); ?>
                                         <td><?php echo $row["nombre"]; ?></td>
                                         <td><select id="proveedor_<?php echo $row["id"]; ?>" name="proveedor_<?php echo $row["id"]; ?>">
                                             <?php
-                                            $sql_proveedor = "SELECT * FROM `proveedores`";
+                                            $sql_proveedor = "SELECT * FROM `proveedor`";
                                             $resultado_proveedor = $conn->query($sql_proveedor);
                                             if ($resultado_proveedor->num_rows > 0) {
                                                 // output data of each row

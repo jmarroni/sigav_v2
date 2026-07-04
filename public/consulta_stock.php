@@ -11,7 +11,7 @@ pr.`nombre` as nombre_producto,
 pr.`stock`,
 pr.`stock_minimo`
 FROM `productos` pr
-	INNER JOIN `proveedores` pap
+	INNER JOIN `proveedor` pap
 	ON pr.`proveedores_id` = pap.`id`
 WHERE
 	`stock_minimo` >= stock

@@ -221,7 +221,7 @@ function line_chart() {
                             <select class="form-control" name="proveedor" id="proveedor">
                                 <option value="0">Seleccione el proveedor</option>
                                 <?php
-                                $sql = "SELECT * FROM `proveedores`";
+                                $sql = "SELECT * FROM `proveedor`";
                                 $resultado = $conn->query($sql);
                                 if ($resultado->num_rows > 0) {
                                     // output data of each row
