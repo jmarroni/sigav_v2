@@ -17,21 +17,29 @@
 
         $( "#codigo-barras" ).focus();
 
-        jQuery("#concretar_venta").click(function(){    
+        jQuery("#concretar_venta").click(function(){
+            var $btn = jQuery(this);
+            // Anti doble-clic: facturar.php descuenta stock, así que si se
+            // dispara dos veces se descuenta de más. Se bloquea el botón hasta
+            // que la respuesta (éxito o error) vuelva.
+            if ($btn.data("procesando")) return;
+
             var medio_de_pago = "0";
             if ($("#debito").prop("checked")) medio_de_pago = $("#debito").val();
             if ($("#efectivo").prop("checked")) medio_de_pago = $("#efectivo").val();
-            if ($("#credito").prop("checked")) medio_de_pago = $("#credito").val(); 
-            if ($("#transferencia").prop("checked")) medio_de_pago = $("#transferencia").val(); 
-            
+            if ($("#credito").prop("checked")) medio_de_pago = $("#credito").val();
+            if ($("#transferencia").prop("checked")) medio_de_pago = $("#transferencia").val();
+
             var iva = "0";
             if ($("#resp_i").prop("checked"))   iva = $("#resp_i").val();
             if ($("#mono").prop("checked"))     iva = $("#mono").val();
-            if ($("#excento").prop("checked"))  iva = $("#excento").val();  
-            if ($("#final").prop("checked"))    iva = $("#final").val();  
+            if ($("#excento").prop("checked"))  iva = $("#excento").val();
+            if ($("#final").prop("checked"))    iva = $("#final").val();
+
+            $btn.data("procesando", true).prop("disabled", true).css("opacity", 0.6);
             $.ajax({
                 method: "GET",
-                url: "facturar.php?tipo=" + medio_de_pago + 
+                url: "facturar.php?tipo=" + medio_de_pago +
                 "&presupuesto=0&nombre=" + $("#nombre-cliente").val() + 
                 '&documento='  + $("#documento-cliente").val() + 
                 '&tipo-documento='  + $("#tipo").val() +
@@ -62,13 +70,20 @@
                      total_ventas=0;
                         $("#precio").html("0.00");
                         $("#cantidad").val('1');
+                    $btn.data("procesando", false).prop("disabled", false).css("opacity", 1);
                 }else{
                     var error = '';
                     if (msg.error) error = msg.error;
-                    else error = msg; 
+                    else error = msg;
                     alert('Sucedió un error en la facturación, no se emitió factura, por favor comuníquese con el administrador o verifique el error que nos indica AFIP, : ' + msg.mensaje + '. Recargaremos la web .-');
                     document.location.reload();
-                } 
+                }
+            })
+            .fail(function () {
+                // El servidor devolvió un error (ej. 500). NO se reintenta solo
+                // para no volver a descontar stock; se avisa y se recarga.
+                alert('Hubo un error en el servidor al facturar. Para no descontar stock de más, NO se reintenta automáticamente. Se va a recargar la página; verificá el stock y el comprobante antes de volver a intentar.');
+                document.location.reload();
             });
         });
 
