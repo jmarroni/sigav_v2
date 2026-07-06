@@ -60,7 +60,7 @@ $sql = "Select * FROM perfil";
 $resultado_perfil = $conn->query($sql) or die("Error: " . $sql . "<br>" . $conn->error);
 if ($resultado_perfil->num_rows > 0) {
     if ($row_perfil = $resultado_perfil->fetch_assoc()) {
-        $logo = "http://".$_SERVER['HTTP_HOST'].$row_perfil["logo"];
+        $logo = is_file(dirname(__FILE__).$row_perfil["logo"]) ? "file://".dirname(__FILE__).$row_perfil["logo"] : "file://".dirname(__FILE__)."/assets/img/photos/no-image-featured-image.png"; // logo desde archivo local (TCPDF no baja imagenes por http/https del propio sitio)
 		$nombre_fantasia = $row_perfil["nombre"];
 		$datos_factura = $row_perfil;
     }
