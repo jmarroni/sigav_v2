@@ -1,117 +1,104 @@
 @extends('layout.layout')
 
 <style>
-    .nc-amount { font-variant-numeric: tabular-nums; font-weight: 600; }
-    .nc-num { font-family: Menlo, Consolas, monospace; }
-    #tabla-nc tbody tr { transition: background-color .15s ease; }
-    #filtro-nc { width: 240px; display: inline-block; }
+    .sigav-app .nc-amount { font-variant-numeric: tabular-nums; font-weight: 600; }
+    .sigav-app #filtro-nc { max-width: 260px; }
 </style>
 
 @section('body')
-<div class="content content-boxed">
+<div class="content content-boxed sigav-app">
 
-    {{-- Hero --}}
-    <div class="bg-image img-rounded overflow-hidden push" style="background-image: url('/assets/img/photos/photo25@2x.jpg');">
-        <div class="bg-black-op">
-            <div class="content">
-                <div class="block block-transparent block-themed text-center">
-                    <div class="block-content">
-                        <h1 class="h1 font-w700 text-white animated fadeInDown push-5" style="color:white">Notas de Crédito</h1>
-                        <h2 class="h4 font-w400 text-white-op animated fadeInUp">Comprobantes emitidos</h2>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Hero -->
+    <div class="sg-hero">
+        <p class="sg-hero__eyebrow">Comprobantes</p>
+        <h1>Notas de crédito</h1>
     </div>
 
-    {{-- Filtro por fecha --}}
-    <div class="block block-rounded">
-        <div class="block-content">
-            <form action="/notas/credito" method="get" class="form-inline">
-                <div class="form-group">
-                    <label class="push-10-r">Desde</label>
-                    <input type="date" name="desde" class="form-control" value="{{ $desde }}">
+    <!-- Filtros -->
+    <section class="sg-card">
+        <header class="sg-card__head">
+            <div class="sg-card__title"><span class="sg-dot"></span><h3>Filtros</h3></div>
+        </header>
+        <div class="sg-card__body">
+            <form class="sg-filters" action="/notas/credito" method="get">
+                <div class="sg-field">
+                    <label for="desde">Desde</label>
+                    <input type="date" name="desde" id="desde" class="form-control" value="{{ $desde }}">
                 </div>
-                <div class="form-group" style="margin-left:12px;">
-                    <label class="push-10-r">Hasta</label>
-                    <input type="date" name="hasta" class="form-control" value="{{ $hasta }}">
+                <div class="sg-field">
+                    <label for="hasta">Hasta</label>
+                    <input type="date" name="hasta" id="hasta" class="form-control" value="{{ $hasta }}">
                 </div>
-                <button type="submit" class="btn btn-primary" style="margin-left:12px;">
-                    <i class="fa fa-filter push-5-r"></i>Filtrar
-                </button>
-                @if($desde || $hasta)
-                    <a href="/notas/credito" class="btn btn-default" style="margin-left:6px;">Limpiar</a>
-                @endif
+                <div class="sg-filter-actions">
+                    <button type="submit" class="sg-btn sg-btn--primary"><i class="fa fa-filter"></i> Filtrar</button>
+                    @if($desde || $hasta)
+                        <a href="/notas/credito" class="sg-btn sg-btn--ghost">Limpiar</a>
+                    @endif
+                </div>
             </form>
         </div>
-    </div>
+    </section>
 
-    {{-- Listado --}}
-    <div class="block block-rounded">
-        <div class="block-header block-header-default">
-            <h3 class="block-title">
-                <i class="fa fa-file-text-o text-muted push-5-r"></i> Notas de Crédito
-                <span class="label label-primary" style="margin-left:6px;">{{ count($notas) }}</span>
-            </h3>
-            <div class="block-options">
-                <input type="text" id="filtro-nc" class="form-control input-sm" placeholder="Filtrar por número, usuario…">
+    <!-- Resultados -->
+    <section class="sg-card">
+        <header class="sg-card__head">
+            <div class="sg-card__title">
+                <span class="sg-dot"></span>
+                <h3>Notas de crédito</h3>
+                <span class="sg-count">{{ count($notas) }}</span>
             </div>
-        </div>
-        <div class="block-content">
+            <div class="sg-field sg-field--inline">
+                <input type="text" id="filtro-nc" class="form-control" placeholder="Filtrar por número, usuario…">
+            </div>
+        </header>
+        <div class="sg-card__body sg-table-wrap">
             @if(count($notas) > 0)
-            <div class="table-responsive">
-                <table class="table table-hover table-vcenter" id="tabla-nc">
-                    <thead>
-                        <tr>
-                            <th>Número</th>
-                            <th class="text-right">Total</th>
-                            <th>Fecha</th>
-                            <th>Usuario</th>
-                            <th>Sucursal</th>
-                            <th class="text-center">PDF</th>
-                            <th class="text-center">Mail</th>
+            <table class="sg-table" id="tabla-nc">
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th class="sg-num">Total</th>
+                        <th>Fecha</th>
+                        <th>Usuario</th>
+                        <th>Sucursal</th>
+                        <th class="sg-num">PDF</th>
+                        <th class="sg-num">Mail</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($notas as $nc)
+                        <tr data-buscar="{{ strtolower($nc->numero.' '.$nc->usuario.' '.$nc->nombre_sucursal) }}">
+                            <td class="sg-mono sg-strong">#{{ $nc->numero }}</td>
+                            <td class="sg-num nc-amount">$ {{ number_format((float) $nc->total, 2, ',', '.') }}</td>
+                            <td class="sg-muted">{{ \Illuminate\Support\Str::limit($nc->fecha, 16, '') }}</td>
+                            <td>{{ $nc->usuario }}</td>
+                            <td>{{ $nc->nombre_sucursal ?: '—' }}</td>
+                            <td class="sg-num">
+                                @if($nc->pdf)
+                                    <a href="{{ $nc->pdf }}" target="_blank" class="sg-btn sg-btn--ghost"><i class="fa fa-file-pdf-o"></i> Ver</a>
+                                @else
+                                    <span class="sg-muted">—</span>
+                                @endif
+                            </td>
+                            <td class="sg-num">
+                                <button type="button" class="sg-btn sg-btn--ghost js-reenviar" data-pdf="{{ $nc->pdf }}" data-num="{{ $nc->numero }}">
+                                    <i class="fa fa-envelope-o"></i> Reenviar
+                                </button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($notas as $nc)
-                            <tr data-buscar="{{ strtolower($nc->numero.' '.$nc->usuario.' '.$nc->nombre_sucursal) }}">
-                                <td><span class="nc-num">#{{ $nc->numero }}</span></td>
-                                <td class="text-right nc-amount">$ {{ number_format((float) $nc->total, 2, ',', '.') }}</td>
-                                <td>{{ \Illuminate\Support\Str::limit($nc->fecha, 16, '') }}</td>
-                                <td>{{ $nc->usuario }}</td>
-                                <td>{{ $nc->nombre_sucursal ?: '—' }}</td>
-                                <td class="text-center">
-                                    @if($nc->pdf)
-                                        <a href="{{ $nc->pdf }}" target="_blank" class="btn btn-xs btn-rounded btn-default">
-                                            <i class="fa fa-file-pdf-o push-5-r"></i>Ver
-                                        </a>
-                                    @else
-                                        <span class="text-muted">—</span>
-                                    @endif
-                                </td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-xs btn-rounded btn-default js-reenviar"
-                                            data-pdf="{{ $nc->pdf }}" data-num="{{ $nc->numero }}">
-                                        <i class="fa fa-envelope-o push-5-r"></i>Reenviar
-                                    </button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div id="nc-sin-resultados" class="text-center push-30 text-muted" style="display:none;">
-                <i class="fa fa-search fa-2x push-10"></i>
-                <p class="font-w600">Ninguna nota coincide con el filtro</p>
+                    @endforeach
+                </tbody>
+            </table>
+            <div id="nc-sin-resultados" class="sg-note" style="display:none; text-align:center;">
+                Ninguna nota coincide con el filtro.
             </div>
             @else
-            <div class="text-center push-30 text-muted">
-                <i class="fa fa-inbox fa-3x push-10"></i>
-                <p class="font-w600">No hay notas de crédito en el período seleccionado</p>
+            <div class="sg-note" style="text-align:center;">
+                No hay notas de crédito en el período seleccionado.
             </div>
             @endif
         </div>
-    </div>
+    </section>
 </div>
 
 {{-- Modal reenvío de mail --}}
@@ -121,7 +108,7 @@
             <div class="block block-themed remove-margin-b">
                 <div class="block-header bg-primary">
                     <ul class="block-options"><li><button data-dismiss="modal" type="button"><i class="si si-close"></i></button></li></ul>
-                    <h3 class="block-title">Reenviar nota de crédito <span id="reenvio-num" class="nc-num"></span></h3>
+                    <h3 class="block-title">Reenviar nota de crédito <span id="reenvio-num" class="sg-mono"></span></h3>
                 </div>
                 <div class="block-content">
                     <div class="alert alert-success" id="reenvio-ok" style="display:none;">Mail enviado correctamente.</div>
