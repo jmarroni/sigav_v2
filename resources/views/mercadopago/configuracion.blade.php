@@ -9,6 +9,14 @@
     @if(session('mp_error'))
         <div class="alert alert-danger">{{ session('mp_error') }}</div>
     @endif
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <strong>No se pudo guardar:</strong>
+            <ul style="margin:6px 0 0;">
+                @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
+            </ul>
+        </div>
+    @endif
 
     <div class="block block-rounded">
         <div class="block-header">

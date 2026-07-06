@@ -33,8 +33,11 @@ class MercadoPagoConfigController extends Controller
     {
         $this->autorizar();
 
+        // El access_token se guarda cifrado en una columna TEXT; no hay motivo
+        // para limitarlo a 255 (algunos tokens de producción son más largos y
+        // quedaban rechazados en silencio). public_key sí es varchar(255).
         $data = $request->validate([
-            'access_token' => 'nullable|string|max:255',
+            'access_token' => 'nullable|string|max:1000',
             'public_key' => 'nullable|string|max:255',
             'activo' => 'sometimes|boolean',
         ]);
