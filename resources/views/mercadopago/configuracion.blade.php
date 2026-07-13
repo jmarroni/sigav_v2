@@ -20,7 +20,13 @@
 
     <div class="block block-rounded">
         <div class="block-header">
-            <h3 class="block-title">Mercado Pago — cuentas por sucursal</h3>
+            <h3 class="block-title">
+                Mercado Pago — cuentas por sucursal
+                <a href="/ayuda/mercadopago.html" target="_blank" rel="noopener"
+                   class="btn btn-xs btn-default" style="margin-left:10px;" title="Guía paso a paso: obtener credenciales y configurarlas">
+                    ? Cómo configurar / cambiar credenciales
+                </a>
+            </h3>
         </div>
         <div class="block-content">
             @foreach($sucursales as $sucursal)
