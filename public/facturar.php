@@ -342,7 +342,13 @@ if (intval($_GET["presupuesto"]) == 0){
             
 		$devolucion["error"] = "Error al generar el comprobante";
 		$devolucion["mensaje"] = "AFIP respondio lo siguiente al intentar comunicarnos: ".$e->getMessage();
-		file_put_contents("errores.dat",$e);
+		// Log durable en storage/logs (www-data puede escribir; el viejo errores.dat
+		// era relativo al cwd y de dueño root, y los errores se perdian).
+		@file_put_contents(
+			__DIR__.'/../storage/logs/facturacion_errores.log',
+			date('c')." facturar.php venta_id=".($_GET['venta_id'] ?? '')." usuario=".($_COOKIE['kiosco'] ?? '')."\n".$e."\n---\n",
+			FILE_APPEND
+		);
 		echo json_encode($devolucion);
             exit();
 		

@@ -119,7 +119,12 @@ try {
 }catch(Exception $e) {
 	$devolucion["error"] = "Error al generar el comprobante";
 	$devolucion["mensaje"] = "AFIP respondio lo siguiente al intentar comunicarnos: ".$e->getMessage();
-	file_put_contents("errores.dat",$e);
+	// Log durable en storage/logs (el viejo errores.dat era relativo y de dueño root).
+	@file_put_contents(
+		__DIR__.'/../storage/logs/facturacion_errores.log',
+		date('c')." nota_de_debito.php usuario=".($_COOKIE['kiosco'] ?? '')."\n".$e."\n---\n",
+		FILE_APPEND
+	);
 	echo json_encode($devolucion);exit();
 }
 
