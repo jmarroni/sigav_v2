@@ -240,6 +240,8 @@ class MercadoPagoServiceTest extends TestCase
 
         $this->assertFalse($r['ok']);
         $this->assertSame('No hay token cargado.', $r['mensaje']);
+        $this->assertTrue($r['config_pendiente']);
+        $this->assertSame('/ayuda/mercadopago.html', $r['ayuda']);
     }
 
     /** @test */

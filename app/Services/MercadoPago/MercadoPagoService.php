@@ -114,7 +114,14 @@ class MercadoPagoService
         $config = MercadoPagoConfig::where('sucursal_id', $sucursalId)->first();
 
         if (! $config || ! $config->access_token) {
-            return ['ok' => false, 'mensaje' => 'No hay token cargado.'];
+            // config_pendiente distingue "falta configurar" de otros errores:
+            // el front ofrece abrir la guía en vez de un alert seco.
+            return [
+                'ok' => false,
+                'mensaje' => 'No hay token cargado.',
+                'config_pendiente' => true,
+                'ayuda' => '/ayuda/mercadopago.html',
+            ];
         }
 
         $ref = 'QR-'.$sucursalId.'-'.uniqid();

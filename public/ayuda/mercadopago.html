@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Configurar Mercado Pago en SIGAV</title>
+<style>
+  :root {
+    --acento: #1e9e64;
+    --tinta: #1c2530;
+    --tinta-suave: #5b6a7a;
+    --borde: #dde4ea;
+    --fondo: #f6f8f9;
+    --aviso-fondo: #fff7e6;
+    --aviso-borde: #e6b800;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'IBM Plex Sans', -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+    color: var(--tinta);
+    background: var(--fondo);
+    line-height: 1.6;
+  }
+  .pagina { max-width: 760px; margin: 0 auto; padding: 32px 20px 64px; }
+  header.cabecera {
+    border-bottom: 3px solid var(--acento);
+    padding-bottom: 16px;
+    margin-bottom: 28px;
+  }
+  .cabecera .marca {
+    font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--acento); font-weight: 600; margin: 0 0 6px;
+  }
+  h1 { font-size: 30px; margin: 0; line-height: 1.2; }
+  .bajada { color: var(--tinta-suave); margin-top: 10px; font-size: 16px; }
+  h2 {
+    font-size: 21px; margin: 40px 0 4px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  h2 .num {
+    background: var(--acento); color: #fff; border-radius: 50%;
+    width: 30px; height: 30px; flex: 0 0 30px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  h2 + p.intro { margin-top: 6px; color: var(--tinta-suave); }
+  ol.pasos { padding-left: 0; counter-reset: paso; list-style: none; margin-top: 16px; }
+  ol.pasos > li {
+    counter-increment: paso;
+    background: #fff; border: 1px solid var(--borde); border-radius: 8px;
+    padding: 14px 16px 14px 52px; margin-bottom: 10px; position: relative;
+  }
+  ol.pasos > li::before {
+    content: counter(paso);
+    position: absolute; left: 14px; top: 14px;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--fondo); border: 1px solid var(--borde);
+    color: var(--tinta-suave); font-weight: 600; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  code, .codigo {
+    font-family: 'IBM Plex Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+    background: #eef2f5; border: 1px solid var(--borde); border-radius: 4px;
+    padding: 1px 6px; font-size: 0.92em; white-space: nowrap;
+  }
+  .aviso {
+    background: var(--aviso-fondo); border-left: 4px solid var(--aviso-borde);
+    border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 18px 0;
+  }
+  .aviso strong:first-child { display: block; margin-bottom: 2px; }
+  .ok {
+    background: #e9f7f0; border-left: 4px solid var(--acento);
+    border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 18px 0;
+  }
+  table.problemas {
+    width: 100%; border-collapse: collapse; background: #fff;
+    border: 1px solid var(--borde); border-radius: 8px; overflow: hidden;
+    font-size: 15px; margin-top: 14px;
+  }
+  table.problemas th, table.problemas td {
+    text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--borde);
+    vertical-align: top;
+  }
+  table.problemas th { background: var(--fondo); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--tinta-suave); }
+  table.problemas tr:last-child td { border-bottom: none; }
+  footer {
+    margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--borde);
+    color: var(--tinta-suave); font-size: 13px;
+  }
+  a { color: var(--acento); }
+  @media print {
+    body { background: #fff; }
+    .pagina { max-width: none; padding: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="pagina">
+
+  <header class="cabecera">
+    <p class="marca">SIGAV · Guía de configuración</p>
+    <h1>Cobrar con Mercado Pago</h1>
+    <p class="bajada">Cómo obtener las credenciales de tu cuenta de Mercado Pago y cargarlas en SIGAV para cobrar con QR desde la pantalla de Ventas.</p>
+  </header>
+
+  <p><strong>Qué vas a necesitar:</strong></p>
+  <ul>
+    <li>La cuenta de <strong>Mercado Pago real del negocio</strong> (usuario y contraseña).</li>
+    <li>Un usuario de SIGAV con permiso de <strong>administrador</strong> (la pantalla de configuración no aparece para otros roles).</li>
+  </ul>
+
+  <h2><span class="num">1</span> Obtener el Access Token en Mercado Pago</h2>
+  <p class="intro">Esto se hace una sola vez, desde una computadora, en el sitio de desarrolladores de Mercado Pago.</p>
+
+  <ol class="pasos">
+    <li>Entrá a <a href="https://www.mercadopago.com.ar/developers" target="_blank" rel="noopener">mercadopago.com.ar/developers</a> e iniciá sesión con la cuenta de Mercado Pago <strong>del negocio</strong> (la misma donde querés recibir la plata).</li>
+    <li>Arriba a la derecha entrá a <strong>«Tus integraciones»</strong> y tocá <strong>«Crear aplicación»</strong>.</li>
+    <li>Poné un nombre (por ejemplo <code>SIGAV</code>). Cuando pregunte qué tipo de solución es, elegí <strong>«Pagos online»</strong> y como producto <strong>«Checkout Pro»</strong>. No hace falta completar nada más del formulario.</li>
+    <li>Dentro de la aplicación creada, andá a <strong>«Credenciales de producción»</strong> (menú de la izquierda). Mercado Pago puede pedirte completar un par de datos del negocio (industria, sitio web) para habilitarlas: completalos.</li>
+    <li>Copiá el <strong>Access Token</strong>. Es un texto largo que empieza con <code>APP_USR-</code>. Ese es el dato que se carga en SIGAV. (La <strong>Public Key</strong> de la misma pantalla es opcional.)</li>
+  </ol>
+
+  <div class="aviso">
+    <strong>⚠ Ojo: producción, no prueba.</strong>
+    En esa misma pantalla existen «Credenciales de prueba» y también empiezan con formato parecido. Si cargás un token de prueba (o de una cuenta de test tipo <code>TESTUSER…</code>), el QR se va a generar igual <strong>pero los clientes no van a poder pagar</strong>. Usá siempre las credenciales de <strong>producción</strong> de la cuenta real.
+  </div>
+
+  <h2><span class="num">2</span> Cargar el token en SIGAV</h2>
+
+  <ol class="pasos">
+    <li>Entrá a SIGAV con un usuario administrador y andá al menú <strong>Mercado Pago → Configuración</strong> (o directo a <code>/mercadopago/configuracion</code>).</li>
+    <li>Buscá la tarjeta de <strong>tu sucursal</strong>. Cada sucursal tiene su propia configuración: si el negocio tiene varias, hay que cargar el token en cada una (puede ser el mismo o cuentas distintas).</li>
+    <li>Pegá el token en el campo <strong>Access Token</strong>, dejá el interruptor <strong>habilitado</strong> encendido y tocá <strong>«Guardar»</strong>.</li>
+    <li>Tocá <strong>«Probar conexión»</strong>. Tiene que aparecer el <strong>nombre real de la cuenta</strong> de Mercado Pago del negocio.</li>
+  </ol>
+
+  <div class="ok">
+    <strong>✓ Cómo saber que quedó bien:</strong> «Probar conexión» muestra el nombre de la cuenta del negocio, y en la tarjeta de la sucursal aparece la etiqueta <em>«token configurado»</em>. Si muestra un nombre tipo <code>TESTUSER…</code>, ese token es de prueba: volvé al paso 1 y copiá el de producción.
+  </div>
+
+  <h2><span class="num">3</span> Cobrar desde Ventas</h2>
+
+  <ol class="pasos">
+    <li>En la pantalla de <strong>Ventas</strong>, cargá los productos como siempre.</li>
+    <li>Tocá <strong>«Cobrar con MP»</strong>. Se muestra un QR por el total exacto de la venta.</li>
+    <li>El cliente lo escanea con la app de Mercado Pago y paga. El QR vence a los 30 minutos.</li>
+    <li>Cuando el pago se acredita, la pantalla muestra <strong>«✓ Pago acreditado»</strong> con el monto confirmado por Mercado Pago. Recién ahí concretá la venta.</li>
+    <li>Los cobros quedan visibles en <strong>Mercado Pago → Movimientos</strong> (usá «Sincronizar» para traer los últimos pagos).</li>
+  </ol>
+
+  <h2><span class="num">4</span> Problemas frecuentes</h2>
+
+  <table class="problemas">
+    <tr><th>Síntoma</th><th>Causa y solución</th></tr>
+    <tr>
+      <td>«No hay token cargado»</td>
+      <td>Esta <strong>sucursal</strong> no tiene el Access Token configurado. Seguí los pasos 1 y 2 de esta guía (recordá que la configuración es por sucursal).</td>
+    </tr>
+    <tr>
+      <td>«Probar conexión» muestra <code>TESTUSER…</code></td>
+      <td>El token cargado es de una cuenta de prueba. Copiá el Access Token de <strong>producción</strong> de la cuenta real y volvé a guardarlo.</td>
+    </tr>
+    <tr>
+      <td>El QR se genera pero al cliente le da error al pagar</td>
+      <td>Casi siempre es token de prueba (ver fila anterior) o credenciales de producción sin habilitar. Verificá en el sitio de developers que las credenciales de producción estén activas.</td>
+    </tr>
+    <tr>
+      <td>«No se pudo conectar con Mercado Pago. Verificá el token.»</td>
+      <td>El token es inválido o fue renovado/revocado en Mercado Pago. Generá uno nuevo en «Credenciales de producción» y volvé a cargarlo en SIGAV.</td>
+    </tr>
+    <tr>
+      <td>El pago no aparece como acreditado</td>
+      <td>Esperá unos segundos (la pantalla consulta cada 4 segundos). Si el cliente pagó y no aparece, revisá en la app de Mercado Pago del negocio que el pago esté aprobado, y consultá «Movimientos» con «Sincronizar».</td>
+    </tr>
+  </table>
+
+  <footer>
+    SIGAV — Guía de configuración de Mercado Pago. Si algo de esta guía no coincide con lo que ves en pantalla, avisale al administrador del sistema.
+  </footer>
+
+</div>
+</body>
+</html>

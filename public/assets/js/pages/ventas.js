@@ -250,7 +250,17 @@
                     dataType: "json"
                 }).done(function(r){
                     $btn.prop("disabled", false);
-                    if (!r.ok) { alert(r.mensaje || "No se pudo generar el QR."); return; }
+                    if (!r.ok) {
+                        // Sin configurar: ofrecemos abrir la guía paso a paso en vez de un alert seco.
+                        if (r.config_pendiente) {
+                            if (confirm("Mercado Pago no está configurado para esta sucursal.\n\n¿Querés abrir la guía que explica cómo configurarlo (en Mercado Pago y en SIGAV)?")) {
+                                window.open(r.ayuda || "/ayuda/mercadopago.html", "_blank");
+                            }
+                            return;
+                        }
+                        alert(r.mensaje || "No se pudo generar el QR.");
+                        return;
+                    }
 
                     detenerQrMp();
                     $("#monto_qr_mp").html(monto.toFixed(2));
