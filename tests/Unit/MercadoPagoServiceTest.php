@@ -340,6 +340,8 @@ class MercadoPagoServiceTest extends TestCase
 
         $this->assertFalse($r['ok']);
         $this->assertFalse($r['pagado']);
+        $this->assertTrue($r['config_pendiente']);
+        $this->assertSame('/ayuda/mercadopago.html', $r['ayuda']);
     }
 
     /** @test */

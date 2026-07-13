@@ -230,10 +230,27 @@
             recalcularTotal();
         });
 
+        // Ofrece abrir la guía de configuración de MP en otra pestaña.
+        function ofrecerGuiaMp(url) {
+            if (confirm("Mercado Pago no está configurado para esta sucursal.\n\n¿Querés abrir la guía que explica cómo configurarlo (en Mercado Pago y en SIGAV)?")) {
+                window.open(url || "/ayuda/mercadopago.html", "_blank");
+            }
+        }
+
         // Cobrar con MP: crea el link de pago por el total actual y lo muestra como QR.
         jQuery("#cobrar_mp").click(function(){
             var monto = parseFloat($("#total_ventas").html()) || 0;
-            if (monto <= 0) { alert("No hay monto para cobrar."); return; }
+            if (monto <= 0) {
+                // Sin monto igual consultamos la config: si falta el token, la guía
+                // es más útil que el aviso de monto (típico al probar el botón en vacío).
+                $.get("/mercadopago/qr/estado", { ref: "handshake" }).done(function(e){
+                    if (e.config_pendiente) { ofrecerGuiaMp(e.ayuda); }
+                    else { alert("No hay monto para cobrar."); }
+                }).fail(function(){
+                    alert("No hay monto para cobrar.");
+                });
+                return;
+            }
 
             // Deshabilitamos el botón para evitar doble click (dos preferencias de MP).
             var $btn = $("#cobrar_mp");
@@ -252,12 +269,7 @@
                     $btn.prop("disabled", false);
                     if (!r.ok) {
                         // Sin configurar: ofrecemos abrir la guía paso a paso en vez de un alert seco.
-                        if (r.config_pendiente) {
-                            if (confirm("Mercado Pago no está configurado para esta sucursal.\n\n¿Querés abrir la guía que explica cómo configurarlo (en Mercado Pago y en SIGAV)?")) {
-                                window.open(r.ayuda || "/ayuda/mercadopago.html", "_blank");
-                            }
-                            return;
-                        }
+                        if (r.config_pendiente) { ofrecerGuiaMp(r.ayuda); return; }
                         alert(r.mensaje || "No se pudo generar el QR.");
                         return;
                     }

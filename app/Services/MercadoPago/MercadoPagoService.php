@@ -165,7 +165,15 @@ class MercadoPagoService
         $config = MercadoPagoConfig::where('sucursal_id', $sucursalId)->first();
 
         if (! $config || ! $config->access_token) {
-            return ['ok' => false, 'pagado' => false, 'mensaje' => 'No hay token cargado.'];
+            // config_pendiente permite al front ofrecer la guía de configuración
+            // (el botón de ventas usa este GET como consulta liviana de estado).
+            return [
+                'ok' => false,
+                'pagado' => false,
+                'mensaje' => 'No hay token cargado.',
+                'config_pendiente' => true,
+                'ayuda' => '/ayuda/mercadopago.html',
+            ];
         }
 
         try {
