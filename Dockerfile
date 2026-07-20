@@ -1,6 +1,6 @@
 # SIGAV v2 — imagen de desarrollo
-# PHP 7.4 + Apache: compatible con Laravel 7 / Passport ~9 y con el lado legacy (mysqli)
-FROM php:7.4-apache
+# PHP 8.2 + Apache: Laravel 11 / Passport 12 y el lado legacy (mysqli)
+FROM php:8.2-apache
 
 # Dependencias del sistema para las extensiones PHP que usa el stack
 RUN apt-get update && apt-get install -y --no-install-recommends \
