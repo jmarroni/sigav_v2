@@ -293,7 +293,7 @@ class MercadoPagoServiceTest extends TestCase
         // (date_of_expiration pertenece a la API de pagos; MP lo ignoraba silenciosamente).
         $this->assertTrue($body['expires']);
         $this->assertArrayNotHasKey('date_of_expiration', $body);
-        $this->assertRegExp('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}[+-]\d{2}:\d{2}$/', $body['expiration_date_to']);
+        $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}[+-]\d{2}:\d{2}$/', $body['expiration_date_to']);
     }
 
     /** @test */

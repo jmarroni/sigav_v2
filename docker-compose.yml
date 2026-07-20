@@ -1,5 +1,5 @@
 # SIGAV v2 — entorno de desarrollo local
-# Levanta: app (PHP 7.4 + Apache) y db (MySQL 5.7)
+# Levanta: app (PHP 8.2 + Apache) y db (MySQL 8.0)
 services:
   app:
     build: .
@@ -20,7 +20,7 @@ services:
       LEGACY_DB_NAME: laravel
 
   db:
-    image: mysql:5.7
+    image: mysql:8.0
     container_name: sigav_db
     # Sin publicar puerto al host: el contenedor `app` accede a `db` por la red
     # interna de compose. (El 3307 del host suele estar ocupado por otros stacks.)
