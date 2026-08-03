@@ -27,3 +27,54 @@
 		-Server
 	}
 }
+
+# Winter League — bloque a AGREGAR al Caddyfile de sigav_v2
+# (en la VM: /opt/sigav/deploy/Caddyfile; y espejarlo en el repo de sigav_v2).
+# Caddy emite el certificado Let's Encrypt solo (Cloudflare debe estar en DNS only).
+
+sattor.sigav.ar {
+	encode gzip
+	reverse_proxy sattor_app:8080
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+}
+
+# Cementos del Sur — bloque a AGREGAR al Caddyfile de sigav_v2.
+# En la VM: /opt/sigav/deploy/Caddyfile. Espejarlo en el repo de sigav_v2.
+# Caddy emite el certificado de Let's Encrypt solo (Cloudflare en DNS only).
+#
+# Este archivo es la copia de referencia: el que manda es el de la VM. Si
+# divergen, gana el de la VM y hay que actualizar este.
+
+cementos-del-sur.sigav.ar {
+	encode gzip
+
+	header {
+		# Las fuentes son de Google Fonts (ver apps/web/index.html): el CSS sale
+		# de fonts.googleapis.com y los woff2 de fonts.gstatic.com.
+		# 'unsafe-inline' en style-src es por los estilos inline de React; en
+		# script-src no hace falta porque Vite emite el bundle como archivo.
+		# Importa tener CSP acá porque el JWT vive en sessionStorage: sin ella,
+		# cualquier XSS futuro se traduce directo en robo de sesión.
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+
+	# La API y la SPA comparten origen: /api/* va a Nest, el resto a nginx.
+	handle /api/* {
+		reverse_proxy cementos_api:3000
+	}
+
+	handle {
+		reverse_proxy cementos_web:80
+	}
+}
