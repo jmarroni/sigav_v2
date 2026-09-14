@@ -1,22 +1,32 @@
 <?php
-define('SEMILLA','$%Reset20122017AnnaLuca#^');
-define('PRODUCTOS_LIBRE','SI');
+require_once __DIR__.'/legacy_config.php';
 
-// Conexión configurable por entorno (no hardcodear credenciales).
-// Si las variables LEGACY_DB_* no están definidas, usa los valores históricos
-// como fallback para no romper despliegues existentes.
-$dbHost = getenv('LEGACY_DB_HOST') ?: "localhost";
-$dbUser = getenv('LEGACY_DB_USER') ?: "c2101314_ma";
-$dbPass = getenv('LEGACY_DB_PASS') ?: "40zuzoGEse";
-$dbName = getenv('LEGACY_DB_NAME') ?: "c2101314_ma";
-
-$conn = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName);
-date_default_timezone_set('America/Argentina/Buenos_Aires');
-if (!$conn) {
-    echo "Error: Unable to connect to MySQL." . PHP_EOL;
-    echo "Debugging ererrorrno: " . mysqli_connect_errno() . PHP_EOL;
+// La semilla de los hashes de cookies (rol, sucursal) y de las claves sha1
+// legacy viene del entorno. DEBE ser idéntica a LEGACY_SEMILLA del .env de
+// Laravel (config/app.php -> legacy_semilla), o /carga y demás rutas Laravel
+// rebotan al login.
+try {
+    $legacyDb = legacy_db_config();
+    $legacySemilla = legacy_env_requerida(['LEGACY_SEMILLA'])['LEGACY_SEMILLA'];
+} catch (RuntimeException $e) {
+    http_response_code(500);
+    error_log('[legacy] '.$e->getMessage());
+    echo 'Error de configuración del servidor.';
     exit;
 }
+
+define('SEMILLA', $legacySemilla);
+define('PRODUCTOS_LIBRE', 'SI');
+
+$conn = mysqli_connect($legacyDb['host'], $legacyDb['user'], $legacyDb['pass'], $legacyDb['name']);
+date_default_timezone_set('America/Argentina/Buenos_Aires');
+if (! $conn) {
+    http_response_code(500);
+    error_log('[legacy] mysqli_connect: '.mysqli_connect_error().' ('.mysqli_connect_errno().')');
+    echo 'Error de conexión a la base de datos.';
+    exit;
+}
+unset($legacyDb, $legacySemilla);
 
 function setRol($rol_id){
     return sha1(SEMILLA.$rol_id.SEMILLA);

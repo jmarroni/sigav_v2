@@ -18,6 +18,17 @@ services:
       LEGACY_DB_USER: root
       LEGACY_DB_PASS: secret
       LEGACY_DB_NAME: laravel
+      # Misma semilla que LEGACY_SEMILLA del .env de Laravel (compose la lee del .env del proyecto)
+      LEGACY_SEMILLA: ${LEGACY_SEMILLA}
+      # Opcionales del lado legacy (mail saliente y chat). Vacíos = deshabilitado.
+      MAIL_HOST: ${MAIL_HOST:-}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-SIGAV}
+      SMARTSUPP_KEY: ${SMARTSUPP_KEY:-}
 
   db:
     image: mysql:5.7
