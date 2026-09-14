@@ -55,11 +55,9 @@ class SucursalesController extends Controller
                 ->get();
             foreach ($imagenes as $imagen) {
                 if ( $producto->id == $imagen->productos_id ) {
-                   // if (file_exists('http://www.mercado-artesanal.com.ar'.$imagen->imagen_url)){
                     if ($imagen->imagen_url != "assets/img/photos/no-image-featured-image.png"){
-                        array_push($array_imagenes, "http://www.mercado-artesanal.com.ar".$imagen->imagen_url);
+                        array_push($array_imagenes, url($imagen->imagen_url));
                     }
-                   //s }
                 }
                 $producto->material = $producto->material;
                 $producto->categoria = 3;

@@ -121,7 +121,6 @@ if ($resultado_perfil->num_rows > 0) {
 	$logo = "file://".dirname(__FILE__)."/assets/img/photos/no-image-featured-image.png";
 	$nombre_fantasia = "SIGAV";
 }
-if (strpos($logo,"127.0.0.1") > 0) $logo = "http://sistema.mercado-artesanal.com.ar/assets/img/photos/no-image-featured-image.png";
 // Agarro el numero de lista para la venta
 if (isset($_COOKIE["lista_precio"])) $lista_precio = $_COOKIE["lista_precio"];
 else $lista_precio = 1;

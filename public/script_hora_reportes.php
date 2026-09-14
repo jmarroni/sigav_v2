@@ -52,7 +52,11 @@ for ($i=0; $i < 24; $i++) {
     $tabla_facturacion_diaria .= "<tr><td>".$i."-".($i + 1)."</td><td style='text-align:right;'>".$datos_horas[$i]["precio"]."</td><td style='text-align:right;'>".$datos_horas[$i]["ganancia"]."</td></tr>";
 }
 $tabla_facturacion_diaria .= "</table></body></html>";
-$to = "jmarroni@gmail.com";
+$to = legacy_env('MAIL_FROM_ADDRESS');
+if (! $to) {
+    // Sin casilla configurada no hay a quién avisar.
+    exit;
+}
 $subject = "Facturacion hasta la hora ".date("H");
 // Always set content-type when sending HTML email
 $headers = "MIME-Version: 1.0" . "\r\n";

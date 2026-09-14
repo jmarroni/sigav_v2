@@ -40,7 +40,11 @@ if ($resultado_caja->num_rows > 0) {
 	$html .= '</table>';
 }
 $conn->close();
-$to = "jmarroni@gmail.com";
+$to = legacy_env('MAIL_FROM_ADDRESS');
+if (! $to) {
+    // Sin casilla configurada no hay a quién avisar.
+    exit;
+}
 $subject = "Faltantes de stock en el kiosco";
 
 // Always set content-type when sending HTML email

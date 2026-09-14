@@ -42,7 +42,6 @@ if (intval($_POST["id"]) != ""){
     $sql .= " WHERE id = ".intval($_POST["id"]);
 
     if ($conn->query($sql) === TRUE) {
-	  //  mail('jmarroni@gmail.com','actualizo un articulo '.$_COOKIE["kiosco"],"Se cargo articulo o actualizo");
       header('Location: /perfil.php?mensaje='.base64_encode("Se actualizo el perfil {$_POST["nombre"]} ok"));
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;

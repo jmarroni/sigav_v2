@@ -168,7 +168,10 @@ if (count($cajasAperturadas)>0)
 $cabeceras = 'From: jmarroni@fidegroup.com.ar' . "\r\n" .
 'Reply-To: jmarroni@fidegroup.com.ar' . "\r\n" .
 'X-Mailer: PHP/' . phpversion();
-mail("jmarroni@gmail.com", "Cierre de caja fecha ".date("Y-m-d H:i:s"), "Cierre de caja por ".$_COOKIE["kiosco"].", \n\r Billeter: \n\r- Cien: ".$request->cien." \n\r- Cincuenta: ".$request->cincuenta." \n\r- Veinte: ".$request->veinte." \n\r- Diez: ".$request->diez." \n\r- Cinco: ".$request->cinco." \n\r Operacion \n\r {$request->operacion} \n\r Observacion \n\r {$request->observacion} \n\r Total: $caja_total Total marcado en venta: ".($total + $totalcaja),$cabeceras);
+$destinatarioCierre = config('mail.from.address');
+if ($destinatarioCierre) {
+    mail($destinatarioCierre, "Cierre de caja fecha ".date("Y-m-d H:i:s"), "Cierre de caja por ".$_COOKIE["kiosco"].", \n\r Billeter: \n\r- Cien: ".$request->cien." \n\r- Cincuenta: ".$request->cincuenta." \n\r- Veinte: ".$request->veinte." \n\r- Diez: ".$request->diez." \n\r- Cinco: ".$request->cinco." \n\r Operacion \n\r {$request->operacion} \n\r Observacion \n\r {$request->observacion} \n\r Total: $caja_total Total marcado en venta: ".($total + $totalcaja),$cabeceras);
+}
 
 $mensaje="Caja ingresada correctamente";   
 return redirect('cierreCajaReporte/mensaje/'.base64_encode($mensaje));       
