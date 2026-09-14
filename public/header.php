@@ -552,10 +552,11 @@ $("#cerrar_session").click(function(){
 })
 </script>
  
-<!-- Smartsupp Live Chat script -->
+<?php if (legacy_smartsupp_key()): ?>
+<!-- Smartsupp Live Chat script (solo si SMARTSUPP_KEY está definida en el entorno) -->
 <script type="text/javascript">
 var _smartsupp = _smartsupp || {};
-_smartsupp.key = '74260743aa31ca10a9aa0e8b4516650f28e02570';
+_smartsupp.key = <?php echo json_encode(legacy_smartsupp_key()); ?>;
 window.smartsupp||(function(d) {
   var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
   s=d.getElementsByTagName('script')[0];c=d.createElement('script');
@@ -563,3 +564,4 @@ window.smartsupp||(function(d) {
   c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
 })(document);
 </script>
+<?php endif; ?>

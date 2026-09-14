@@ -45,14 +45,18 @@ $mail = new PHPMailer(true);
 try {
 
     //Recipients
-    $mail->setFrom('facturacion@sigav.com.ar', $perfil["nombre"]);
-    $mail->addAddress($_GET["mail"], 'Cliente');     // Add a recipient
-    $mail->addReplyTo('facturacion@sigav.com.ar', 'Sigav');
-        $mail->IsSMTP();
-        $mail->Host = "c2101314.ferozo.com";
-        $mail->SMTPAuth = true;
-        $mail->Username = 'facturacion@mercado-artesanal.com.ar';
-        $mail->Password = 'Afoo2te1';
+    $smtp = legacy_mail_config();
+    $from = ! empty($perfil["mail"]) ? $perfil["mail"] : $smtp['from_address'];
+    $mail->setFrom($from, $perfil["nombre"]);
+    $mail->addAddress($_GET["mail"], 'Cliente');
+    $mail->addReplyTo($from, $perfil["nombre"]);
+    $mail->IsSMTP();
+    $mail->Host       = $smtp['host'];
+    $mail->Port       = (int) $smtp['port'];
+    $mail->SMTPSecure = $smtp['encryption'];
+    $mail->SMTPAuth   = true;
+    $mail->Username   = $smtp['username'];
+    $mail->Password   = $smtp['password'];
 
     // Content
     $mail->isHTML(true);                                  // Set email format to HTML
@@ -61,8 +65,8 @@ try {
     $mail->AltBody =  'Te enviamos la factura por tu compra.\n\r Desde el siguiente link: http://'.$_SERVER["HTTP_HOST"].$file.' podes visualizar (o descargar) la factura enviada por '.$perfil["nombre"].'\n\r Saludos y gracias por tu compra. \n\r'.$perfil["nombre"];
     $mail->send();
     echo 'Message has been sent';
-} catch (Exception $e) {
-    echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+} catch (\Throwable $e) {
+    echo "No se pudo enviar el mail."; error_log('[mail] '.$e->getMessage());
 }
 
 

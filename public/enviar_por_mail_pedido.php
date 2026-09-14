@@ -43,21 +43,19 @@ $message = $htmlContent;
 // Instantiation and passing `true` enables exceptions
 $mail = new PHPMailer(true);
 try {
-    $header = "From: facturacion@mercado-artesanal.com.ar\nReply-To:facturacion@mercado-artesanal.com.ar\n";
-    $header .= "Mime-Version: 1.0\n";
-    $header .= "Content-Type: text/plain";
-    if(mail("jmarroni@gmail.com", "$subject", "$contenido" ,"$header")){
-    echo "Mail Enviado.";
-    }else{ echo "Error en el envio";}
         //Recipients
-        $mail->setFrom('facturacion@mercado-artesanal.com.ar', $perfil["nombre"]);
-        $mail->addAddress($_GET["mail"], 'Cliente');     // Add a recipient
-        $mail->addReplyTo('facturacion@mercado-artisanal.com.ar', 'Mercado Artesanal');
+        $smtp = legacy_mail_config();
+        $from = ! empty($perfil["mail"]) ? $perfil["mail"] : $smtp['from_address'];
+        $mail->setFrom($from, $perfil["nombre"]);
+        $mail->addAddress($_GET["mail"], 'Cliente');
+        $mail->addReplyTo($from, $perfil["nombre"]);
         $mail->IsSMTP();
-        $mail->Host = "c2101314.ferozo.com";
-        $mail->SMTPAuth = true;
-        $mail->Username = 'facturacion@mercado-artesanal.com.ar';
-        $mail->Password = 'Afoo2te1';
+        $mail->Host       = $smtp['host'];
+        $mail->Port       = (int) $smtp['port'];
+        $mail->SMTPSecure = $smtp['encryption'];
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $smtp['username'];
+        $mail->Password   = $smtp['password'];
         // Content
         $mail->isHTML(true);                                  // Set email format to HTML
         $mail->Subject = $subject;
@@ -65,8 +63,8 @@ try {
         $mail->AltBody =  'Te enviamos la factura por tu compra.\n\r Desde el siguiente link: http://'.$_SERVER["HTTP_HOST"].$file.' podes visualizar (o descargar) la factura enviada por '.$perfil["nombre"].'\n\r Saludos y gracias por tu compra. \n\r'.$perfil["nombre"];
         $mail->send();
     echo 'Message has been sent';
-} catch (Exception $e) {
-    echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+} catch (\Throwable $e) {
+    echo "No se pudo enviar el mail."; error_log('[mail] '.$e->getMessage());
 }
 
 
