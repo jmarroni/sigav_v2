@@ -41,9 +41,11 @@ SELECT COUNT(*) INTO @pedidos_tiene_nro FROM information_schema.columns
  WHERE table_schema = @db AND table_name = 'pedidos' AND column_name = 'nro_pedido';
 SET @pedidos_es_laravel := (@pedidos_es_laravel = 2 AND @pedidos_tiene_nro = 0);
 
--- Abort explícito: fuerza un error de SQL legible si hay que intervenir a mano.
+-- Abort explícito. MySQL 5.7 no permite SIGNAL vía PREPARE (error 1295), así
+-- que se fuerza un error determinista consultando una tabla inexistente cuyo
+-- nombre es el mensaje: "Table 'ABORT_pedidos_legacy_ya_existe_resolver_a_mano' doesn't exist".
 SET @s := IF(@pedidos_existe = 1 AND NOT @pedidos_es_laravel AND @pedidos_legacy_existe = 1,
-  'SIGNAL SQLSTATE ''45000'' SET MESSAGE_TEXT = ''pedidos_legacy ya existe y pedidos sigue siendo legacy: resolver a mano''',
+  'SELECT * FROM `ABORT_pedidos_legacy_ya_existe_resolver_a_mano`',
   'SELECT 1');
 PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
