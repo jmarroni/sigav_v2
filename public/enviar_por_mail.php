@@ -46,10 +46,10 @@ try {
 
     //Recipients
     $smtp = legacy_mail_config();
-    $from = ! empty($perfil["mail"]) ? $perfil["mail"] : $smtp['from_address'];
-    $mail->setFrom($from, $perfil["nombre"]);
+    $mail->setFrom($smtp['from_address'], $perfil["nombre"]);
+    $mail->Sender = $smtp['from_address'];
     $mail->addAddress($_GET["mail"], 'Cliente');
-    $mail->addReplyTo($from, $perfil["nombre"]);
+    $mail->addReplyTo(! empty($perfil["mail"]) ? $perfil["mail"] : $smtp['from_address'], $perfil["nombre"]);
     $mail->IsSMTP();
     $mail->Host       = $smtp['host'];
     $mail->Port       = (int) $smtp['port'];

@@ -13,11 +13,15 @@ class LegacyConfigTest extends TestCase
         'MAIL_FROM_ADDRESS', 'MAIL_FROM_NAME', 'SMARTSUPP_KEY',
     ];
 
+    /** Valores originales de cada var, tal como estaban antes del test (false = no seteada). */
+    private $originales = [];
+
     protected function setUp(): void
     {
         parent::setUp();
         require_once __DIR__.'/../../public/legacy_config.php';
         foreach ($this->vars as $v) {
+            $this->originales[$v] = getenv($v);
             putenv($v); // limpia
         }
     }
@@ -25,7 +29,11 @@ class LegacyConfigTest extends TestCase
     protected function tearDown(): void
     {
         foreach ($this->vars as $v) {
-            putenv($v);
+            if ($this->originales[$v] === false) {
+                putenv($v);
+            } else {
+                putenv("$v=".$this->originales[$v]);
+            }
         }
         parent::tearDown();
     }

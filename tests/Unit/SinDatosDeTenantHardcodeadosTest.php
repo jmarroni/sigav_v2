@@ -21,8 +21,9 @@ class SinDatosDeTenantHardcodeadosTest extends TestCase
         '_smartsupp\.key\s*=\s*[\'"][0-9a-f]{8,}',
         '\$cuitempresa\s*=\s*"\d{11}',
         '<b>CUIT</b>&nbsp;\d{11}',
-        'jmarroni@gmail\.com',
+        'jmarroni',
         'fidegroup',
+        'sha1\(\s*"[^"$]{8,}"\s*\.',
     ];
 
     /** Dónde buscar. */
@@ -67,5 +68,46 @@ class SinDatosDeTenantHardcodeadosTest extends TestCase
             }
         }
         $this->assertSame([], $hallazgos, "Literales de tenant hardcodeados:\n".implode("\n", $hallazgos));
+    }
+
+    /**
+     * Los ejemplos/plantillas de deploy/ no deben traer secretos reales:
+     * ni una LEGACY_SEMILLA no vacía, ni passwords/keys con pinta de valor
+     * real (los placeholders CAMBIAR_/</${ están permitidos).
+     */
+    private $prohibidosDeploy = [
+        '^\s*LEGACY_SEMILLA=\s*\S',
+        '^\s*(DB_PASSWORD|DB_ROOT_PASSWORD|LEGACY_DB_PASS|MAIL_PASSWORD|API_SECRET_KEY)=\s*(?!CAMBIAR_|<|\$\{)\S{8,}',
+    ];
+
+    /** @test */
+    public function no_hay_secretos_en_archivos_de_deploy()
+    {
+        $base = realpath(__DIR__.'/../..');
+        $dir = $base.'/deploy';
+        $hallazgos = [];
+        if (! is_dir($dir)) {
+            $this->markTestSkipped('No existe deploy/.');
+        }
+        $it = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS));
+        foreach ($it as $file) {
+            /** @var \SplFileInfo $file */
+            if (! $file->isFile()) {
+                continue;
+            }
+            $path = $file->getPathname();
+            $lineas = file($path, FILE_IGNORE_NEW_LINES);
+            if ($lineas === false) {
+                continue;
+            }
+            foreach ($lineas as $n => $linea) {
+                foreach ($this->prohibidosDeploy as $p) {
+                    if (preg_match('#'.$p.'#', $linea, $m)) {
+                        $hallazgos[] = substr($path, strlen($base) + 1).':'.($n + 1).' :: '.trim($m[0]);
+                    }
+                }
+            }
+        }
+        $this->assertSame([], $hallazgos, "Posibles secretos en deploy/:\n".implode("\n", $hallazgos));
     }
 }

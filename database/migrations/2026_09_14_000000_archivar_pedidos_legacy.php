@@ -16,7 +16,7 @@ class ArchivarPedidosLegacy extends Migration
 {
     public function up()
     {
-        if (Schema::hasTable('pedidos') && ! Schema::hasColumn('pedidos', 'id_sucursal')) {
+        if (Schema::hasTable('pedidos') && ! $this->tieneEsquemaLaravel()) {
             if (Schema::hasTable('pedidos_legacy')) {
                 throw new RuntimeException('pedidos_legacy ya existe; resolver a mano antes de migrar');
             }
@@ -31,6 +31,19 @@ class ArchivarPedidosLegacy extends Migration
     public function down()
     {
         // No se revierte: perderíamos la distinción entre ambas tablas.
+    }
+
+    /**
+     * true solo si `pedidos` tiene exactamente la firma Laravel
+     * (id_sucursal + monto, sin la columna legacy nro_pedido). Cualquier otra
+     * cosa (incluido el esquema legacy con id_sucursal pero también
+     * nro_pedido) se trata como legacy y se archiva.
+     */
+    private function tieneEsquemaLaravel()
+    {
+        return Schema::hasColumn('pedidos', 'id_sucursal')
+            && Schema::hasColumn('pedidos', 'monto')
+            && ! Schema::hasColumn('pedidos', 'nro_pedido');
     }
 
     private function crearEsquemaLaravel()

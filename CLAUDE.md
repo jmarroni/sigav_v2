@@ -98,7 +98,8 @@ docker compose exec -T app vendor/bin/phpunit tests/Feature/SomeTest.php
 - Destructive operations are exposed as `DELETE`/`POST` routes (not `GET`) — preserve the verbs in `routes/web.php`
 - CORS is centralized in `config/cors.php` and reads `FRONTEND_URL` from env — do not re-add `header('Access-Control-Allow-Origin: *')` inside controllers
 - `Producto` and `Usuario` models have `$guarded` to prevent mass assignment of `id` / `clave` / `password`
-- The legacy `public/*.php` files have **not** been hardened to the same degree; SHA1 hashing, hardcoded DB credentials, and direct query interpolation still exist there
+- The legacy `public/*.php` files have **not** been hardened to the same degree; SHA1 hashing and direct query interpolation still exist there (DB credentials and the hash seed now come from env — see above)
+- `public/enviar_por_mail_pedido.php` has a pre-existing `echo ...; exit();` before its SMTP block, so pedido mails are effectively not sent today.
 - Tenant data (domain, CUIT, SMTP, chat key) must never be hardcoded: `tests/Unit/SinDatosDeTenantHardcodeadosTest.php` scans `app/`, `routes/`, `config/`, `resources/views/` and `public/*.php` and fails the suite if it finds any. Read them from `.env`, `afip_config` (`afip_valor()` in legacy) or the `perfil` table.
 - `catalogo:importar --force` is blocked unless `CATALOGO_IMPORTAR_PERMITIDO=true`. It wipes `ventas`, `factura`, `stock`, `stock_logs`, `descuentos_logs`, `productos_en_carrito` and `productos`.
 - `pedidos` has the Laravel schema (`id_sucursal`, `monto`, ...). Instances born from a legacy dump get their old table archived as `pedidos_legacy` by `2026_09_14_000000_archivar_pedidos_legacy`; the legacy `public/pedidos*.php` flow points there and is a candidate for removal.

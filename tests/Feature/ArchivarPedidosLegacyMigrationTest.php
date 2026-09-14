@@ -71,4 +71,54 @@ class ArchivarPedidosLegacyMigrationTest extends TestCase
         $this->assertTrue(Schema::hasTable('pedidos'));
         $this->assertTrue(Schema::hasColumn('pedidos', 'id_sucursal'));
     }
+
+    /** @test */
+    public function archiva_una_tabla_con_id_sucursal_que_tambien_tiene_nro_pedido()
+    {
+        // Caso híbrido: tiene la columna Laravel pero también la legacy —
+        // no es la firma Laravel exacta, así que debe tratarse como legacy.
+        Schema::create('pedidos', function (Blueprint $t) {
+            $t->increments('id');
+            $t->integer('id_sucursal');
+            $t->integer('nro_pedido');
+            $t->double('monto');
+            $t->integer('estado');
+        });
+        \DB::table('pedidos')->insert(['id_sucursal' => 1, 'nro_pedido' => 9, 'monto' => 5, 'estado' => 0]);
+
+        $this->migracion()->up();
+
+        $this->assertTrue(Schema::hasTable('pedidos_legacy'));
+        $this->assertSame(1, \DB::table('pedidos_legacy')->count());
+        $this->assertTrue(Schema::hasColumn('pedidos', 'id_sucursal'));
+        $this->assertFalse(Schema::hasColumn('pedidos', 'nro_pedido'));
+        $this->assertSame(0, \DB::table('pedidos')->count());
+    }
+
+    /** @test */
+    public function aborta_si_pedidos_legacy_ya_existe_y_no_toca_ninguna_tabla()
+    {
+        Schema::create('pedidos', function (Blueprint $t) {
+            $t->increments('id');
+            $t->integer('nro_pedido');
+            $t->integer('productos_id');
+            $t->integer('cantidad');
+            $t->string('precio', 20);
+            $t->integer('estado');
+        });
+        \DB::table('pedidos')->insert(['nro_pedido' => 1, 'productos_id' => 7, 'cantidad' => 2, 'precio' => '10', 'estado' => 0]);
+
+        Schema::create('pedidos_legacy', function (Blueprint $t) {
+            $t->increments('id');
+            $t->integer('nro_pedido');
+        });
+        \DB::table('pedidos_legacy')->insert(['nro_pedido' => 99]);
+
+        $this->assertSame(1, \DB::table('pedidos')->count());
+        $this->assertSame(1, \DB::table('pedidos_legacy')->count());
+
+        $this->expectException(\RuntimeException::class);
+
+        $this->migracion()->up();
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__.'/legacy_config.php';
 if (!isset($_COOKIE["kiosco"])) {
     header('Location: /');
 }
@@ -556,7 +557,7 @@ $("#cerrar_session").click(function(){
 <!-- Smartsupp Live Chat script (solo si SMARTSUPP_KEY está definida en el entorno) -->
 <script type="text/javascript">
 var _smartsupp = _smartsupp || {};
-_smartsupp.key = <?php echo json_encode(legacy_smartsupp_key()); ?>;
+_smartsupp.key = <?php echo json_encode(legacy_smartsupp_key(), JSON_HEX_TAG | JSON_HEX_AMP); ?>;
 window.smartsupp||(function(d) {
   var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
   s=d.getElementsByTagName('script')[0];c=d.createElement('script');

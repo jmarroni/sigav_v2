@@ -33,12 +33,32 @@ Internet → Caddy (443/80, HTTPS automático) → app (PHP 7.4 + Apache) → My
 `deploy/.env.production.example` ya trae, además de las variables Laravel/compose de siempre:
 
 - `LEGACY_DB_HOST/USER/PASS/NAME` — conexión mysqli de `public/conection.php`. Sin las cuatro, el sitio legacy responde 500.
-- `LEGACY_SEMILLA` — semilla de hashes legacy (cookies `rol`/`sucursal`, claves `sha1`). Debe coincidir con `SEMILLA` histórica; ver el paso 3 de "Pasos manuales post-bootstrap" más abajo.
+- `LEGACY_SEMILLA` — semilla de hashes legacy (cookies `rol`/`sucursal`, claves `sha1`). `public/conection.php` la lee directamente de esta variable (fuente única, ya no hay un literal separado que deba coincidir); ver el paso 3 de "Pasos manuales post-bootstrap" más abajo.
 - `SMARTSUPP_KEY` — clave del chat en `public/header.php`. Vacía = script no se carga.
 - `MAIL_HOST/PORT/USERNAME/PASSWORD/ENCRYPTION/FROM_ADDRESS/FROM_NAME` — SMTP saliente que usan tanto Laravel (`config/mail.php`) como `public/enviar_por_mail.php` / `enviar_por_mail_pedido.php` vía `legacy_mail_config()`.
 - `CATALOGO_IMPORTAR_PERMITIDO` — guard de `catalogo:importar --force` (borra `ventas`, `factura`, `stock`, `stock_logs`, `descuentos_logs`, `productos_en_carrito`, `productos`). Dejar en `false` salvo en una instancia que arranca vacía.
 
 **Nota:** el `PassEnv` de `deploy/afip-protect.conf` es la lista de variables que el código legacy puede leer bajo Apache/mod_php; toda variable nueva para `public/*.php` va ahí.
+
+**Nota:** `consulta_stock.php` y `script_hora_reportes.php` leen `MAIL_FROM_ADDRESS` con `getenv()`; si se corren desde cron/CLI (no Apache) esa variable tiene que estar presente en el entorno del cron, o el script termina sin enviar el mail.
+
+## Migrar la tabla `pedidos_legacy` en VMs bootstrapeadas por dump
+
+Una VM que arrancó importando el dump (`dump/c2101314_ma.sql`) tiene la tabla
+`migrations` vacía (ver "NO correr `php artisan migrate`" más arriba). Un
+`php artisan migrate` a secas ahí intenta correr **todas** las migraciones
+del repo contra un esquema que ya las tiene, y falla. Para aplicar solo la
+migración de este branch (`2026_09_14_000000_archivar_pedidos_legacy`, que
+renombra la tabla `pedidos` legacy a `pedidos_legacy` y crea la `pedidos` con
+el esquema Laravel):
+
+```bash
+sudo docker exec sigav_app php artisan migrate --force --path=database/migrations/2026_09_14_000000_archivar_pedidos_legacy.php
+```
+
+Es idempotente: correrla una segunda vez imprime "Nothing to migrate.". Si
+aborta con "pedidos_legacy ya existe", resolver a mano (decidir qué hacer con
+la tabla `pedidos_legacy` existente) antes de reintentar.
 
 ## Flujo resumido
 
@@ -76,7 +96,7 @@ Ajustes que se aplicaron a mano en la VM y **NO** están en el código. **Reapli
    sudo docker compose -f docker-compose.prod.yml exec -T app php artisan passport:install --force
    ```
 
-3. **`LEGACY_SEMILLA` en `.env`** — imprescindible (puente auth legacy→Laravel, middleware `LegacyCookieAuth`). Sin esto, las rutas Laravel (`/carga`, etc.) rebotan al login. Ya está en `deploy/.env.production.example`; debe coincidir con `SEMILLA` de `public/conection.php`.
+3. **`LEGACY_SEMILLA` en `.env`** — imprescindible (puente auth legacy→Laravel, middleware `LegacyCookieAuth`). Sin esto, las rutas Laravel (`/carga`, etc.) rebotan al login. La plantilla `deploy/.env.production.example` trae el nombre de la variable vacío a propósito; `public/conection.php` lee esta misma variable como `SEMILLA`, así que es una única fuente — completarla con el valor real desde el gestor de secretos (nunca commitear el valor).
 
 > **Assets:** `npm ci` / `npm run prod` **no funcionan** (no hay `package-lock.json` ni `resources/js/app.js`·`resources/sass/app.scss`); los compilados ya vienen versionados en `public/css` y `public/js`. **Saltear el build de assets.**
 >
@@ -94,7 +114,7 @@ docker compose -f docker-compose.prod.yml run --rm --no-deps app php artisan pac
 docker compose -f docker-compose.prod.yml restart app
 ```
 
-> Correr `php artisan migrate --force` solo si se agregan migraciones nuevas; con el arranque por dump la tabla `migrations` está vacía (evaluar baseline antes).
+> Correr `php artisan migrate --force` solo si se agregan migraciones nuevas; con el arranque por dump la tabla `migrations` está vacía (evaluar baseline antes — ver la sección "Migrar la tabla `pedidos_legacy` en VMs bootstrapeadas por dump" más arriba para el caso de la migración de este branch).
 
 ## Restore
 
@@ -115,6 +135,6 @@ Requisitos en el server:
 - `storage/app/afip/` debe ser escribible por el usuario del web server
   (el SDK escribe ahí el cache de tokens `TA-*.xml`):
   `chown -R www-data:www-data storage/app/afip && chmod -R 750 storage/app/afip`
-- Tras el primer deploy: `php artisan migrate && php artisan db:seed --class=AfipConfigSeeder`
+- Tras el primer deploy: `php artisan migrate && php artisan db:seed --class=AfipConfigSeeder` (en VMs bootstrapeadas por dump, ver "Migrar la tabla `pedidos_legacy` en VMs bootstrapeadas por dump" más arriba antes de correr un `migrate` a secas)
 - Cargar credenciales de homologación y producción desde la pantalla.
 - El switch de entorno activo (global) se cambia desde la misma pantalla.
