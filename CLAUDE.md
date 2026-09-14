@@ -34,7 +34,7 @@ There are **two parallel applications** sharing the same database:
 ### 2. Legacy PHP app (under `public/`)
 - ~88 standalone `.php` scripts in `public/` (e.g. `login.php`, `ventas.php`, `facturar.php`, `pedidos.php`, `nota_credito.php`, `usuarios_api.php`, `stock_por_sucursal.php`)
 - Auth: cookie-based (`$_COOKIE["kiosco"]`, `"sucursal"`, `"rol"`); password hash is `sha1($clave . SEMILLA)` from `public/conection.php`
-- DB connection: **hardcoded** `mysqli_connect` credentials in `public/conection.php` (known tech-debt — do not hardcode new ones; do not delete the file without a migration plan)
+- DB connection: `public/conection.php` reads `LEGACY_DB_HOST/USER/PASS/NAME` and `LEGACY_SEMILLA` via `getenv()` (helpers in `public/legacy_config.php`) and fails with a generic 500 if any is missing. There is **no fallback** anymore. Under Apache/mod_php the container env only reaches `getenv()` through `PassEnv` in `deploy/afip-protect.conf` — add new legacy env vars there too.
 - Many of these scripts use raw MySQLi with string interpolation — treat anything touched as suspect for SQL injection / XSS and prefer prepared statements when editing
 - Subfolders (`AFIP/`, `presupuesto/`, `notas_credito/`, `branchs/`, `clientes/`, `cobros/`, …) hold generated artifacts (PDFs, images, txt logs)
 
@@ -81,13 +81,13 @@ php artisan config:clear
 php artisan cache:clear
 
 # Tests (see caveat below)
-vendor/bin/phpunit
-vendor/bin/phpunit --filter SomeTest
-vendor/bin/phpunit tests/Feature/SomeTest.php
+docker compose exec -T app vendor/bin/phpunit
+docker compose exec -T app vendor/bin/phpunit --filter SomeTest
+docker compose exec -T app vendor/bin/phpunit tests/Feature/SomeTest.php
 ```
 
 ### Tests caveat
-`phpunit.xml` declares `./tests/Unit` and `./tests/Feature` suites, but **no `tests/` directory exists** in the repo. There is no test infrastructure to run against today. If you write tests, you must create that directory and the base `TestCase` first. Do not claim "tests pass" without verifying the suite actually executed something.
+`tests/Unit` and `tests/Feature` exist and run against SQLite in-memory (`phpunit.xml`). Run the suite inside the app container: `docker compose exec -T app vendor/bin/phpunit` — currently `OK (77 tests, 199 assertions)`. Do not claim "tests pass" without verifying the suite actually executed something.
 
 ## Security context (recent and important)
 
@@ -99,6 +99,9 @@ vendor/bin/phpunit tests/Feature/SomeTest.php
 - CORS is centralized in `config/cors.php` and reads `FRONTEND_URL` from env — do not re-add `header('Access-Control-Allow-Origin: *')` inside controllers
 - `Producto` and `Usuario` models have `$guarded` to prevent mass assignment of `id` / `clave` / `password`
 - The legacy `public/*.php` files have **not** been hardened to the same degree; SHA1 hashing, hardcoded DB credentials, and direct query interpolation still exist there
+- Tenant data (domain, CUIT, SMTP, chat key) must never be hardcoded: `tests/Unit/SinDatosDeTenantHardcodeadosTest.php` scans `app/`, `routes/`, `config/`, `resources/views/` and `public/*.php` and fails the suite if it finds any. Read them from `.env`, `afip_config` (`afip_valor()` in legacy) or the `perfil` table.
+- `catalogo:importar --force` is blocked unless `CATALOGO_IMPORTAR_PERMITIDO=true`. It wipes `ventas`, `factura`, `stock`, `stock_logs`, `descuentos_logs`, `productos_en_carrito` and `productos`.
+- `pedidos` has the Laravel schema (`id_sucursal`, `monto`, ...). Instances born from a legacy dump get their old table archived as `pedidos_legacy` by `2026_09_14_000000_archivar_pedidos_legacy`; the legacy `public/pedidos*.php` flow points there and is a candidate for removal.
 
 When you touch legacy `public/*.php`: prefer parameterized queries (`mysqli_prepare`), escape output, and surface the issue rather than silently propagating the existing pattern.
 

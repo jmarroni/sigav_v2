@@ -697,6 +697,9 @@ git commit -m "fix(tenant): imagen fallback relativa al host de la instancia (no
 - Delete: `public/generar_facturar.php` (plantilla de prueba con datos de 2020; sin referencias en `public/`, `resources/`, JS)
 - Delete: `public/reimprimir.php` (stub con CAE/fechas de 2021 hardcodeados; sin referencias)
 - Delete: `resources/views/login/login.php` (Laravel resuelve `login.blade.php`; el `.php` nunca se renderiza)
+- Delete: `app/Http/Controllers/TestPassportController.php` (controller de prueba con una password personal en la URL de ejemplo)
+- Delete: `public/facturarbk26-07-2022.php` (backup muerto de `facturar.php`)
+- Delete: `public/_ventas_post.php` (backup muerto de `ventas_post.php`)
 
 - [ ] **Step 1: Re-verificar que no hay referencias (el estado pudo cambiar)**
 
@@ -718,7 +721,7 @@ Run: `docker compose exec app vendor/bin/phpunit`
 Expected: `OK`, incluyendo `SinDatosDeTenantHardcodeadosTest`.
 
 ```bash
-curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8080/login     # ruta Laravel de login: 200
+curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8080/loginejemplo     # ruta Laravel de login: 200
 ```
 
 - [ ] **Step 4: Commit**
@@ -1065,6 +1068,7 @@ git commit -m "docs(mercado): documenta el contrato de configuración legacy y c
 1. Rotar la password de la DB `c2101314_ma` en el panel de Ferozo y actualizar el `.env` del hosting (el valor viejo está en la historia de git del repo público).
 2. Regenerar la clave de Smartsupp (o dar de baja el chat) y cargarla como `SMARTSUPP_KEY` donde corresponda.
 3. En la VM de Acantilado, agregar a `/opt/sigav/.env` las variables nuevas que apliquen (`SMARTSUPP_KEY` vacío, `CATALOGO_IMPORTAR_PERMITIDO=false`, `MAIL_*` si se usa el mail) **antes** de desplegar este branch, porque `conection.php` ya no tiene fallback: si `LEGACY_DB_*`/`LEGACY_SEMILLA` faltaran, el sitio legacy daría 500. Verificar con `docker exec sigav_app php -r 'var_dump(getenv("LEGACY_SEMILLA") !== false);'` → `true`.
+4. Rotar la contraseña personal que estaba en la URL de `TestPassportController.php` (quedó en la historia del repo público).
 
 ---
 

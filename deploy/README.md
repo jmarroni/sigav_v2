@@ -28,6 +28,18 @@ Internet → Caddy (443/80, HTTPS automático) → app (PHP 7.4 + Apache) → My
 
 (El `docker-compose.prod.yml` está en la raíz del repo.)
 
+## Variables de entorno del lado legacy (`public/*.php`)
+
+`deploy/.env.production.example` ya trae, además de las variables Laravel/compose de siempre:
+
+- `LEGACY_DB_HOST/USER/PASS/NAME` — conexión mysqli de `public/conection.php`. Sin las cuatro, el sitio legacy responde 500.
+- `LEGACY_SEMILLA` — semilla de hashes legacy (cookies `rol`/`sucursal`, claves `sha1`). Debe coincidir con `SEMILLA` histórica; ver el paso 3 de "Pasos manuales post-bootstrap" más abajo.
+- `SMARTSUPP_KEY` — clave del chat en `public/header.php`. Vacía = script no se carga.
+- `MAIL_HOST/PORT/USERNAME/PASSWORD/ENCRYPTION/FROM_ADDRESS/FROM_NAME` — SMTP saliente que usan tanto Laravel (`config/mail.php`) como `public/enviar_por_mail.php` / `enviar_por_mail_pedido.php` vía `legacy_mail_config()`.
+- `CATALOGO_IMPORTAR_PERMITIDO` — guard de `catalogo:importar --force` (borra `ventas`, `factura`, `stock`, `stock_logs`, `descuentos_logs`, `productos_en_carrito`, `productos`). Dejar en `false` salvo en una instancia que arranca vacía.
+
+**Nota:** el `PassEnv` de `deploy/afip-protect.conf` es la lista de variables que el código legacy puede leer bajo Apache/mod_php; toda variable nueva para `public/*.php` va ahí.
+
 ## Flujo resumido
 
 1. **Provisión GCP** (`gcloud`): IP estática, VM `e2-small` con tag `sigav`, firewall (80/443 público, SSH solo por IAP `35.235.240.0/20`), política de snapshots diaria, bucket Nearline con lifecycle 30d.
