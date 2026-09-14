@@ -22,6 +22,7 @@ class SinDatosDeTenantHardcodeadosTest extends TestCase
         '\$cuitempresa\s*=\s*"\d{11}',
         '<b>CUIT</b>&nbsp;\d{11}',
         'jmarroni@gmail\.com',
+        'fidegroup',
     ];
 
     /** Dónde buscar. */

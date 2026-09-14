@@ -29,9 +29,6 @@ require_once ("conection.php");
 			} else {
 				echo "Error en UPDATE: " . $sql . "<br>" . $conn->error;
 			}
-            ///$cabeceras = 'From: jmarroni@fidegroup.com.ar' . "\r\n" .
-                        'Reply-To: jmarroni@fidegroup.com.ar' . "\r\n" .
-                        'X-Mailer: PHP/' . phpversion();
 
             header('Location: /cta_corriente.php?mensaje='.base64_encode("Obsequio ingresado correctamnte"));
         } else {

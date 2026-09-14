@@ -165,8 +165,9 @@ if (count($cajasAperturadas)>0)
   }
 }
 
-$cabeceras = 'From: jmarroni@fidegroup.com.ar' . "\r\n" .
-'Reply-To: jmarroni@fidegroup.com.ar' . "\r\n" .
+$remitenteCierre = config('mail.from.address');
+$cabeceras = 'From: '.$remitenteCierre . "\r\n" .
+'Reply-To: '.$remitenteCierre . "\r\n" .
 'X-Mailer: PHP/' . phpversion();
 $destinatarioCierre = config('mail.from.address');
 if ($destinatarioCierre) {
