@@ -25,3 +25,6 @@ yarn-error.log
 # Credenciales AFIP (nunca commitear)
 /storage/app/afip/*
 !/storage/app/afip/.gitkeep
+
+# Workspace de superpowers (ledgers, briefs, reports de planes)
+.superpowers/
