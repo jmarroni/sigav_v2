@@ -45,7 +45,7 @@ if ($resultado_caja->num_rows > 0) {
 }
 
 //Productos vendidos hoy por el usuario
-$sql = "SELECT * FROM `pedidos`";
+$sql = "SELECT * FROM `pedidos_legacy`";
 $resultado = $conn->query($sql);
 $total = 0;
 $cantidad_de_ventas = $resultado->num_rows;
@@ -256,8 +256,8 @@ $cantidad_de_ventas = $resultado->num_rows;
                                                     p.item,
                                                     p.`estado` as estado_pedido,
                                                     c.* 
-                                                FROM pedidos p 
-                                                        INNER JOIN clientes c 
+                                                FROM pedidos_legacy p
+                                                        INNER JOIN clientes c
                                                             ON p.`cliente_id` = c.`id`
                                                 ORDER BY nro_pedido DESC";
                                         $resultado = $conn->query($sql) or die($conn->error);

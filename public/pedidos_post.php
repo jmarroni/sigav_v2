@@ -16,15 +16,17 @@ if (getRol() < 4 && getRol() != 1) {
 
 
 if (isset($_GET["pedido"]) && isset($_GET["estado_nuevo"])){
-    $pedido         = $_GET["pedido"];
-    $estado_nuevo   = $_GET["estado_nuevo"];
-    $pedido_sql = "UPDATE pedidos SET estado =".$estado_nuevo." WHERE nro_pedido =".$pedido;
-    if ($conn->query($pedido_sql) === TRUE) {
+    $pedido         = (int) $_GET["pedido"];
+    $estado_nuevo   = (int) $_GET["estado_nuevo"];
+    $stmt = mysqli_prepare($conn, "UPDATE pedidos_legacy SET estado = ? WHERE nro_pedido = ?");
+    mysqli_stmt_bind_param($stmt, 'ii', $estado_nuevo, $pedido);
+    if (mysqli_stmt_execute($stmt)) {
         $datos["pedido_nro"] = $pedido;
         echo json_encode($datos);
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        echo "Error al actualizar el pedido.";
     }
+    mysqli_stmt_close($stmt);
     exit();
 }
 
@@ -32,7 +34,7 @@ $datos = '{"data":"no data"}';
 
 
 if (!(isset($_POST["nro_pedido"])) || $_POST["nro_pedido"] == ""){
-    $sql = "SELECT nro_pedido  FROM pedidos p ORDER BY nro_pedido DESC LIMIT 1";
+    $sql = "SELECT nro_pedido  FROM pedidos_legacy p ORDER BY nro_pedido DESC LIMIT 1";
     $pedido_nro = 1;
     $resultado = $conn->query($sql);
 
@@ -46,7 +48,7 @@ if (!(isset($_POST["nro_pedido"])) || $_POST["nro_pedido"] == ""){
     $pedido_nro = $_POST["nro_pedido"];
 }
 
-$sql = "INSERT INTO pedidos VALUES (NULL,$pedido_nro,'{$_POST["nombre-producto"]}', 
+$sql = "INSERT INTO pedidos_legacy VALUES (NULL,$pedido_nro,'{$_POST["nombre-producto"]}',
                                     '{$_POST["precio"]}',
                                     '{$_POST["recepcion"]}',
                                     '{$_POST["entrega"]}',

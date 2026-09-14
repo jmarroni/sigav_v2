@@ -9,7 +9,7 @@ if (getRol() < 4 && getRol() != 1) {
 }
 
 //Productos vendidos hoy por el usuario
-$sql = "SELECT * FROM `pedidos`";
+$sql = "SELECT * FROM `pedidos_optica`";
 $resultado = $conn->query($sql);
 $total = 0;
 $cantidad_de_ventas = $resultado->num_rows;
