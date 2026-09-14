@@ -66,6 +66,14 @@ Ya resueltos o muertos (no tocar por esto):
 - Ferozo: Apache, solo HTTP, PHP de versión desconocida, sin Docker ni SSH garantizado. `netsuite_proxy.php` lo consume n8n.
 - VM `sigav` e2-small (2 GB + swap 2 GB, disco 30 GB) ya corre 4 stacks y tuvo OOM en junio 2026.
 
+## 2.6 Decisiones tomadas el 2026-09-14 (operator) y hallazgos del ensayo local
+
+- **Opción B confirmada**, pero con **DB compartida**: base `mercado` dentro del MySQL de Acantilado (`sigav_db`), usuario propio. Motivo: la VM viva es `sigav-a` (e2-small, 2 GB, 12 contenedores, ~900 MB libres y swap en uso); un segundo MySQL no entra sin subir a e2-medium y el operator prefirió no hacerlo ahora. Compensación: `deploy/backup.sh` dumpea también `mercado`.
+- **Alias de pre-producción** `mercado-artesanal.sigav.ar` lo crea el operator en Cloudflare. **Datos frescos**: el operator baja dump y archivos del panel de Ferozo. **NetSuite**: ya no se usa; se ignora.
+- **Charset (hallazgo del ensayo)**: la base de Mercado guarda **bytes UTF-8 dentro de columnas latin1** (el POS legacy conecta sin `set_charset`). Laravel con utf8mb4 muestra `NIÃ‘EZ` (así estaba también en Ferozo). Solución: `config/database.php` toma `DB_CHARSET`/`DB_COLLATION` del env; Mercado usa `latin1` (passthrough) y Acantilado sigue en utf8mb4. Verificado ida y vuelta Laravel→legacy.
+- `/reporte.stocks` daba 500 con datos reales: 3 productos tienen `precio_unidad` como texto (`1.200.000`). Cast en la vista + listado en `02-datos-condicion-iva.sql` para corregir a mano.
+- Rama de deploy: `prod-mercado-artesanal` (nace de `feat/mercado-fase0-saneamiento`). Runbook: `deploy/mercado/README.md`.
+
 ## 3. Decisión: dónde corre Mercado actualizado
 
 **Opción B (recomendada; el plan la desarrolla): stack independiente en la VM de GCP con DB propia.** No se comparte `sigav_db` (acopla backups/restores y anula el rollback independiente). Argumentos: HTTPS automático (hoy Mercado factura sin TLS), misma imagen PHP 7.4 + extensiones ya validada en Acantilado, charset latin1 ya resuelto en el compose, CLI real para seeders/`cache:clear` (la opción A obligaría a recrear justamente el `limpiar_cache.php` que hay que eliminar), backups a GCS. Costo: dimensionar la VM (RAM **y disco**) antes de anunciar la ventana, decidir `netsuite_proxy.php`, relay SMTP.

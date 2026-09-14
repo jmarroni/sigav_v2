@@ -1,0 +1,64 @@
+# SIGAV v2 — instancia de Mercado Artesanal en la misma VM que Acantilado Sur.
+#
+# Un solo servicio: la app (misma imagen `sigav-app:prod` que Acantilado).
+# La base de datos vive en el MySQL de Acantilado (`sigav_db`) como base
+# separada `mercado`, con su propio usuario (decisión del operator, 2026-09-14:
+# la VM e2-small no tiene RAM para un segundo MySQL). Backups: deploy/backup.sh
+# ya recorre `sigav_db`; hay que agregar la base `mercado` al dump.
+#
+# Caddy es el de Acantilado (sigav_caddy) y llega a esta app por la red
+# externa `sigav_sigav`, igual que sattor/gimnasio/cementos. El bloque de
+# Caddy está en deploy/Caddyfile (hosts sistema.mercado-artesanal.com.ar y
+# mercado-artesanal.sigav.ar).
+#
+# Uso en la VM (desde /opt/mercado):
+#   sudo docker compose -f deploy/mercado/docker-compose.mercado.yml --env-file .env up -d
+services:
+  mercado_app:
+    image: sigav-app:prod
+    container_name: mercado_app
+    restart: always
+    expose:
+      - "80"
+    volumes:
+      - ../../:/var/www/html
+      - ../afip-protect.conf:/etc/apache2/conf-enabled/zz-afip-protect.conf:ro
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/html/public
+      # Laravel toma estas mismas claves del .env montado; se pasan también
+      # como env del contenedor para que la instancia no dependa de qué .env
+      # haya en el árbol (el env del contenedor gana sobre el archivo).
+      APP_URL: ${APP_URL}
+      DB_CONNECTION: mysql
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      # Mercado guarda UTF-8 dentro de columnas latin1: la conexion Laravel va en latin1 (passthrough).
+      DB_CHARSET: ${DB_CHARSET:-utf8mb4}
+      DB_COLLATION: ${DB_COLLATION:-utf8mb4_unicode_ci}
+      # El lado legacy (public/conection.php) conecta al MySQL compartido por
+      # el nombre del contenedor de Acantilado.
+      LEGACY_DB_HOST: ${DB_HOST}
+      LEGACY_DB_USER: ${DB_USERNAME}
+      LEGACY_DB_PASS: ${DB_PASSWORD}
+      LEGACY_DB_NAME: ${DB_DATABASE}
+      LEGACY_SEMILLA: ${LEGACY_SEMILLA}
+      API_SECRET_KEY: ${API_SECRET_KEY}
+      MAIL_HOST: ${MAIL_HOST:-}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-SIGAV}
+      SMARTSUPP_KEY: ${SMARTSUPP_KEY:-}
+      CATALOGO_IMPORTAR_PERMITIDO: "false"
+    networks: [caddy_shared]
+
+networks:
+  # Red del stack de Acantilado, donde viven sigav_caddy y sigav_db.
+  caddy_shared:
+    external: true
+    name: ${CADDY_NETWORK:-sigav_sigav}

@@ -16,3 +16,18 @@
 {$APP_APEX} {
 	redir https://{$APP_DOMAIN}{uri} permanent
 }
+
+# Mercado Artesanal — segunda instancia de SIGAV en la misma VM (ver
+# deploy/mercado/). El alias mercado-artesanal.sigav.ar es la pre-producción:
+# se prueba ahí con HTTPS real antes de apuntar el dominio definitivo.
+# Caddy emite ambos certificados solo (Cloudflare en DNS only).
+sistema.mercado-artesanal.com.ar, mercado-artesanal.sigav.ar {
+	encode gzip
+	reverse_proxy mercado_app:80
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+}

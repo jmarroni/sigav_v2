@@ -55,7 +55,7 @@
                     @if (count($productos)>0)
                     <?php  $i = 1; $subtotal = 0; ?>
                     @foreach($productos as $producto)
-                    <?php $subtotal += $producto->precio_unidad *  $producto->stockactual; ?>
+                    <?php $subtotal += (float) str_replace(',', '.', $producto->precio_unidad) * (float) $producto->stockactual; // precios legacy pueden venir como texto ?>
                     <tr>
                         <td>{{$i}}</td>
                         <td>{{$producto->sucursal}}</td>

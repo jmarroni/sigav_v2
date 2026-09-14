@@ -1,0 +1,165 @@
+# Mercado Artesanal en la VM de SIGAV — runbook
+
+Segunda instancia de SIGAV v2 en la misma VM que Acantilado Sur (`sigav-a`,
+`southamerica-east1-a`, IP `35.198.36.159`). Spec y decisiones:
+`docs/superpowers/specs/2026-09-13-mercado-artesanal-actualizacion-design.md`.
+
+Decisiones del operator (2026-09-14):
+- **DB compartida**: base `mercado` dentro del MySQL de Acantilado (`sigav_db`,
+  MySQL 5.7 con `character-set-server=latin1`), con usuario propio `mercado`
+  limitado a esa base. La VM (e2-small, 2 GB) no tiene RAM para un segundo MySQL.
+- **Charset**: la base de Mercado guarda bytes UTF-8 dentro de columnas latin1
+  (herencia del POS legacy, que conecta sin `set_charset`). Por eso el `.env`
+  lleva `DB_CHARSET=latin1` / `DB_COLLATION=latin1_swedish_ci`: Laravel lee y
+  escribe los bytes tal cual. Con utf8mb4 los acentos se ven como `NIÃ‘EZ`.
+- **Alias de pre-producción** `mercado-artesanal.sigav.ar` (A en Cloudflare,
+  DNS only → 35.198.36.159) para probar con HTTPS real antes de apuntar
+  `sistema.mercado-artesanal.com.ar`.
+- `netsuite_proxy.php` y `limpiar_cache.php` del hosting viejo **no se copian**.
+
+## Archivos
+
+| Archivo | Para qué |
+|---|---|
+| `docker-compose.mercado.yml` | Servicio `mercado_app` (misma imagen `sigav-app:prod`), sin DB propia, en la red externa `sigav_sigav` donde viven `sigav_caddy` y `sigav_db` |
+| `.env.mercado.example` | Plantilla del `.env` de la instancia (Laravel + compose) |
+| `01-esquema-desde-8d14505.sql` | Lleva la base del hosting (master@8d14505) al esquema actual y registra las migraciones. Idempotente. |
+| `02-datos-condicion-iva.sql` | Saneo de `clientes.condicion_iva` (RG 5616) y listado de precios no numéricos a corregir a mano |
+| `../Caddyfile` | Bloque `sistema.mercado-artesanal.com.ar, mercado-artesanal.sigav.ar` → `mercado_app:80` |
+| `../backup.sh` | Ya incluye la base `mercado` y los archivos de `/opt/mercado` |
+
+## Qué hace falta del hosting Ferozo (antes del corte)
+
+Con el sitio de Ferozo **en mantenimiento** (para que no entren ventas nuevas):
+
+1. Dump fresco: en phpMyAdmin exportar `c2101314_ma` completo (SQL, con
+   `DROP TABLE` y datos). El export de phpMyAdmin declara `SET NAMES utf8mb4`
+   y trae los bytes ya "dobles": importarlo tal cual reproduce exactamente lo
+   que hay en el hosting.
+2. Archivos (tar/zip desde el administrador de archivos o FTP):
+   `storage/` entero (incluye `storage/oauth-private.key` y
+   `storage/oauth-public.key`, sin los cuales los tokens del API dejan de
+   validar), `public/AFIP/cert`, `public/AFIP/key`, `public/assets/perfil/`,
+   `public/assets/sucursales/`, `public/productos/`, `public/facturas/`,
+   `public/presupuesto/`, `public/clientes/`, `public/branchs/`,
+   `public/notas_credito/`, `public/cobros/`, `upload_articles/`.
+3. El `.env` del hosting: solo hace falta el valor de `APP_KEY`.
+
+## Deploy en la VM
+
+Todo desde la VM (`gcloud compute ssh sigav-a --zone=southamerica-east1-a --tunnel-through-iap`).
+
+### 1. Base y usuario en el MySQL compartido
+
+```bash
+cd /opt/sigav
+ROOT_PW="$(grep -E '^DB_ROOT_PASSWORD=' .env | cut -d= -f2-)"
+MERCADO_PW="$(openssl rand -hex 24)"      # anotarlo: va al .env de Mercado
+sudo docker exec -i sigav_db mysql -uroot -p"$ROOT_PW" <<SQL
+CREATE DATABASE IF NOT EXISTS mercado CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+CREATE USER IF NOT EXISTS 'mercado'@'%' IDENTIFIED BY '$MERCADO_PW';
+GRANT ALL PRIVILEGES ON mercado.* TO 'mercado'@'%';
+FLUSH PRIVILEGES;
+SQL
+```
+
+### 2. Código
+
+```bash
+sudo git clone -b prod-mercado-artesanal git@github.com:jmarroni/sigav_v2.git /opt/mercado
+cd /opt/mercado
+sudo cp deploy/mercado/.env.mercado.example .env
+sudo nano .env    # APP_KEY (el de Ferozo), DB_PASSWORD (el generado), LEGACY_SEMILLA (misma que Acantilado), API_SECRET_KEY nuevo, MAIL_* si aplica
+sudo chown -R www-data:www-data storage bootstrap/cache
+```
+
+La imagen es la misma que Acantilado (`sigav-app:prod`, ya construida en la VM).
+Si en algún momento se rebuildéa, hacerlo desde `/opt/sigav` con
+`docker compose -f docker-compose.prod.yml build app`; ambas instancias la comparten.
+
+### 3. Importar datos y aplicar el esquema
+
+```bash
+# dump fresco copiado a /opt/mercado/dump.sql (scp vía IAP desde la PC)
+sudo docker exec -i sigav_db mysql -uroot -p"$ROOT_PW" mercado < dump.sql
+sudo docker exec -i sigav_db mysql -uroot -p"$ROOT_PW" mercado < deploy/mercado/01-esquema-desde-8d14505.sql
+sudo docker exec -i sigav_db mysql -uroot -p"$ROOT_PW" mercado < deploy/mercado/01-esquema-desde-8d14505.sql   # 2ª vez: mismo resumen, sin errores
+sudo docker exec -i sigav_db mysql -uroot -p"$ROOT_PW" mercado < deploy/mercado/02-datos-condicion-iva.sql
+sudo rm dump.sql
+```
+
+### 4. Archivos del hosting
+
+Descomprimir el tar de Ferozo sobre `/opt/mercado` respetando rutas, y luego:
+
+```bash
+cd /opt/mercado
+sudo mkdir -p storage/app/afip/prod storage/app/afip/homo
+sudo mv public/AFIP/cert storage/app/afip/prod/cert && sudo mv public/AFIP/key storage/app/afip/prod/key   # master ya no lee public/AFIP
+sudo chown -R www-data:www-data storage public/assets/perfil public/assets/sucursales public/productos public/presupuesto public/facturas public/clientes public/branchs public/notas_credito public/cobros
+sudo chmod -R 750 storage/app/afip
+```
+
+### 5. Levantar la app y Caddy
+
+```bash
+cd /opt/mercado
+sudo docker compose -f deploy/mercado/docker-compose.mercado.yml --env-file .env up -d
+sudo docker exec mercado_app php artisan config:clear && sudo docker exec mercado_app php artisan route:clear && sudo docker exec mercado_app php artisan view:clear
+sudo docker exec mercado_app php artisan migrate --pretend      # debe decir "Nothing to migrate."
+sudo docker exec mercado_app php artisan storage:link
+
+# Caddy es el de Acantilado: su Caddyfile ya trae el bloque de Mercado en este branch.
+cd /opt/sigav && sudo git fetch && sudo git checkout origin/prod-mercado-artesanal -- deploy/Caddyfile
+sudo docker exec sigav_caddy caddy validate --config /etc/caddy/Caddyfile
+sudo docker exec sigav_caddy caddy reload --config /etc/caddy/Caddyfile
+```
+
+`https://mercado-artesanal.sigav.ar/login.php` debe responder 200 con certificado válido.
+
+### 6. AFIP producción
+
+En `https://mercado-artesanal.sigav.ar/afip/configuracion` (usuario con rol 5):
+sección Producción → completar CUIT, punto de venta, comprobante, condición IVA,
+inicio de actividades e ingresos brutos de Mercado; los archivos cert/key ya
+están en `storage/app/afip/prod/` (o pegarlos ahí mismo); **Probar conexión**;
+activar Producción solo cuando se vaya a facturar de verdad. Hasta entonces el
+badge en `/ventas` dice "homo" y las facturas van a homologación.
+
+### 7. Smoke test por el alias (antes del DNS)
+
+- Login de 2 usuarios reales (sha1) y `/carga`, `/ventas.php`, `/pedido`, reportes.
+- `/notas/credito` y `/notas/debito` muestran el histórico.
+- Acentos: un cliente con ñ en `/cliente` y en el buscador de `/ventas.php`.
+- Reimpresión de una factura vieja (PDF en `public/facturas`).
+- Mail saliente desde una factura (si `MAIL_*` está cargado).
+- `POST /api/auth/login` con un usuario de `users` y un token pre-existente de
+  `oauth_access_tokens` contra `/api/auth/productos` (documentar paridad con Ferozo).
+- AFIP prod: solo "Probar conexión".
+
+### 8. Cambio de DNS y punto de no retorno
+
+1. Bajar el TTL de `sistema.mercado-artesanal.com.ar` a 300 s con 24 h de anticipación.
+2. Ferozo en mantenimiento → dump y archivos frescos → reimportar (pasos 3 y 4;
+   la base se puede `DROP DATABASE mercado` y recrear antes de importar).
+3. Apuntar el A a `35.198.36.159`. Verificar `https://sistema.mercado-artesanal.com.ar/login.php`.
+4. **Mientras no haya ventas ni comprobantes AFIP en la base nueva**, el rollback
+   es volver el DNS y sacar el mantenimiento en Ferozo. La primera factura real es
+   el punto de no retorno: desde ahí se corrige hacia adelante y Ferozo queda en
+   mantenimiento fijo.
+5. A los 7 días estables: borrar `netsuite_proxy.php` y `limpiar_cache.php` del
+   hosting, rotar la password de la DB de Ferozo y las credenciales NetSuite.
+
+## Deploy de cambios futuros
+
+```bash
+cd /opt/mercado && sudo git pull
+sudo docker exec mercado_app php artisan config:clear && sudo docker exec mercado_app php artisan route:clear && sudo docker exec mercado_app php artisan view:clear
+sudo docker exec mercado_app php artisan migrate --force   # ahora sí funciona: migrations está completa
+```
+
+## Pendiente conocido
+
+- `pedidos_legacy` conserva 3 filas de 2019; el flujo legacy `public/pedidos*.php` apunta ahí y es candidato a borrar.
+- Guard `api` con driver `token` (preexistente): el API OAuth puede no validar tokens. Paridad con Ferozo, no regresión.
+- 3 productos con precio como texto (`1.200.000`): los lista `02-datos-condicion-iva.sql`; corregir desde `/carga`.
