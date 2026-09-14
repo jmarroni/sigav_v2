@@ -23,7 +23,7 @@ class SinDatosDeTenantHardcodeadosTest extends TestCase
         '<b>CUIT</b>&nbsp;\d{11}',
         'jmarroni',
         'fidegroup',
-        'sha1\(\s*"[^"$]{8,}"\s*\.',
+        'sha1\(\s*"[^"]{8,}"\s*\.',
     ];
 
     /** Dónde buscar. */
