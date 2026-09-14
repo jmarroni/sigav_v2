@@ -72,6 +72,10 @@ return [
     // validar las cookies 'rol'/'sucursal' en el bridge de autenticación.
     'legacy_semilla' => env('LEGACY_SEMILLA'),
 
+    // Guard del importador de catálogo (borra productos/stock/ventas/factura).
+    // Solo true en instancias que arrancan de cero. NUNCA en Mercado Artesanal.
+    'catalogo_importar_permitido' => filter_var(env('CATALOGO_IMPORTAR_PERMITIDO', false), FILTER_VALIDATE_BOOLEAN),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

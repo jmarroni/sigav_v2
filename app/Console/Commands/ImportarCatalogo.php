@@ -33,6 +33,11 @@ class ImportarCatalogo extends Command
 
     public function handle(): int
     {
+        if ($this->option('force') && ! config('app.catalogo_importar_permitido')) {
+            $this->error('Importación bloqueada: CATALOGO_IMPORTAR_PERMITIDO no es true en esta instancia. Este comando BORRA productos, stock, ventas y facturas.');
+            return 2;
+        }
+
         $path = $this->option('path') ?: base_path('CODIGOS PRODUCTOS.csv');
         if (!is_file($path)) {
             $this->error("No se encontró el CSV en: $path");
