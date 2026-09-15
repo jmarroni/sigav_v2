@@ -47,6 +47,14 @@ Con el sitio de Ferozo **en mantenimiento** (para que no entren ventas nuevas):
 
 ## Deploy en la VM
 
+### 0. Pre-flight de recursos
+
+```bash
+free -m; df -h /; sudo docker stats --no-stream --format '{{.Name}} {{.MemUsage}}'
+```
+Seguir solo con ≥ 700 MB disponibles y ≥ 5 GB de disco libre. `mercado_app`
+corre con `mem_limit: 384m`; si la VM queda justa, subir a e2-medium antes.
+
 Todo desde la VM (`gcloud compute ssh sigav-a --zone=southamerica-east1-a --tunnel-through-iap`).
 
 ### 1. Base y usuario en el MySQL compartido
@@ -70,9 +78,37 @@ sudo git clone -b prod-mercado-artesanal https://github.com/jmarroni/sigav_v2.gi
 sudo git config --global --add safe.directory /opt/mercado   # el clon es de root
 cd /opt/mercado
 sudo cp deploy/mercado/.env.mercado.example .env
-sudo nano .env    # APP_KEY (el de Ferozo), DB_PASSWORD (el generado), LEGACY_SEMILLA (misma que Acantilado), API_SECRET_KEY nuevo, MAIL_* si aplica
+sudo nano .env    # APP_KEY (el de Ferozo), DB_PASSWORD y LEGACY_DB_PASS (el generado), LEGACY_SEMILLA (misma que Acantilado, entre comillas simples), API_SECRET_KEY nuevo, MAIL_* si aplica
+sudo chown root:www-data .env && sudo chmod 640 .env
 sudo chown -R www-data:www-data storage bootstrap/cache
 ```
+
+El `.env` entra al contenedor por `env_file` (sin interpolación de Compose), así
+que los valores con `$` o `#` viajan tal cual. Verificación obligatoria tras
+levantar el contenedor (paso 5): el hash de la semilla debe coincidir con el de
+Acantilado.
+
+```bash
+sudo docker exec mercado_app sh -c 'printf %s "$LEGACY_SEMILLA"' | sha1sum
+sudo grep -E '^LEGACY_SEMILLA=' /opt/sigav/.env | cut -d= -f2- | sed -E "s/^'(.*)'$/\1/" | tr -d '\n' | sha1sum
+```
+
+**Artefactos trackeados por error.** El repo trackea PDFs e imágenes de
+Acantilado en `public/presupuesto`, `public/upload_articles`, `public/clientes`,
+`public/branchs`, `public/cobros` y `public/assets/sucursales` (aunque están en
+`.gitignore`). En el checkout de Mercado hay que vaciarlos y decirle a git que
+ignore sus cambios, si no `git pull` se niega y el sitio sirve archivos del
+otro negocio:
+
+```bash
+cd /opt/mercado
+for d in public/presupuesto public/upload_articles public/clientes public/branchs public/cobros public/assets/sucursales; do
+  sudo git ls-files -z "$d" | sudo xargs -0 git update-index --skip-worktree
+  sudo find "$d" -type f ! -name '.gitkeep' ! -name 'index.php' -delete
+done
+```
+(Untrackearlos en el repo es lo correcto, pero borraría esos archivos en la VM de
+Acantilado en el próximo `pull`; queda para un cambio dedicado.)
 
 `vendor/` no está en git: instalar las dependencias con el `composer.phar`
 versionado, dentro del contenedor (paso 5, después de levantarlo). `public/vendor`
@@ -86,6 +122,9 @@ Si en algún momento se rebuildéa, hacerlo desde `/opt/sigav` con
 
 ```bash
 # dump fresco copiado a /opt/mercado/dump.sql (scp vía IAP desde la PC)
+# El export de phpMyAdmin NO debe traer CREATE DATABASE / USE: si los trae, los
+# datos caen en otra base y la app arranca vacía.
+grep -inE '^(CREATE DATABASE|USE )' dump.sql && { echo "ABORTAR: el dump trae CREATE DATABASE/USE"; false; }
 M='sudo docker exec -i sigav_db sh -c '"'"'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" mercado'"'"''
 eval "$M" < dump.sql
 eval "$M" < deploy/mercado/01-esquema-desde-8d14505.sql
@@ -115,7 +154,8 @@ sudo docker exec -u root mercado_app sh -c 'cd /var/www/html && COMPOSER_ALLOW_S
 sudo chown -R www-data:www-data vendor bootstrap/cache storage
 sudo docker exec mercado_app php artisan config:clear && sudo docker exec mercado_app php artisan route:clear && sudo docker exec mercado_app php artisan view:clear
 sudo docker exec mercado_app php artisan migrate --pretend --force   # APP_ENV=production pide confirmación: --force. Debe decir "Nothing to migrate."
-sudo docker exec mercado_app php artisan storage:link
+[ -e public/storage ] || sudo docker exec mercado_app php artisan storage:link
+sudo docker exec mercado_app php artisan tinker --execute="echo config('app.key') ? 'APP_KEY ok' : 'FALTA APP_KEY';"
 
 # Caddy es el de Acantilado. El Caddyfile de la VM (/opt/sigav/deploy/Caddyfile)
 # es el que manda: agregarle el bloque de Mercado (copiarlo de este repo), NO
@@ -159,7 +199,10 @@ badge en `/ventas` dice "homo" y las facturas van a homologación.
    es volver el DNS y sacar el mantenimiento en Ferozo. La primera factura real es
    el punto de no retorno: desde ahí se corrige hacia adelante y Ferozo queda en
    mantenimiento fijo.
-5. A los 7 días estables: borrar `netsuite_proxy.php` y `limpiar_cache.php` del
+5. Convertir el alias en redirección para no servir el sitio en dos nombres:
+   en el Caddyfile, un bloque `mercado-artesanal.sigav.ar { redir https://sistema.mercado-artesanal.com.ar{uri} permanent }`
+   y sacar el alias de la cabecera del bloque principal; `caddy reload`.
+6. A los 7 días estables: borrar `netsuite_proxy.php` y `limpiar_cache.php` del
    hosting, rotar la password de la DB de Ferozo y las credenciales NetSuite.
 
 ## Deploy de cambios futuros
@@ -190,4 +233,6 @@ tienen precios con puntos de miles (`1.200.000`). Corregir desde `/carga`.
 
 - `pedidos_legacy` conserva 3 filas de 2019; el flujo legacy `public/pedidos*.php` apunta ahí y es candidato a borrar.
 - Guard `api` con driver `token` (preexistente): el API OAuth puede no validar tokens. Paridad con Ferozo, no regresión.
-- 3 productos con precio como texto (`1.200.000`): los lista `02-datos-condicion-iva.sql`; corregir desde `/carga`.
+- Productos con precio como texto (`1.200.000`) o con una fecha en `precio_mayorista`: los lista `02-datos-condicion-iva.sql`; el reporte de stock los marca con ⚠ y los excluye del total. Corregir desde `/carga`.
+- `public/ventas_post.php` fuerza `mysqli_set_charset("utf8")` (también en Ferozo): el alta de productos libres desde el POS escribe con otra convención de bytes que el resto. Paridad, no regresión; revisar en Fase 4.
+- La imagen `sigav-app:prod` es compartida con Acantilado y se construye desde `/opt/sigav`; si los Dockerfiles divergen, etiquetar por tenant.

@@ -24,8 +24,11 @@ docker exec sigav_db sh -c \
   | gzip > "$TMP/db-$TS.sql.gz"
 
 # 1b) Mercado Artesanal: segunda base en el MISMO MySQL (ver deploy/mercado/).
-#     Solo si la base existe; no rompe el backup de Acantilado si no está.
-if docker exec sigav_db sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -N -e "SHOW DATABASES LIKE '"'"'mercado'"'"'"' 2>/dev/null | grep -q mercado; then
+#     Presencia explícita por el checkout /opt/mercado; si el dump falla, set -e
+#     aborta y el cron avisa (nada de `|| true`).
+MERCADO_PRESENTE=0
+if [ -d /opt/mercado ]; then
+  MERCADO_PRESENTE=1
   docker exec sigav_db sh -c \
     'exec mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" --single-transaction --routines --default-character-set=latin1 mercado' \
     | gzip > "$TMP/db-mercado-$TS.sql.gz"
@@ -37,17 +40,19 @@ tar -czf "$TMP/files-$TS.tar.gz" \
   public/clientes public/cobros storage 2>/dev/null || true
 
 # 2b) Archivos de la instancia de Mercado (checkout propio en /opt/mercado)
-if [ -d /opt/mercado ]; then
+if [ "$MERCADO_PRESENTE" = 1 ]; then
   tar -C /opt/mercado -czf "$TMP/files-mercado-$TS.tar.gz" \
     public/presupuesto public/notas_credito public/branchs public/clientes \
     public/cobros public/facturas public/productos public/assets/perfil \
-    public/assets/sucursales storage 2>/dev/null || true
+    public/assets/sucursales public/upload_articles storage 2>/dev/null || true
 fi
 
 # 3) Subir al bucket
 gcloud storage cp "$TMP/db-$TS.sql.gz"    "$BACKUP_BUCKET/db/"
 gcloud storage cp "$TMP/files-$TS.tar.gz" "$BACKUP_BUCKET/files/"
-[ -f "$TMP/db-mercado-$TS.sql.gz" ]    && gcloud storage cp "$TMP/db-mercado-$TS.sql.gz"    "$BACKUP_BUCKET/db/"
-[ -f "$TMP/files-mercado-$TS.tar.gz" ] && gcloud storage cp "$TMP/files-mercado-$TS.tar.gz" "$BACKUP_BUCKET/files/"
+if [ "$MERCADO_PRESENTE" = 1 ]; then
+  gcloud storage cp "$TMP/db-mercado-$TS.sql.gz"    "$BACKUP_BUCKET/db/"
+  gcloud storage cp "$TMP/files-mercado-$TS.tar.gz" "$BACKUP_BUCKET/files/"
+fi
 
 echo "Backup OK: $TS -> $BACKUP_BUCKET"

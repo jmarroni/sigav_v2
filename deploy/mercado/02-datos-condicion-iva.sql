@@ -9,12 +9,27 @@
 --   1) lista los anómalos (para revisar a mano si alguno es RI/Monotributo),
 --   2) los normaliza a '4' (Consumidor Final), que es lo que AFIP recibiría
 --      igual.
--- IDEMPOTENTE. Correr DESPUÉS de importar el dump fresco.
+-- IDEMPOTENTE. Correr DESPUÉS de importar el dump fresco. Los valores previos
+-- quedan en `clientes_condicion_iva_backup`.
 -- =============================================================================
 
 SELECT id, razon_social, cuit, condicion_iva
   FROM clientes
  WHERE condicion_iva IS NULL OR condicion_iva NOT IN ('1', '2', '3', '4');
+
+-- Respaldo de los valores originales ANTES de tocarlos (campo fiscal): si un
+-- cliente resulta ser Resp. Inscripto o Monotributo, se recupera de aca.
+CREATE TABLE IF NOT EXISTS clientes_condicion_iva_backup (
+  id int NOT NULL PRIMARY KEY,
+  condicion_iva varchar(255) NULL,
+  cuit varchar(255) NULL,
+  guardado_at datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+INSERT INTO clientes_condicion_iva_backup (id, condicion_iva, cuit, guardado_at)
+SELECT c.id, c.condicion_iva, c.cuit, NOW() FROM clientes c
+ WHERE (c.condicion_iva IS NULL OR c.condicion_iva NOT IN ('1', '2', '3', '4'))
+   AND NOT EXISTS (SELECT 1 FROM clientes_condicion_iva_backup b WHERE b.id = c.id);
 
 UPDATE clientes
    SET condicion_iva = '4'

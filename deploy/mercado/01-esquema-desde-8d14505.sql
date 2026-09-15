@@ -19,7 +19,10 @@
 --   sudo docker exec mercado_app php artisan migrate --pretend   -> sin pendientes
 -- =============================================================================
 
-SET NAMES utf8mb4;
+-- latin1: la base entera es latin1 (bytes UTF-8 passthrough, ver README) y
+-- Laravel conecta en latin1; las tablas nuevas siguen el mismo charset para
+-- que no convivan dos convenciones de bytes en la misma base.
+SET NAMES latin1;
 SET @db := DATABASE();
 
 -- Lote único para todas las filas nuevas de `migrations`.
@@ -66,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `pedidos` (
   `id_cliente` int(11) NOT NULL,
   `estado` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- -----------------------------------------------------------------------------
 -- 2. detalle_pedidos — 2021_08_31_015254_create_detalle_pedidos_table
@@ -79,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `detalle_pedidos` (
   `precio` double NOT NULL,
   `costo` double NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- -----------------------------------------------------------------------------
 -- 3. sites_sucursales_opencart — 2021_10_21_015259_create_sites_sucursales_opencart_table
@@ -91,14 +94,16 @@ CREATE TABLE IF NOT EXISTS `sites_sucursales_opencart` (
   `user` varchar(255) NOT NULL,
   `password` longtext NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- -----------------------------------------------------------------------------
 -- 4. oauth_clients.provider — 2021_08_16_010308_AddProviderColumnToOauthClientsTable
 -- -----------------------------------------------------------------------------
+SELECT COUNT(*) INTO @t FROM information_schema.tables
+ WHERE table_schema = @db AND table_name = 'oauth_clients';
 SELECT COUNT(*) INTO @c FROM information_schema.columns
  WHERE table_schema = @db AND table_name = 'oauth_clients' AND column_name = 'provider';
-SET @s := IF(@c = 0,
+SET @s := IF(@t = 1 AND @c = 0,
   'ALTER TABLE `oauth_clients` ADD COLUMN `provider` varchar(255) NULL AFTER `secret`',
   'SELECT 1');
 PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
@@ -123,7 +128,7 @@ CREATE TABLE IF NOT EXISTS `afip_config` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `afip_config_entorno_unique` (`entorno`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 INSERT INTO `afip_config` (`entorno`, `activo`, `created_at`, `updated_at`)
 SELECT 'homo', 1, NOW(), NOW() FROM DUAL
@@ -158,31 +163,39 @@ CREATE TABLE IF NOT EXISTS `descuentos_logs` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- -----------------------------------------------------------------------------
 -- 8. columnas de descuento — 2026_06_26_100100_add_descuento_columns
 --    productos.descuento, productos_en_carrito.descuento, ventas.descuento,
 --    factura.descuento_total (decimal(5,2) NOT NULL DEFAULT 0)
 -- -----------------------------------------------------------------------------
+SELECT COUNT(*) INTO @t FROM information_schema.tables
+ WHERE table_schema = @db AND table_name = 'productos';
 SELECT COUNT(*) INTO @c FROM information_schema.columns
  WHERE table_schema = @db AND table_name = 'productos' AND column_name = 'descuento';
-SET @s := IF(@c = 0, 'ALTER TABLE `productos` ADD COLUMN `descuento` decimal(5,2) NOT NULL DEFAULT 0', 'SELECT 1');
+SET @s := IF(@t = 1 AND @c = 0, 'ALTER TABLE `productos` ADD COLUMN `descuento` decimal(5,2) NOT NULL DEFAULT 0', 'SELECT 1');
 PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
+SELECT COUNT(*) INTO @t FROM information_schema.tables
+ WHERE table_schema = @db AND table_name = 'productos_en_carrito';
 SELECT COUNT(*) INTO @c FROM information_schema.columns
  WHERE table_schema = @db AND table_name = 'productos_en_carrito' AND column_name = 'descuento';
-SET @s := IF(@c = 0, 'ALTER TABLE `productos_en_carrito` ADD COLUMN `descuento` decimal(5,2) NOT NULL DEFAULT 0', 'SELECT 1');
+SET @s := IF(@t = 1 AND @c = 0, 'ALTER TABLE `productos_en_carrito` ADD COLUMN `descuento` decimal(5,2) NOT NULL DEFAULT 0', 'SELECT 1');
 PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
+SELECT COUNT(*) INTO @t FROM information_schema.tables
+ WHERE table_schema = @db AND table_name = 'ventas';
 SELECT COUNT(*) INTO @c FROM information_schema.columns
  WHERE table_schema = @db AND table_name = 'ventas' AND column_name = 'descuento';
-SET @s := IF(@c = 0, 'ALTER TABLE `ventas` ADD COLUMN `descuento` decimal(5,2) NOT NULL DEFAULT 0', 'SELECT 1');
+SET @s := IF(@t = 1 AND @c = 0, 'ALTER TABLE `ventas` ADD COLUMN `descuento` decimal(5,2) NOT NULL DEFAULT 0', 'SELECT 1');
 PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
+SELECT COUNT(*) INTO @t FROM information_schema.tables
+ WHERE table_schema = @db AND table_name = 'factura';
 SELECT COUNT(*) INTO @c FROM information_schema.columns
  WHERE table_schema = @db AND table_name = 'factura' AND column_name = 'descuento_total';
-SET @s := IF(@c = 0, 'ALTER TABLE `factura` ADD COLUMN `descuento_total` decimal(5,2) NOT NULL DEFAULT 0', 'SELECT 1');
+SET @s := IF(@t = 1 AND @c = 0, 'ALTER TABLE `factura` ADD COLUMN `descuento_total` decimal(5,2) NOT NULL DEFAULT 0', 'SELECT 1');
 PREPARE stmt FROM @s; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 -- -----------------------------------------------------------------------------
@@ -198,7 +211,7 @@ CREATE TABLE IF NOT EXISTS `mercadopago_config` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `mercadopago_config_sucursal_id_unique` (`sucursal_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- -----------------------------------------------------------------------------
 -- 10. mercadopago_pagos — 2026_06_30_100100_create_mercadopago_pagos_table
@@ -219,7 +232,7 @@ CREATE TABLE IF NOT EXISTS `mercadopago_pagos` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `mercadopago_pagos_sucursal_id_mp_payment_id_unique` (`sucursal_id`, `mp_payment_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- -----------------------------------------------------------------------------
 -- 11. Registrar en `migrations` todo lo que el repo tiene y esta base no

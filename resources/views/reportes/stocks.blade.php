@@ -55,13 +55,18 @@
                     @if (count($productos)>0)
                     <?php  $i = 1; $subtotal = 0; ?>
                     @foreach($productos as $producto)
-                    <?php $subtotal += (float) str_replace(',', '.', $producto->precio_unidad) * (float) $producto->stockactual; // precios legacy pueden venir como texto ?>
+                    <?php
+                        // Precios legacy pueden venir como texto ('1.200.000'): no se adivina el valor,
+                        // se excluye del total y se marca en la fila para que lo corrijan desde /carga.
+                        $precioOk = is_numeric($producto->precio_unidad);
+                        $subtotal += ($precioOk ? (float) $producto->precio_unidad : 0) * (float) $producto->stockactual;
+                    ?>
                     <tr>
                         <td>{{$i}}</td>
                         <td>{{$producto->sucursal}}</td>
                         <td class="sg-mono sg-muted">{{$producto->codigo_barras}}</td>
                         <td class="sg-strong">{{$producto->nombre}}</td>
-                        <td class="sg-num sg-mono">{{$producto->precio_unidad}}</td>
+                        <td class="sg-num sg-mono">{{ $precioOk ? $producto->precio_unidad : '⚠ '.$producto->precio_unidad }}</td>
                         <td class="sg-num sg-mono">{{$subtotal}}</td>
                         <td class="sg-num">{{$producto->stockactual}}</td>
                         <td>{{$producto->nombreProveedor}} {{$producto->apellidoProveedor}}</td>
