@@ -52,26 +52,31 @@ Todo desde la VM (`gcloud compute ssh sigav-a --zone=southamerica-east1-a --tunn
 ### 1. Base y usuario en el MySQL compartido
 
 ```bash
-cd /opt/sigav
-ROOT_PW="$(grep -E '^DB_ROOT_PASSWORD=' .env | cut -d= -f2-)"
-MERCADO_PW="$(openssl rand -hex 24)"      # anotarlo: va al .env de Mercado
-sudo docker exec -i sigav_db mysql -uroot -p"$ROOT_PW" <<SQL
-CREATE DATABASE IF NOT EXISTS mercado CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-CREATE USER IF NOT EXISTS 'mercado'@'%' IDENTIFIED BY '$MERCADO_PW';
-GRANT ALL PRIVILEGES ON mercado.* TO 'mercado'@'%';
-FLUSH PRIVILEGES;
-SQL
+# La password de root se toma del propio contenedor (la del .env de /opt/sigav
+# no coincide con la del volumen). La de Mercado queda en /root/mercado_db_pw.
+openssl rand -hex 24 | sudo tee /root/mercado_db_pw >/dev/null && sudo chmod 600 /root/mercado_db_pw
+MPW="$(sudo cat /root/mercado_db_pw)"
+printf "CREATE DATABASE IF NOT EXISTS mercado CHARACTER SET latin1 COLLATE latin1_swedish_ci;\nCREATE USER IF NOT EXISTS 'mercado'@'%%' IDENTIFIED BY '%s';\nGRANT ALL PRIVILEGES ON mercado.* TO 'mercado'@'%%';\nFLUSH PRIVILEGES;\n" "$MPW" \
+  | sudo docker exec -i sigav_db sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
 ```
+
+Para correr SQL como root en los pasos siguientes usar siempre la forma
+`sudo docker exec -i sigav_db sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" mercado' < archivo.sql`.
 
 ### 2. Código
 
 ```bash
-sudo git clone -b prod-mercado-artesanal git@github.com:jmarroni/sigav_v2.git /opt/mercado
+sudo git clone -b prod-mercado-artesanal https://github.com/jmarroni/sigav_v2.git /opt/mercado   # repo público; la VM no tiene deploy key
+sudo git config --global --add safe.directory /opt/mercado   # el clon es de root
 cd /opt/mercado
 sudo cp deploy/mercado/.env.mercado.example .env
 sudo nano .env    # APP_KEY (el de Ferozo), DB_PASSWORD (el generado), LEGACY_SEMILLA (misma que Acantilado), API_SECRET_KEY nuevo, MAIL_* si aplica
 sudo chown -R www-data:www-data storage bootstrap/cache
 ```
+
+`vendor/` no está en git: instalar las dependencias con el `composer.phar`
+versionado, dentro del contenedor (paso 5, después de levantarlo). `public/vendor`
+(tcpdf, html2pdf, afipsdk) sí viene en el repo.
 
 La imagen es la misma que Acantilado (`sigav-app:prod`, ya construida en la VM).
 Si en algún momento se rebuildéa, hacerlo desde `/opt/sigav` con
@@ -81,10 +86,11 @@ Si en algún momento se rebuildéa, hacerlo desde `/opt/sigav` con
 
 ```bash
 # dump fresco copiado a /opt/mercado/dump.sql (scp vía IAP desde la PC)
-sudo docker exec -i sigav_db mysql -uroot -p"$ROOT_PW" mercado < dump.sql
-sudo docker exec -i sigav_db mysql -uroot -p"$ROOT_PW" mercado < deploy/mercado/01-esquema-desde-8d14505.sql
-sudo docker exec -i sigav_db mysql -uroot -p"$ROOT_PW" mercado < deploy/mercado/01-esquema-desde-8d14505.sql   # 2ª vez: mismo resumen, sin errores
-sudo docker exec -i sigav_db mysql -uroot -p"$ROOT_PW" mercado < deploy/mercado/02-datos-condicion-iva.sql
+M='sudo docker exec -i sigav_db sh -c '"'"'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" mercado'"'"''
+eval "$M" < dump.sql
+eval "$M" < deploy/mercado/01-esquema-desde-8d14505.sql
+eval "$M" < deploy/mercado/01-esquema-desde-8d14505.sql   # 2ª vez: mismo resumen, sin errores
+eval "$M" < deploy/mercado/02-datos-condicion-iva.sql
 sudo rm dump.sql
 ```
 
@@ -105,12 +111,16 @@ sudo chmod -R 750 storage/app/afip
 ```bash
 cd /opt/mercado
 sudo docker compose -f deploy/mercado/docker-compose.mercado.yml --env-file .env up -d
+sudo docker exec -u root mercado_app sh -c 'cd /var/www/html && COMPOSER_ALLOW_SUPERUSER=1 php composer.phar install --no-dev --no-interaction --prefer-dist --optimize-autoloader'
+sudo chown -R www-data:www-data vendor bootstrap/cache storage
 sudo docker exec mercado_app php artisan config:clear && sudo docker exec mercado_app php artisan route:clear && sudo docker exec mercado_app php artisan view:clear
-sudo docker exec mercado_app php artisan migrate --pretend      # debe decir "Nothing to migrate."
+sudo docker exec mercado_app php artisan migrate --pretend --force   # APP_ENV=production pide confirmación: --force. Debe decir "Nothing to migrate."
 sudo docker exec mercado_app php artisan storage:link
 
-# Caddy es el de Acantilado: su Caddyfile ya trae el bloque de Mercado en este branch.
-cd /opt/sigav && sudo git fetch && sudo git checkout origin/prod-mercado-artesanal -- deploy/Caddyfile
+# Caddy es el de Acantilado. El Caddyfile de la VM (/opt/sigav/deploy/Caddyfile)
+# es el que manda: agregarle el bloque de Mercado (copiarlo de este repo), NO
+# pisarlo con checkout (la VM tiene bloques que el repo puede no tener).
+awk '/^# Mercado Artesanal — segunda instancia/{p=1} p' /opt/mercado/deploy/Caddyfile | sudo tee -a /opt/sigav/deploy/Caddyfile
 sudo docker exec sigav_caddy caddy validate --config /etc/caddy/Caddyfile
 sudo docker exec sigav_caddy caddy reload --config /etc/caddy/Caddyfile
 ```
@@ -142,7 +152,9 @@ badge en `/ventas` dice "homo" y las facturas van a homologación.
 1. Bajar el TTL de `sistema.mercado-artesanal.com.ar` a 300 s con 24 h de anticipación.
 2. Ferozo en mantenimiento → dump y archivos frescos → reimportar (pasos 3 y 4;
    la base se puede `DROP DATABASE mercado` y recrear antes de importar).
-3. Apuntar el A a `35.198.36.159`. Verificar `https://sistema.mercado-artesanal.com.ar/login.php`.
+3. Apuntar el A a `35.198.36.159`. En `/opt/sigav/deploy/Caddyfile` cambiar la
+   cabecera del bloque a `sistema.mercado-artesanal.com.ar, mercado-artesanal.sigav.ar {`,
+   `caddy validate` y `caddy reload`. Verificar `https://sistema.mercado-artesanal.com.ar/login.php`.
 4. **Mientras no haya ventas ni comprobantes AFIP en la base nueva**, el rollback
    es volver el DNS y sacar el mantenimiento en Ferozo. La primera factura real es
    el punto de no retorno: desde ahí se corrige hacia adelante y Ferozo queda en
@@ -156,7 +168,23 @@ badge en `/ventas` dice "homo" y las facturas van a homologación.
 cd /opt/mercado && sudo git pull
 sudo docker exec mercado_app php artisan config:clear && sudo docker exec mercado_app php artisan route:clear && sudo docker exec mercado_app php artisan view:clear
 sudo docker exec mercado_app php artisan migrate --force   # ahora sí funciona: migrations está completa
+# si cambió composer.lock: repetir el composer install del paso 5
 ```
+
+## Deploy inicial realizado (2026-09-14)
+
+Hecho en la VM con el dump de **febrero 2026** para dejar el sitio funcional
+mientras llega el dump fresco: base `mercado` + usuario, clon en `/opt/mercado`
+(rama `prod-mercado-artesanal`), `.env` con el `APP_KEY` de Ferozo, esquema
+aplicado (idempotencia verificada), cert/key AFIP de febrero en
+`storage/app/afip/prod/` (entorno prod **inactivo**, homo activo), contenedor
+`mercado_app` arriba, bloque agregado al Caddyfile de la VM y recargado.
+Pendiente: alias DNS en Cloudflare → certificado; reimportar con datos frescos;
+cargar datos AFIP prod en la pantalla; cutover DNS.
+
+Datos con problemas detectados en el dump (los lista `02-datos-condicion-iva.sql`):
+varios productos tienen una **fecha** (`2025-07-02`) en `precio_mayorista` y tres
+tienen precios con puntos de miles (`1.200.000`). Corregir desde `/carga`.
 
 ## Pendiente conocido
 

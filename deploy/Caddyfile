@@ -20,8 +20,12 @@
 # Mercado Artesanal — segunda instancia de SIGAV en la misma VM (ver
 # deploy/mercado/). El alias mercado-artesanal.sigav.ar es la pre-producción:
 # se prueba ahí con HTTPS real antes de apuntar el dominio definitivo.
-# Caddy emite ambos certificados solo (Cloudflare en DNS only).
-sistema.mercado-artesanal.com.ar, mercado-artesanal.sigav.ar {
+# Caddy emite el certificado solo (Cloudflare en DNS only).
+# CUTOVER: cuando el A de sistema.mercado-artesanal.com.ar apunte a esta VM,
+# agregar ese host a la cabecera del bloque (coma-separado) y `caddy reload`.
+# No antes: con el DNS todavía en Ferozo, ACME falla y Let's Encrypt limita
+# los reintentos por hostname.
+mercado-artesanal.sigav.ar {
 	encode gzip
 	reverse_proxy mercado_app:80
 	header {
