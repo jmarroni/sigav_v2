@@ -25,6 +25,7 @@ Decisiones del operator (2026-09-14):
 | `.env.mercado.example` | Plantilla del `.env` de la instancia (Laravel + compose) |
 | `01-esquema-desde-8d14505.sql` | Lleva la base del hosting (master@8d14505) al esquema actual y registra las migraciones. Idempotente. |
 | `02-datos-condicion-iva.sql` | Saneo de `clientes.condicion_iva` (RG 5616) y listado de precios no numéricos a corregir a mano |
+| `03-unificar-convencion-utf8.sql` | Una sola vez: pasa las columnas con acentos de las tablas utf8mb4 (creadas por Laravel en Ferozo) a la convención de bytes del resto de la base, para que se lean bien con la conexión latin1. Deja marca en `charset_convencion_aplicada`. |
 | `../Caddyfile` | Bloque `sistema.mercado-artesanal.com.ar, mercado-artesanal.sigav.ar` → `mercado_app:80` |
 | `../backup.sh` | Ya incluye la base `mercado` y los archivos de `/opt/mercado` |
 
@@ -130,6 +131,7 @@ eval "$M" < dump.sql
 eval "$M" < deploy/mercado/01-esquema-desde-8d14505.sql
 eval "$M" < deploy/mercado/01-esquema-desde-8d14505.sql   # 2ª vez: mismo resumen, sin errores
 eval "$M" < deploy/mercado/02-datos-condicion-iva.sql
+eval "$M" < deploy/mercado/03-unificar-convencion-utf8.sql   # una sola vez por importación (si se reimporta el dump, se vuelve a correr: la marca viaja con la base)
 sudo rm dump.sql
 ```
 
