@@ -23,6 +23,8 @@ services:
     volumes:
       - ../../:/var/www/html
       - ../afip-protect.conf:/etc/apache2/conf-enabled/zz-afip-protect.conf:ro
+      # AFIP producción negocia DH débil: OpenSSL a SECLEVEL=1 (ver deploy/openssl-afip.cnf)
+      - ../openssl-afip.cnf:/etc/ssl/openssl-afip.cnf:ro
     # Todo el .env de Laravel entra al contenedor tal cual (sin interpolación de
     # Compose: un valor con `$` como la semilla se truncaría con `${VAR}`). Bajo
     # Apache/mod_php solo llegan a getenv() las variables listadas en PassEnv
@@ -32,6 +34,7 @@ services:
       - ../../.env
     environment:
       APACHE_DOCUMENT_ROOT: /var/www/html/public
+      OPENSSL_CONF: /etc/ssl/openssl-afip.cnf
       CATALOGO_IMPORTAR_PERMITIDO: "false"
     # La VM (e2-small, 2 GB) ya tuvo OOM: se acota este contenedor para que un
     # pico no mate al MySQL compartido con Acantilado.

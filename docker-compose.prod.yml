@@ -10,11 +10,14 @@ services:
     volumes:
       - ./:/var/www/html
       - ./deploy/afip-protect.conf:/etc/apache2/conf-enabled/zz-afip-protect.conf:ro
+      # AFIP producción negocia DH débil: OpenSSL a SECLEVEL=1 (ver deploy/openssl-afip.cnf)
+      - ./deploy/openssl-afip.cnf:/etc/ssl/openssl-afip.cnf:ro
     depends_on:
       db:
         condition: service_healthy
     environment:
       APACHE_DOCUMENT_ROOT: /var/www/html/public
+      OPENSSL_CONF: /etc/ssl/openssl-afip.cnf
       LEGACY_DB_HOST: db
       LEGACY_DB_USER: ${DB_USERNAME}
       LEGACY_DB_PASS: ${DB_PASSWORD}

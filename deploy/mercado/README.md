@@ -231,6 +231,23 @@ Datos con problemas detectados en el dump (los lista `02-datos-condicion-iva.sql
 varios productos tienen una **fecha** (`2025-07-02`) en `precio_mayorista` y tres
 tienen precios con puntos de miles (`1.200.000`). Corregir desde `/carga`.
 
+## AFIP producción: TLS con `servicios1.afip.gov.ar`
+
+El WSFE de producción negocia Diffie-Hellman de 1024 bits y OpenSSL 1.1.1
+(SECLEVEL=2 por defecto en la imagen) lo rechaza con `dh key too small`; la
+prueba de conexión autentica en WSAA pero falla en WSFE con "SOAP Fault: HTTP".
+Homologación no lo sufre. Solución: `deploy/openssl-afip.cnf` montado en el
+contenedor y `OPENSSL_CONF` apuntando ahí (ya en ambos compose). Verificar:
+
+```bash
+sudo docker exec mercado_app curl -s -o /dev/null -w '%{http_code}\n' https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL   # 200
+```
+
+Las credenciales productivas reales de Mercado estaban en
+`public/vendor/afipsdk/afip.php/src/Afip_res/{cert,key}` del hosting (no en
+`public/AFIP/`, que contenía un CSR de homologación). Certificado CUIT
+30715251988, **vence el 13-nov-2026**: renovar antes en AFIP.
+
 ## Pendiente conocido
 
 - `pedidos_legacy` conserva 3 filas de 2019; el flujo legacy `public/pedidos*.php` apunta ahí y es candidato a borrar.
