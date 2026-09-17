@@ -207,6 +207,31 @@ badge en `/ventas` dice "homo" y las facturas van a homologación.
 6. A los 7 días estables: borrar `netsuite_proxy.php` y `limpiar_cache.php` del
    hosting, rotar la password de la DB de Ferozo y las credenciales NetSuite.
 
+## Reimportar la base desde un dump nuevo (hecho el 2026-09-17)
+
+El dump de phpMyAdmin trae `CREATE DATABASE`/`USE` y no trae `DROP TABLE`, así
+que se limpia y se recrea la base. La config AFIP/MP se preserva porque no
+viene del hosting:
+
+```bash
+# PC: quitar las 2 líneas de CREATE DATABASE/USE y subir
+grep -vE '^(CREATE DATABASE IF NOT EXISTS `c2101314_ma`|USE `c2101314_ma`;)' c2101314_ma.sql > dump.sql
+gcloud compute scp --zone=southamerica-east1-a --tunnel-through-iap dump.sql sigav-a:/tmp/
+# VM
+cd /opt/mercado; TS=$(date +%Y%m%d-%H%M%S); M() { sudo docker exec -i sigav_db sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" '"$1"; }
+sudo sh -c "docker exec sigav_db sh -c 'mysqldump -uroot -p\"\$MYSQL_ROOT_PASSWORD\" --default-character-set=latin1 mercado' > /root/mercado_backups/mercado-pre-reimport-$TS.sql"
+sudo sh -c "docker exec sigav_db sh -c 'mysqldump -uroot -p\"\$MYSQL_ROOT_PASSWORD\" --no-create-info --default-character-set=latin1 mercado afip_config mercadopago_config' > /root/mercado_backups/afip_mp_config-$TS.sql"
+printf 'DROP DATABASE mercado; CREATE DATABASE mercado CHARACTER SET latin1 COLLATE latin1_swedish_ci;\n' | M ''
+M mercado < /tmp/dump.sql && sudo rm /tmp/dump.sql
+M mercado < deploy/mercado/01-esquema-desde-8d14505.sql
+M mercado < deploy/mercado/02-datos-condicion-iva.sql
+M mercado < deploy/mercado/03-unificar-convencion-utf8.sql
+printf 'DELETE FROM afip_config; DELETE FROM mercadopago_config;\n' | M mercado
+sudo cat /root/mercado_backups/afip_mp_config-$TS.sql | M mercado
+sudo docker exec mercado_app php artisan config:clear && sudo docker exec mercado_app php artisan migrate --pretend --force
+```
+Los privilegios del usuario `mercado` sobreviven al `DROP DATABASE`.
+
 ## Deploy de cambios futuros
 
 ```bash
