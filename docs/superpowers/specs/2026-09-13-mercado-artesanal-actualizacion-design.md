@@ -1,6 +1,6 @@
 # Actualizar la instancia de Mercado Artesanal a la versión actual de SIGAV v2
 
-Estado: **plan aprobado por el operator pendiente**. Revisado por el panel de IA (Codex `gpt-5.6-sol` en sandbox read-only + agente local `code-reviewer` con acceso completo). Ronda 1: ambos REVISE; esta versión incorpora todas las objeciones válidas. Informe del panel en el Apéndice A.
+Estado: **EJECUTADO. Mercado Artesanal corre en la VM `sigav-a` en `https://sistema.mercado-artesanal.com.ar` desde el 2026-09-18** (rama `prod-mercado-artesanal`; runbook `deploy/mercado/README.md`). Pendientes de Fase 4: archivos históricos del hosting si aparecen, `pedidos_legacy`, guard `api`, backlog de Fase 1 en el ledger. Revisado por el panel de IA (Codex `gpt-5.6-sol` en sandbox read-only + agente local `code-reviewer` con acceso completo). Ronda 1: ambos REVISE; esta versión incorpora todas las objeciones válidas. Informe del panel en el Apéndice A.
 
 ## 1. Contexto
 

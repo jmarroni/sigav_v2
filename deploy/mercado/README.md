@@ -191,6 +191,14 @@ badge en `/ventas` dice "homo" y las facturas van a homologación.
 
 ### 8. Cambio de DNS y punto de no retorno
 
+**HECHO el 2026-09-18:** `sistema.mercado-artesanal.com.ar` → 35.198.36.159, bloque de
+Caddy con el dominio definitivo, certificado emitido (fue necesario
+`docker restart sigav_caddy`: `caddy reload` no dispara la emisión de hosts nuevos en
+esta VM), alias `mercado-artesanal.sigav.ar` convertido en `redir permanent`. La base
+es el dump del 2026-09-17 (ventas hasta el 11-sep) y AFIP producción está activa: a
+partir de acá se corrige hacia adelante; Ferozo queda como archivo, no como rollback.
+
+
 1. Bajar el TTL de `sistema.mercado-artesanal.com.ar` a 300 s con 24 h de anticipación.
 2. Ferozo en mantenimiento → dump y archivos frescos → reimportar (pasos 3 y 4;
    la base se puede `DROP DATABASE mercado` y recrear antes de importar).
