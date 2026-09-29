@@ -11,14 +11,12 @@ class SucursalesController extends Controller
 {
     public function sucursales(Request $request)
     {
-        if (!$request->user_id) {
-            return response()->json('Debe de ingresar su id de usuario.');
-        }
-
+        // El usuario sale del token, nunca del request: si no, cualquier
+        // usuario de la API podía leer las sucursales de otro.
         $sucursales = DB::table('sucursales')->
                 join('relacion_users_sucursales', 'sucursales.id', 'relacion_users_sucursales.sucursal_id')->
                 select('sucursales.nombre')->
-                where('relacion_users_sucursales.user_id', $request->user_id)->
+                where('relacion_users_sucursales.user_id', $request->user()->id)->
                 get();
 
         return response()->json($sucursales, 201);
@@ -30,10 +28,6 @@ class SucursalesController extends Controller
             return response()->json('Debe de ingresar el nombre de la sucursal.');
         }
 
-        if (!$request->user_id) {
-            return response()->json('Debe de ingresar su id de usuario.');
-        }
-
         $productos = DB::table('productos')->
         		join('stock', 'stock.productos_id', 'productos.id')->
         		join('sucursales', 'stock.sucursal_id', 'sucursales.id')->
@@ -42,7 +36,7 @@ class SucursalesController extends Controller
                 join('proveedor', 'proveedor.id', 'productos.proveedores_id')->
                 select('productos.codigo_barras','productos.id as id', 'productos.nombre', 'productos.precio_unidad as precio', 'productos.costo', 'productos.usuario', 'productos.fecha','productos.descripcion','productos.descripcion_en','productos.descripcion_pr','productos.material','productos.precio_mayorista', 'proveedor.nombre AS nombre_proveedor', 'proveedor.apellido AS apellido_proveedor')->
                 where('sucursales.nombre', $request->nombre_sucursal)->
-                where('relacion_users_sucursales.user_id', $request->user_id)->
+                where('relacion_users_sucursales.user_id', $request->user()->id)->
                 get();
 
 

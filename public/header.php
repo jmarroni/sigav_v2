@@ -501,7 +501,7 @@ function getMes($numero){
                                 <a href="/notas/debito">Nota D&eacute;bito</a>
                             </li>
                             <li>
-                                <a href="/usuarios_api.php">Api</a>
+                                <a href="/usuarios-api">Api</a>
                             </li>   
                                <li>
                                 <a href="/logsProductos">Logs Productos stock</a>

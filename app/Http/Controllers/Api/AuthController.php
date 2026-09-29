@@ -6,60 +6,9 @@ use Illuminate\Support\Facades\DB;
 use Lcobucci\JWT\Parser;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\User;
 
 class AuthController extends Controller
 {
-    /**
-     * Create user
-     *
-     * @param  [string] name
-     * @param  [string] email
-     * @param  [string] password
-     * @param  [string] password_confirmation
-     * @return [string] message
-     */
-    public function signup(Request $request)
-    {
-        $this->validate($request, [
-        'name' => 'required|string',
-        'email' => 'required|string|email|unique:users',
-        'password' => 'required|string'
-        ], [
-             'name.required' => 'Ingrese un nombre de usuario',
-             'name.string' => 'El nombre debe ser de caracteres',
-             'email.required' => 'Ingrese un email',
-             'email.string' => 'El email debe ser de caracteres',
-             'email.email' => 'Ingrese un email valido',
-             'email.unique' => 'El email ya esta en uso',
-             'password.required' => 'Ingrese una clave/contraseña',
-             'password.string' => 'La contraseña debe ser de caracteres'
-        ]);
-
-        if ($request->id != "") {
-            $user = User::find($request->id);
-            $user->name = $request->name;
-            $user->email = $request->email;
-
-            if($request->password !== "") {
-                // IMPORTANTE: Hashear el password antes de guardarlo
-                $user->password = bcrypt($request->password);
-            }
-
-            $user->save();
-        } else {
-            $user = new User([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => bcrypt($request->password)
-            ]);
-
-            $user->save();
-        }
-
-        return redirect("/usuarios_api.php?mensaje=".base64_encode("Se agrego el usuario ok"));
-    }
-  
     /**
      * Login user and create token
      *

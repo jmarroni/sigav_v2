@@ -41,10 +41,10 @@ return [
             'provider' => 'users',
         ],
 
+        // Tokens de Passport emitidos por Api\AuthController@login.
         'api' => [
-            'driver' => 'token',
+            'driver' => 'passport',
             'provider' => 'users',
-            'hash' => false,
         ],
     ],
 

@@ -26,7 +26,15 @@ Route::get('/loginejemplo', function(){
 	return view('login/login');
 });
 
-Route::get('signup', ['uses' =>'Api\AuthController@signup']);
+// Usuarios de la API (/api/auth/*): reemplaza a public/usuarios_api*.php y al viejo GET signup
+Route::middleware('throttle:20,1')->group(function () {
+    Route::get('usuarios-api', 'UsuarioApiController@index');
+    Route::post('usuarios-api', 'UsuarioApiController@store');
+    Route::put('usuarios-api/{id}', 'UsuarioApiController@update')->where('id', '[0-9]+');
+    Route::delete('usuarios-api/{id}', 'UsuarioApiController@destroy')->where('id', '[0-9]+');
+    Route::post('usuarios-api/{id}/sucursales', 'UsuarioApiController@asignarSucursal')->where('id', '[0-9]+');
+    Route::delete('usuarios-api/{id}/sucursales/{sucursalId}', 'UsuarioApiController@quitarSucursal')->where(['id' => '[0-9]+', 'sucursalId' => '[0-9]+']);
+});
 //Producto
 Route::get('productos/datatable', 'ProductoController@datatable');
 Route::resource('carga', 'ProductoController');
