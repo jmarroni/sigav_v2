@@ -28,6 +28,37 @@ class ApiAuthTest extends TestCase
             $t->integer('user_id');
         });
 
+        Schema::create('categorias', function (Blueprint $t) {
+            $t->increments('id');
+            $t->string('nombre');
+        });
+        Schema::create('proveedor', function (Blueprint $t) {
+            $t->increments('id');
+            $t->string('nombre');
+            $t->string('apellido')->nullable();
+        });
+        Schema::create('productos', function (Blueprint $t) {
+            $t->increments('id');
+            foreach (['codigo_barras', 'nombre', 'usuario', 'fecha', 'descripcion', 'descripcion_en', 'descripcion_pr', 'material'] as $c) {
+                $t->string($c)->nullable();
+            }
+            foreach (['precio_unidad', 'costo', 'precio_mayorista', 'stock', 'stock_minimo', 'es_comodato'] as $c) {
+                $t->decimal($c)->nullable();
+            }
+            $t->integer('proveedores_id');
+            $t->integer('categorias_id');
+        });
+        Schema::create('stock', function (Blueprint $t) {
+            $t->increments('id');
+            $t->integer('productos_id');
+            $t->integer('sucursal_id');
+        });
+        Schema::create('imagen_producto', function (Blueprint $t) {
+            $t->increments('id');
+            $t->integer('productos_id');
+            $t->string('imagen_url');
+        });
+
         $this->artisan('passport:client', ['--personal' => true, '--name' => 'test']);
     }
 
@@ -91,5 +122,49 @@ class ApiAuthTest extends TestCase
             ->assertJson([['nombre' => 'Mía']])
             ->assertJsonCount(1)
             ->assertJsonMissing(['nombre' => 'Ajena']);
+    }
+
+    private function productoEnSucursal(User $user): void
+    {
+        DB::table('sucursales')->insert(['id' => 1, 'nombre' => 'Centro']);
+        DB::table('relacion_users_sucursales')->insert(['sucursal_id' => 1, 'user_id' => $user->id]);
+        DB::table('categorias')->insert(['id' => 1, 'nombre' => 'Textil']);
+        DB::table('proveedor')->insert(['id' => 1, 'nombre' => 'Artesana']);
+        DB::table('productos')->insert([
+            'id' => 1, 'nombre' => 'Poncho', 'precio_unidad' => 1000, 'costo' => 400,
+            'proveedores_id' => 1, 'categorias_id' => 1,
+        ]);
+        DB::table('stock')->insert(['productos_id' => 1, 'sucursal_id' => 1]);
+    }
+
+    /** @test */
+    public function los_endpoints_de_productos_no_exponen_el_costo()
+    {
+        $this->productoEnSucursal($this->usuarioApi());
+        $bearer = ['Authorization' => 'Bearer ' . $this->token()];
+
+        $porSucursal = $this->withHeaders($bearer)
+            ->postJson('/api/auth/productosPorSucursal', ['nombre_sucursal' => 'Centro'])
+            ->assertJsonPath('0.nombre', 'Poncho')
+            ->json();
+        $this->assertArrayNotHasKey('costo', $porSucursal[0]);
+
+        $todos = $this->withHeaders($bearer)
+            ->postJson('/api/auth/productos')
+            ->assertJsonPath('0.nombre', 'Poncho')
+            ->json();
+        $this->assertArrayNotHasKey('costo', $todos[0]);
+    }
+
+    /** @test */
+    public function el_token_vence_en_un_dia_como_informa_el_login()
+    {
+        $this->usuarioApi();
+        $jwt = $this->token();
+
+        $payload = json_decode(base64_decode(strtr(explode('.', $jwt)[1], '-_', '+/')), true);
+
+        $this->assertLessThanOrEqual(now()->addDay()->addMinute()->timestamp, (int) $payload['exp']);
+        $this->assertGreaterThan(now()->addHours(23)->timestamp, (int) $payload['exp']);
     }
 }
