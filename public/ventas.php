@@ -257,10 +257,10 @@ $conn->query($sql_update);
 
                 <!-- Acciones de la venta -->
                 <div class="sg-cta-row">
-                    <button class="sg-btn sg-btn--primary sg-btn--lg" type="button" id="concretar_venta">
+                    <button class="sg-btn sg-btn--primary sg-btn--lg" type="button" id="concretar_venta" disabled>
                         <i class="fa fa-check"></i> Concretar venta y facturar
                     </button>
-                    <button class="sg-btn sg-btn--ghost sg-btn--lg" type="button" id="presupuesto" name="presupuesto" style="display:none;">
+                    <button class="sg-btn sg-btn--ghost sg-btn--lg" type="button" id="presupuesto" name="presupuesto" style="display:none;" disabled>
                         <i class="fa fa-check"></i> Concretar venta
                     </button>
                     <span id="espere_venta_activa" class="sg-note" style="display:none;">(En proceso de emisión, por favor aguarde unos segundos)</span>
