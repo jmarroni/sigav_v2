@@ -60,7 +60,8 @@ $sql = "Select * FROM perfil";
 $resultado_perfil = $conn->query($sql) or die("Error: " . $sql . "<br>" . $conn->error);
 if ($resultado_perfil->num_rows > 0) {
     if ($row_perfil = $resultado_perfil->fetch_assoc()) {
-        $logo = "http://".$_SERVER['HTTP_HOST'].$row_perfil["logo"];
+        // Ruta local: con el sitio en HTTPS la URL http:// redirige (308) y Html2Pdf falla.
+        $logo = legacy_logo_pdf(__DIR__, $row_perfil["logo"]);
 		$nombre_fantasia = $row_perfil["nombre"];
 		$datos_factura = $row_perfil;
     }

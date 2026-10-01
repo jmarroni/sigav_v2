@@ -76,6 +76,34 @@ if (! function_exists('legacy_imagen_default')) {
     }
 }
 
+if (! function_exists('legacy_logo_pdf')) {
+    /**
+     * Src del logo para los PDFs legacy (Html2Pdf): SIEMPRE una ruta local
+     * file:// dentro de $publicDir. Nunca una URL http:// del propio host:
+     * con el sitio en HTTPS el 308 de redirección hace que Html2Pdf no pueda
+     * medir la imagen y tire ImageException (ya con el CAE emitido).
+     * Si el archivo no existe cae al placeholder no-image.
+     */
+    function legacy_logo_pdf($publicDir, $logoRel)
+    {
+        $publicReal  = realpath($publicDir);
+        $placeholder = 'file://'.$publicReal.'/assets/img/photos/no-image-featured-image.png';
+        if (! is_string($logoRel) || $logoRel === '' || $publicReal === false) {
+            return $placeholder;
+        }
+        // Tolera que el perfil tenga guardada una URL absoluta: se usa solo el path.
+        $path = parse_url($logoRel, PHP_URL_PATH);
+        if (! is_string($path) || $path === '') {
+            return $placeholder;
+        }
+        $real = realpath($publicReal.'/'.ltrim($path, '/'));
+        if ($real === false || ! is_file($real) || strpos($real, $publicReal.DIRECTORY_SEPARATOR) !== 0) {
+            return $placeholder;
+        }
+        return 'file://'.$real;
+    }
+}
+
 if (! function_exists('legacy_smartsupp_key')) {
     function legacy_smartsupp_key()
     {

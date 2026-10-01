@@ -112,8 +112,8 @@ $sql = "Select * FROM perfil";
 $resultado_perfil = $conn->query($sql) or die("Error: " . $sql . "<br>" . $conn->error);
 if ($resultado_perfil->num_rows > 0) {
 	if ($row_perfil = $resultado_perfil->fetch_assoc()) {
-		$logo = "http://".$_SERVER['HTTP_HOST'].$row_perfil["logo"];
-        //$logo = (file_exists($logo))?$logo:"http://".$_SERVER['HTTP_HOST']."/assets/img/photos/no-image-featured-image.png";
+		// Ruta local: con el sitio en HTTPS la URL http:// redirige (308) y Html2Pdf falla.
+		$logo = legacy_logo_pdf(__DIR__, $row_perfil["logo"]);
 		$nombre_fantasia = $row_perfil["nombre"];
 		$datos_factura = $row_perfil;
 	}
@@ -133,8 +133,61 @@ if (intval($emitir) === 1 ) {
 	$estado = 3;
 }
 
-// Agarro los productos del carrito para esta venta
-$sql_productos_en_carrito = "SELECT * FROM productos_en_carrito WHERE venta_id = '{$_GET['venta_id']}'";
+// --- Reclamo atomico del carrito: UN solo intento de facturacion por venta_id ---
+// estado 0 = abierto (ventas_post.php), 1 = reclamado/facturado. Un segundo clic
+// (o dos requests simultaneos) no encuentra filas en estado 0 y no emite nada.
+$venta_id_carrito = intval($_GET['venta_id'] ?? 0);
+$stmt_reclamo = $conn->prepare("UPDATE productos_en_carrito SET estado = 1 WHERE venta_id = ? AND estado = 0");
+$stmt_reclamo->bind_param("i", $venta_id_carrito);
+$stmt_reclamo->execute();
+$filas_reclamadas = $stmt_reclamo->affected_rows;
+$stmt_reclamo->close();
+if ($filas_reclamadas === 0) {
+	$stmt_hay = $conn->prepare("SELECT COUNT(*) FROM productos_en_carrito WHERE venta_id = ?");
+	$stmt_hay->bind_param("i", $venta_id_carrito);
+	$stmt_hay->execute();
+	$stmt_hay->bind_result($hay_filas);
+	$stmt_hay->fetch();
+	$stmt_hay->close();
+	if (intval($hay_filas) > 0) {
+		$devolucion["error"]   = "Venta ya facturada";
+		$devolucion["mensaje"] = "Esta venta ya fue facturada o esta siendo procesada. NO vuelva a facturar: revise el listado de facturas.";
+	} else {
+		$devolucion["error"]   = "No existen productos para facturar";
+		$devolucion["mensaje"] = "No existen productos para facturar";
+	}
+	echo json_encode($devolucion);
+	exit();
+}
+
+// --- Pre-vuelo: todo lo que puede fallar al generar el PDF se verifica ANTES de
+// tocar stock, ventas o AFIP. Si falla, se libera el carrito y no se emite nada.
+$carpeta_pdf = dirname(__FILE__).((intval($_GET["presupuesto"]) == 0) ? "/facturas" : "/presupuesto");
+$error_previo = null;
+if (!is_dir($carpeta_pdf) || !is_writable($carpeta_pdf)) {
+	$error_previo = "La carpeta de comprobantes no es escribible en el servidor.";
+} else {
+	try {
+		$pdf_prueba = new HTML2PDF('P', 'A4', 'pt', true, 'UTF-8');
+		$pdf_prueba->setDefaultFont('Arial');
+		$pdf_prueba->writeHTML("<page><img = src='$logo' style='height:80px;width:120px;'/> prueba</page>");
+		$pdf_prueba->Output("prevuelo.pdf", "S");
+		unset($pdf_prueba);
+	} catch (\Throwable $e) {
+		$error_previo = "No se puede generar el PDF del comprobante (".$e->getMessage().").";
+	}
+}
+if ($error_previo !== null) {
+	$conn->query("UPDATE productos_en_carrito SET estado = 0 WHERE venta_id = ".$venta_id_carrito." AND estado = 1");
+	error_log("facturar.php: pre-vuelo fallido, no se emitio comprobante: ".$error_previo);
+	$devolucion["error"]   = "No se emitio el comprobante";
+	$devolucion["mensaje"] = $error_previo." No se emitio ningun comprobante; avise al administrador.";
+	echo json_encode($devolucion);
+	exit();
+}
+
+// Agarro los productos del carrito para esta venta (solo los reclamados arriba)
+$sql_productos_en_carrito = "SELECT * FROM productos_en_carrito WHERE venta_id = '".$venta_id_carrito."' AND estado = 1";
 
 $resultados_productos_en_carrito = $conn->query($sql_productos_en_carrito);
 
@@ -227,6 +280,7 @@ if ($resultado->num_rows > 0) {
 	}
 	//$eliminar_carrito = "DELETE FROM productos_en_carrito WHERE venta_id = '{$_GET['venta_id']}'";
 }else{
+	$conn->query("UPDATE productos_en_carrito SET estado = 0 WHERE venta_id = ".$venta_id_carrito." AND estado = 1");
 	$devolucion["error"] = "No existen productos para facturar";
 	echo json_encode($devolucion);
 	exit();
@@ -339,6 +393,8 @@ if (intval($_GET["presupuesto"]) == 0){
 	            }//END WHILE
             }//END IF
             
+		// AFIP no autorizo nada: se libera el carrito para que la venta pueda reintentarse.
+		$conn->query("UPDATE productos_en_carrito SET estado = 0 WHERE venta_id = ".$venta_id_carrito." AND estado = 1");
 		$devolucion["error"] = "Error al generar el comprobante";
 		$devolucion["mensaje"] = "AFIP respondio lo siguiente al intentar comunicarnos: ".$e->getMessage();
 		file_put_contents("errores.dat",$e);
@@ -604,17 +660,25 @@ if($voucher_info === NULL){
 	//	$html .= utf8_encode("<p style='text-align:left'> *P&aacute;guese a la cuenta oficial Tesorer&iacute;a General Mercado Artesanal Provincial-Recaudadora. <br/><b>N° Cta Bco.</b> - 900001194 <br/><b>CBU</b> - 0340250600900001194004 <br/><b>CUIT</b> - Tesorer&iacute;a General Nro. 30-63945328-2 </p>");
 	//}
 
-		$html2pdf = new HTML2PDF('P', 'A4', 'pt', true, 'UTF-8');
-		$html2pdf->setDefaultFont('Arial');
 		$html = str_replace("@@FACTURANRO@@",$facturanro,$html);
+		$devolucion["factura_id"] = isset($factura_id) ? $factura_id : null;
+		$devolucion["numero"]     = $res["voucher_number"];
+		$devolucion["cae"]        = $res["CAE"];
 
-
-
-		$html2pdf->writeHTML("<page>".str_replace("@@COMPROBANTE@@","ORIGINAL",$html)."<br><br><hr style='border-style: dotted;' /><br><br></page><page>".str_replace("@@COMPROBANTE@@","DUPLICADO",$html)."<br><br><hr style='border-style: dotted;' /><br><br></page>");
-
-
-		$html2pdf->Output(dirname(__FILE__).$nombre_factura, "F");
-		$devolucion["factura"] = $nombre_factura;
+		// A esta altura el comprobante YA fue autorizado por AFIP y grabado en `factura`.
+		// Si el PDF falla NO puede responder 500: el front lo tomaria como "no se emitio"
+		// y el operador volveria a facturar (incidente 2026-09-23: 21 facturas repetidas).
+		try {
+			$html2pdf = new HTML2PDF('P', 'A4', 'pt', true, 'UTF-8');
+			$html2pdf->setDefaultFont('Arial');
+			$html2pdf->writeHTML("<page>".str_replace("@@COMPROBANTE@@","ORIGINAL",$html)."<br><br><hr style='border-style: dotted;' /><br><br></page><page>".str_replace("@@COMPROBANTE@@","DUPLICADO",$html)."<br><br><hr style='border-style: dotted;' /><br><br></page>");
+			$html2pdf->Output(dirname(__FILE__).$nombre_factura, "F");
+			$devolucion["factura"] = $nombre_factura;
+		} catch (\Throwable $e) {
+			error_log("facturar.php: comprobante ".$res["voucher_number"]." (CAE ".$res["CAE"].") emitido pero fallo el PDF: ".get_class($e).": ".$e->getMessage());
+			$devolucion["emitida_sin_pdf"] = true;
+			$devolucion["mensaje"] = "El comprobante Nro. ".$res["voucher_number"]." fue emitido (CAE ".$res["CAE"].") pero no se pudo generar el PDF. NO vuelva a facturar esta venta; avise al administrador.";
+		}
 		$eliminar_carrito = "DELETE FROM productos_en_carrito WHERE venta_id = '{$_GET['venta_id']}'";	
 		echo json_encode($devolucion);
 	}

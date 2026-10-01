@@ -7,7 +7,14 @@
     var subtotal_con_descuento = 0;
     //Array para guardar los productos que se van agregando a la factura para poder buscar si ya un producto ha sido agregado
     var detalleProductos = new Array();
+    // Facturar/Concretar solo se habilitan con productos en la venta y se vuelven a
+    // bloquear despues de emitir, hasta que se agrega un producto a una venta nueva.
+    function habilitarFacturar(habilitar) {
+        $("#concretar_venta, #presupuesto").prop("disabled", !habilitar);
+    }
+
     jQuery("document").ready(function(){
+        habilitarFacturar(false);
 
         $("#nombre-cliente").keyup(function(e){
             if(e.keyCode == 8){
@@ -18,6 +25,9 @@
         $( "#codigo-barras" ).focus();
 
         jQuery("#concretar_venta").click(function(){    
+            // Un solo intento a la vez: cada request a facturar.php emite un comprobante en AFIP.
+            if ($(this).prop("disabled")) return;
+            habilitarFacturar(false);
             var medio_de_pago = "0";
             if ($("#debito").prop("checked")) medio_de_pago = $("#debito").val();
             if ($("#efectivo").prop("checked")) medio_de_pago = $("#efectivo").val();
@@ -62,6 +72,10 @@
                      total_ventas=0;
                         $("#precio").html("0.00");
                         $("#cantidad").val('1');
+                }else if (msg.emitida_sin_pdf){
+                    // El comprobante YA existe en AFIP y en el sistema: no permitir reintento.
+                    alert(msg.mensaje);
+                    document.location.reload();
                 }else{
                     var error = '';
                     if (msg.error) error = msg.error;
@@ -69,6 +83,12 @@
                     alert('Sucedió un error en la facturación, no se emitió factura, por favor comuníquese con el administrador o verifique el error que nos indica AFIP, : ' + msg.mensaje + '. Recargaremos la web .-');
                     document.location.reload();
                 } 
+            })
+            .fail(function (xhr) {
+                // Sin respuesta valida no sabemos si AFIP autorizo o no: nunca reintentar a ciegas.
+                alert('No se pudo confirmar el resultado de la facturación (error ' + (xhr && xhr.status ? xhr.status : 'de red') + '). ' +
+                      'NO vuelva a apretar Facturar: verifique en el listado de facturas si el comprobante ya fue emitido y avise al administrador. Recargaremos la web.');
+                document.location.reload();
             });
         });
 
@@ -94,6 +114,8 @@
         });
 
         jQuery("#presupuesto").click(function() {  
+            if ($(this).prop("disabled")) return;
+            habilitarFacturar(false);
             var medio_de_pago = "0";
             $("#presupuesto").hide();
             $("#espere_venta_activa").show();
@@ -142,7 +164,20 @@
                         $("#precio").html("0.00");
                         $("#cantidad").val('1');
                     },1000);
-                }  
+                }else if (msg && msg.emitida_sin_pdf){
+                    alert(msg.mensaje);
+                    document.location.reload();
+                }else{
+                    $("#espere_venta_activa").hide();
+                    $("#presupuesto").show();
+                    habilitarFacturar(true);
+                    alert('No se pudo generar el presupuesto: ' + (msg && (msg.mensaje || msg.error) ? (msg.mensaje || msg.error) : 'error desconocido'));
+                }
+            })
+            .fail(function (xhr) {
+                // Sin respuesta valida no sabemos si se emitio: no rehabilitar, recargar.
+                alert('No se pudo confirmar el resultado (error ' + (xhr && xhr.status ? xhr.status : 'de red') + '). NO vuelva a intentar: verifique en el listado si el comprobante ya existe y avise al administrador. Recargaremos la web.');
+                document.location.reload();
             });
         });
 
@@ -177,6 +212,7 @@
                 .done(function (msg) {
                     devolucion = msg;
                     venta_id = msg.ventas_id;
+                    habilitarFacturar(true);
                     jQuery("#nombre-devuelto").html('Venta del producto ' + msg.nombre + ' ingresada correctamente');
                     $("#add_success").show('slow');
                     setTimeout(function(){ $("#add_success").hide('slow');jQuery("#nombre-devuelto").html(''); }, 3000);
