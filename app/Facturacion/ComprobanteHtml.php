@@ -16,14 +16,18 @@ use App\Ventas\CalculadoraVenta;
  */
 class ComprobanteHtml
 {
-    /** Documento completo: ORIGINAL y DUPLICADO, una página cada uno. */
-    public static function documento(array $d): string
+    /** Documento completo: una página por copia (factura: ORIGINAL y DUPLICADO; nota de crédito: solo ORIGINAL). */
+    public static function documento(array $d, array $copias = ['ORIGINAL', 'DUPLICADO']): string
     {
         $cuerpo = self::cuerpo($d);
         $pie = "<br><br><hr style='border-style: dotted;' /><br><br>";
 
-        return '<page>'.str_replace('@@COMPROBANTE@@', 'ORIGINAL', $cuerpo).$pie.'</page>'
-            .'<page>'.str_replace('@@COMPROBANTE@@', 'DUPLICADO', $cuerpo).$pie.'</page>';
+        $html = '';
+        foreach ($copias as $copia) {
+            $html .= '<page>'.str_replace('@@COMPROBANTE@@', $copia, $cuerpo).$pie.'</page>';
+        }
+
+        return $html;
     }
 
     /** Una copia del comprobante, con @@COMPROBANTE@@ donde va ORIGINAL/DUPLICADO. */
@@ -31,7 +35,7 @@ class ComprobanteHtml
     {
         $presupuesto = ! empty($d['presupuesto']);
         $letra = $presupuesto ? 'X' : self::letra((int) ($d['comprobante_tipo'] ?? 0));
-        $titulo = $presupuesto ? 'PRESUPUESTO NRO.' : 'FACTURA NRO.';
+        $titulo = $d['titulo'] ?? ($presupuesto ? 'PRESUPUESTO NRO.' : 'FACTURA NRO.');
         $validez = $presupuesto ? 'No valido como factura' : 'Comprobante Electronico';
 
         $sucursal = $d['sucursal'] ?? [];
@@ -150,13 +154,13 @@ class ComprobanteHtml
         return $html;
     }
 
-    /** Letra del comprobante según el código AFIP (CbteTipo). */
+    /** Letra del comprobante según el código AFIP (CbteTipo): facturas 1/6/11, notas de crédito 3/8/13, de débito 2/7/12. */
     public static function letra(int $tipo): string
     {
         switch ($tipo) {
-            case 1:  return 'A';
-            case 6:  return 'B';
-            case 11: return 'C';
+            case 1: case 2: case 3:    return 'A';
+            case 6: case 7: case 8:    return 'B';
+            case 11: case 12: case 13: return 'C';
             default: return 'X';
         }
     }

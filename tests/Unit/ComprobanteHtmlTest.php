@@ -132,6 +132,29 @@ class ComprobanteHtmlTest extends TestCase
     }
 
     /** @test */
+    public function una_nota_de_credito_lleva_su_titulo_y_una_sola_copia()
+    {
+        $d = $this->datos([
+            'titulo' => 'NOTA DE CREDITO NRO.',
+            'comprobante_tipo' => 13,
+            'numero' => 111,
+            'lineas' => [['nombre' => 'Nota de crédito s/ Factura C 00017-00000289', 'cantidad' => 1, 'precio' => 70000, 'descuento' => 0]],
+            'total' => 70000,
+        ]);
+
+        $cuerpo = ComprobanteHtml::cuerpo($d);
+        $this->assertStringContainsString('NOTA DE CREDITO NRO.</b>&nbsp;000020&nbsp;-&nbsp;000111', $cuerpo);
+        $this->assertStringContainsString("text-align: center;'>C</td>", $cuerpo);
+        $this->assertStringContainsString('Nota de crédito s/ Factura C 00017-00000289', $cuerpo);
+        $this->assertStringContainsString('<b>CAE Nro.:</b>', $cuerpo);
+
+        $doc = ComprobanteHtml::documento($d, ['ORIGINAL']);
+        $this->assertSame(1, substr_count($doc, '<page>'));
+        $this->assertStringContainsString('ORIGINAL', $doc);
+        $this->assertStringNotContainsString('DUPLICADO', $doc);
+    }
+
+    /** @test */
     public function escapa_el_html_de_los_datos_de_la_base()
     {
         $html = ComprobanteHtml::cuerpo($this->datos([

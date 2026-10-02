@@ -28,6 +28,7 @@ Route::get('/loginejemplo', function(){
 
 // Botón "Regenerar PDF" del reporte de facturación (rol >= 4): reescribe el PDF desde la base.
 Route::post('facturas/{id}/regenerar-pdf', 'FacturaPdfController@regenerar')->where('id', '[0-9]+')->middleware('throttle:30,1');
+Route::post('notas-credito/{id}/regenerar-pdf', 'NotaCreditoPdfController@regenerar')->where('id', '[0-9]+')->middleware('throttle:30,1');
 
 // Usuarios de la API (/api/auth/*): reemplaza a public/usuarios_api*.php y al viejo GET signup
 Route::middleware('throttle:20,1')->group(function () {

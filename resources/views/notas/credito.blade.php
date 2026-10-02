@@ -5,9 +5,14 @@
     .nc-num { font-family: Menlo, Consolas, monospace; }
     #tabla-nc tbody tr { transition: background-color .15s ease; }
     #filtro-nc { width: 240px; display: inline-block; }
+    .nc-pdf { white-space: nowrap; }
+    .nc-pdf__falta { color: #c0392b; font-weight: 600; }
+    .nc-pdf__regenerar[disabled] { opacity: .6; cursor: progress; }
+    .nc-pdf__aviso { display: none; margin: 0 0 12px; }
 </style>
 
 @section('body')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="content content-boxed">
 
     {{-- Hero --}}
@@ -58,6 +63,7 @@
             </div>
         </div>
         <div class="block-content">
+            <div id="nc-pdf-aviso" class="alert nc-pdf__aviso" role="status"></div>
             @if(count($notas) > 0)
             <div class="table-responsive">
                 <table class="table table-hover table-vcenter" id="tabla-nc">
@@ -80,11 +86,14 @@
                                 <td>{{ \Illuminate\Support\Str::limit($nc->fecha, 16, '') }}</td>
                                 <td>{{ $nc->usuario }}</td>
                                 <td>{{ $nc->nombre_sucursal ?: '—' }}</td>
-                                <td class="text-center">
+                                <td class="text-center nc-pdf" data-nota-id="{{ $nc->id }}">
                                     @if($nc->pdf)
-                                        <a href="{{ $nc->pdf }}" target="_blank" class="btn btn-xs btn-rounded btn-default">
-                                            <i class="fa fa-file-pdf-o push-5-r"></i>Ver
+                                        <a href="{{ $nc->pdf }}" target="_blank" class="btn btn-xs btn-rounded btn-default nc-pdf__link {{ $nc->pdf_existe ? '' : 'nc-pdf__falta' }}">
+                                            <i class="fa fa-file-pdf-o push-5-r"></i>{{ $nc->pdf_existe ? 'Ver' : 'Falta PDF' }}
                                         </a>
+                                        <button type="button" class="btn btn-xs btn-rounded btn-default nc-pdf__regenerar" title="Volver a generar el PDF desde los datos de la nota (no vuelve a emitir)">
+                                            <i class="fa fa-refresh push-5-r"></i>Regenerar
+                                        </button>
                                     @else
                                         <span class="text-muted">—</span>
                                     @endif
@@ -159,6 +168,37 @@
             });
         }
 
+        // Regenerar PDF: POST a Laravel, actualiza el link de la fila sin recargar.
+        var csrf = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+        function avisoPdf(ok, texto) {
+            var el = document.getElementById('nc-pdf-aviso');
+            el.className = 'alert nc-pdf__aviso ' + (ok ? 'alert-success' : 'alert-danger');
+            el.textContent = texto;
+            el.style.display = '';
+        }
+        document.querySelectorAll('.nc-pdf__regenerar').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var celda = btn.closest('.nc-pdf'), link = celda.querySelector('.nc-pdf__link');
+                btn.disabled = true;
+                jQuery.ajax({
+                    method: 'POST',
+                    url: '/notas-credito/' + celda.getAttribute('data-nota-id') + '/regenerar-pdf',
+                    headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' }
+                })
+                .done(function (r) {
+                    link.setAttribute('href', r.pdf + '?v=' + Date.now());
+                    link.classList.remove('nc-pdf__falta');
+                    link.innerHTML = '<i class="fa fa-file-pdf-o push-5-r"></i>Ver';
+                    avisoPdf(true, r.mensaje);
+                })
+                .fail(function (xhr) {
+                    var msg = (xhr.responseJSON && xhr.responseJSON.mensaje) ? xhr.responseJSON.mensaje
+                        : 'No se pudo regenerar el PDF (error ' + xhr.status + '). Avise al administrador.';
+                    avisoPdf(false, msg);
+                })
+                .always(function () { btn.disabled = false; });
+            });
+        });
         // Reenvío de mail (reusa el endpoint legacy /enviar_por_mail.php)
         var pdfActual = '';
         document.querySelectorAll('.js-reenviar').forEach(function (btn) {
