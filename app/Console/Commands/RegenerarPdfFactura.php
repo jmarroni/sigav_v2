@@ -3,19 +3,15 @@
 namespace App\Console\Commands;
 
 use App\Facturacion\ComprobanteHtml;
+use App\Facturacion\RegeneradorPdfFactura;
 use App\Models\AfipConfig;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Spipu\Html2Pdf\Html2Pdf;
 
 /**
  * Vuelve a generar el PDF de facturas ya emitidas a partir de la base.
- *
- * No toca AFIP ni la base: usa el CAE, los datos del cliente y los renglones
- * (`ventas.factura_id`) que quedaron grabados al emitir, y escribe el archivo
- * en la ruta que la factura ya tiene en `factura.pdf`, así el LINK del listado
- * de facturación vuelve a funcionar. Sirve para PDFs perdidos en una migración
- * o que nunca se escribieron (incidente del logo http:// del 2026-09-23).
+ * La lógica está en App\Facturacion\RegeneradorPdfFactura (compartida con el
+ * botón "Regenerar PDF" del reporte); acá solo la selección y la salida.
  */
 class RegenerarPdfFactura extends Command
 {
@@ -30,9 +26,14 @@ class RegenerarPdfFactura extends Command
 
     protected $description = 'Regenera el PDF de facturas ya emitidas (CAE en la base) sin volver a facturar';
 
-    private const FORMAS_PAGO = [1 => 'Efectivo', 2 => 'Debito', 3 => 'Credito', 4 => 'Transferencia'];
+    /** @var RegeneradorPdfFactura */
+    private $regenerador;
 
-    private const TEXTO_IVA = [1 => 'Resp. Inscripto', 2 => 'Monotributista', 3 => 'Exento', 4 => 'Cons. Final'];
+    public function __construct(RegeneradorPdfFactura $regenerador)
+    {
+        parent::__construct();
+        $this->regenerador = $regenerador;
+    }
 
     public function handle(): int
     {
@@ -54,7 +55,7 @@ class RegenerarPdfFactura extends Command
 
         $fallidas = 0;
         foreach ($facturas as $factura) {
-            $ruta = $this->rutaPdf($factura);
+            $ruta = $this->regenerador->rutaPdf($factura);
             $etiqueta = sprintf('Nro %06d (id %d, emitida %s, %s)', (int) $factura->numero, $factura->id, $factura->fecha, $factura->pdf);
 
             if ($ruta === null) {
@@ -71,7 +72,7 @@ class RegenerarPdfFactura extends Command
                 continue;
             }
             try {
-                $this->generar($factura, $ruta);
+                $this->regenerador->regenerar($factura, $fecha);
                 $this->info("$etiqueta: PDF generado.");
             } catch (\Throwable $e) {
                 $this->error("$etiqueta: ".$e->getMessage());
@@ -135,101 +136,10 @@ class RegenerarPdfFactura extends Command
         if ($this->option('faltantes')) {
             $facturas = $facturas->filter(function ($f) {
                 return (int) $f->presupuesto === 0 && (string) $f->cae !== ''
-                    && ($ruta = $this->rutaPdf($f)) !== null && ! is_file($ruta);
+                    && $this->regenerador->rutaPdf($f) !== null && ! $this->regenerador->pdfExiste($f);
             })->values();
         }
 
         return $facturas;
-    }
-
-    /** Ruta absoluta del PDF dentro de public/, a partir de factura.pdf (acepta URL absoluta vieja). */
-    private function rutaPdf($factura): ?string
-    {
-        $path = parse_url((string) $factura->pdf, PHP_URL_PATH);
-        if (! is_string($path) || ! preg_match('#^/?(facturas|presupuesto)/[A-Za-z0-9_\-]+\.pdf\z#', $path)) {
-            return null;
-        }
-
-        return rtrim(public_path(), '/').'/'.ltrim($path, '/');
-    }
-
-    private function generar($factura, string $ruta): void
-    {
-        $lineas = DB::table('ventas')
-            ->leftJoin('productos', 'productos.id', '=', 'ventas.productos_id')
-            ->where('ventas.factura_id', $factura->id)
-            ->orderBy('ventas.id')
-            ->get(['ventas.cantidad', 'ventas.precio', 'ventas.descuento', 'ventas.tipo_pago', 'productos.nombre']);
-        if ($lineas->isEmpty()) {
-            throw new \RuntimeException('no tiene renglones de venta asociados (ventas.factura_id); no se puede regenerar.');
-        }
-
-        $dir = dirname($ruta);
-        if (! is_dir($dir) || ! is_writable($dir)) {
-            throw new \RuntimeException("la carpeta $dir no existe o no es escribible.");
-        }
-
-        $html2pdf = new Html2Pdf('P', 'A4', 'pt', true, 'UTF-8');
-        $html2pdf->setDefaultFont('Arial');
-        $html2pdf->writeHTML(ComprobanteHtml::documento($this->datos($factura, $lineas)));
-        $html2pdf->output($ruta, 'F');
-    }
-
-    private function datos($factura, $lineas): array
-    {
-        require_once base_path('public/legacy_config.php');
-
-        $sucursal = DB::table('sucursales')->where('id', $factura->sucursal_id)->first();
-        $perfil = DB::table('perfil')->orderBy('id')->first();
-        $afip = AfipConfig::activa();
-
-        // El punto de venta con el que se emitió está en el nombre del archivo; la
-        // sucursal puede haber cambiado de pto_vta después.
-        $ptovta = preg_match('#/(\d+)_[^/]*\.pdf$#', (string) $factura->pdf, $m)
-            ? (int) $m[1] : (int) ($sucursal->pto_vta ?? 0);
-
-        $fecha = preg_match('/^(\d{4})-(\d{2})-(\d{2})/', (string) ($this->option('fecha') ?: $factura->fecha), $f)
-            ? "$f[3]-$f[2]-$f[1]" : (string) $factura->fecha;
-
-        $tipoPago = (int) ($lineas->first()->tipo_pago ?? 0);
-
-        return [
-            'logo_src' => legacy_logo_pdf(public_path(), $perfil->logo ?? ''),
-            'sucursal' => [
-                'nombre' => $sucursal->nombre ?? '',
-                'direccion' => $sucursal->direccion ?? '',
-                'codigo_postal' => $sucursal->codigo_postal ?? '',
-                'provincia' => $sucursal->provincia ?? '',
-            ],
-            'emisor' => [
-                'cuit' => $afip->cuit ?? '',
-                'ingresos_brutos' => $afip->ingresos_brutos ?? '',
-                'condicion_iva' => $afip->condicion_iva ?? '',
-            ],
-            'comprobante_tipo' => (int) ($afip->comprobante ?? 11),
-            'presupuesto' => (int) $factura->presupuesto === 1,
-            'ptovta' => $ptovta,
-            'numero' => (int) $factura->numero,
-            'fecha' => $fecha,
-            'cae' => (string) $factura->cae,
-            'cae_vto' => (string) $factura->fechacae,
-            'cliente' => [
-                'nombre' => (string) $factura->nombre,
-                'direccion' => (string) $factura->direccion,
-                'documento' => (string) $factura->documento,
-                'iva_texto' => self::TEXTO_IVA[(int) $factura->iva] ?? 'Consumidor Final',
-                'forma_pago' => self::FORMAS_PAGO[$tipoPago] ?? null,
-            ],
-            'lineas' => $lineas->map(function ($l) {
-                return [
-                    'nombre' => $l->nombre ?? '',
-                    'cantidad' => $l->cantidad,
-                    'precio' => (float) $l->precio,
-                    'descuento' => (float) $l->descuento,
-                ];
-            })->all(),
-            'descuento_total' => (float) ($factura->descuento_total ?? 0),
-            'total' => (float) $factura->total,
-        ];
     }
 }

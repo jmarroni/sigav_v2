@@ -44,15 +44,17 @@ class UsuariosApiTest extends TestCase
 
     protected function tearDown(): void
     {
-        unset($_COOKIE['kiosco']);
+        unset($_COOKIE['kiosco'], $_COOKIE['rol']);
         parent::tearDown();
     }
 
     /** Sesión Laravel + cookie legacy de un usuario con el rol dado. */
     private function logueadoConRol(int $rol): self
     {
+        config(['app.legacy_semilla' => 'semilla-de-test']);
         DB::table('usuarios')->insert(['usuario' => 'operador', 'rol_id' => $rol]);
         $_COOKIE['kiosco'] = 'operador';
+        $_COOKIE['rol'] = sha1('semilla-de-test'.$rol.'semilla-de-test');
 
         $sesion = User::create(['name' => 'op', 'email' => 'operador@legacy.local', 'password' => bcrypt('x')]);
 

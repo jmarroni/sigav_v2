@@ -111,6 +111,12 @@ class RegenerarPdfFacturaTest extends TestCase
         return is_file($ruta) && strncmp((string) file_get_contents($ruta, false, null, 0, 4), '%PDF', 4) === 0;
     }
 
+    /** TCPDF escribe cada imagen embebida como un objeto /Subtype /Image. */
+    private function tieneImagen(string $ruta): bool
+    {
+        return is_file($ruta) && preg_match('#/Subtype\s*/Image#', (string) file_get_contents($ruta)) === 1;
+    }
+
     /** @test */
     public function regenera_el_pdf_de_una_factura_por_numero()
     {
@@ -119,7 +125,25 @@ class RegenerarPdfFacturaTest extends TestCase
         $this->artisan('factura:regenerar-pdf', ['numero' => ['590']])
             ->assertExitCode(0);
 
-        $this->assertTrue($this->esPdf($this->publico.'/facturas/20_86395342432866_000590.pdf'));
+        $ruta = $this->publico.'/facturas/20_86395342432866_000590.pdf';
+        $this->assertTrue($this->esPdf($ruta));
+        // El logo del perfil (o el placeholder) tiene que quedar embebido: la copia de
+        // Html2Pdf de Laravel ignora en silencio los src file:// y dejaba el PDF sin imagen.
+        $this->assertTrue($this->tieneImagen($ruta), 'El PDF regenerado no tiene el logo embebido');
+    }
+
+    /** @test */
+    public function usa_el_logo_cargado_en_el_perfil()
+    {
+        mkdir($this->publico.'/assets/perfil', 0777, true);
+        copy(base_path('public/assets/img/photos/no-image-featured-image.png'), $this->publico.'/assets/perfil/logo.png');
+        DB::table('perfil')->where('id', 1)->update(['logo' => '/assets/perfil/logo.png']);
+        unlink($this->publico.'/assets/img/photos/no-image-featured-image.png'); // sin placeholder: solo puede salir del perfil
+        $this->factura(590, '86395342432866');
+
+        $this->artisan('factura:regenerar-pdf', ['numero' => ['590']])->assertExitCode(0);
+
+        $this->assertTrue($this->tieneImagen($this->publico.'/facturas/20_86395342432866_000590.pdf'));
     }
 
     /** @test */

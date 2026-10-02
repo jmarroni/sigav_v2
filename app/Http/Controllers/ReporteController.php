@@ -23,6 +23,8 @@ use DB;
 
 class ReporteController extends Controller
 {
+  use Concerns\AutorizaRolAdmin;
+
   public function __construct(){
     // Protección mediante middleware de autenticación de Laravel
     $this->middleware('auth');
@@ -83,13 +85,17 @@ class ReporteController extends Controller
     }
   }
 
+  // Botón "Regenerar PDF": solo rol >= 4, y se marca qué facturas no tienen el archivo en disco.
+  $regenerador = new \App\Facturacion\RegeneradorPdfFactura();
+  $puedeRegenerar = $this->tieneRol(4);
   foreach($facturas as $factura)
   {
     if ($factura->nombre_sucursal==NULL)
       $factura->nombre_sucursal="Eliminada";
+    $factura->pdf_existe = $regenerador->pdfExiste($factura);
   }
 
-  return view("reportes.factura",compact("facturas","reporte_desde","reporte_hasta"));
+  return view("reportes.factura",compact("facturas","reporte_desde","reporte_hasta","puedeRegenerar"));
 }
 
 public function cierreCajaReporte(Request $request)
