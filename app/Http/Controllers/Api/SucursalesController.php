@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Support\Utf8;
 use App\Sucursales;
 
 class SucursalesController extends Controller
@@ -19,7 +20,7 @@ class SucursalesController extends Controller
                 where('relacion_users_sucursales.user_id', $request->user()->id)->
                 get();
 
-        return response()->json($sucursales, 201);
+        return response()->json(Utf8::sanear($sucursales), 201);
     }
 
     public function productosPorSucursal(Request $request)
@@ -62,6 +63,7 @@ class SucursalesController extends Controller
             $producto->id = null;
             $producto->imagenes = $array_imagenes;
         }
-        return response()->json($productos, 201);
+        // Hay celdas en latin1 real en la base: sin esto json_encode falla y la API da 500.
+        return response()->json(Utf8::sanear($productos), 201);
     }
 }

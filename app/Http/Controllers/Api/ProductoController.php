@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
 use Illuminate\Http\Request;
+use App\Support\Utf8;
 use App\Producto;
 
 class ProductoController extends Controller
@@ -46,6 +47,7 @@ class ProductoController extends Controller
             $producto->imagenes = $array_imagenes;
         }
 
-        return response()->json($productos, 201);
+        // Hay celdas en latin1 real en la base: sin esto json_encode falla y la API da 500.
+        return response()->json(Utf8::sanear($productos), 201);
     }
 }

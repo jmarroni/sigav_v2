@@ -157,6 +157,31 @@ class ApiAuthTest extends TestCase
     }
 
     /** @test */
+    public function los_productos_con_texto_en_latin1_no_tumban_los_endpoints()
+    {
+        // En la base de Mercado quedaron ~300 celdas en latin1 real (PE\xD1A) entre
+        // datos UTF-8: json_encode fallaba con "Malformed UTF-8" y la API daba 500.
+        $this->productoEnSucursal($this->usuarioApi());
+        DB::table('productos')->where('id', 1)->update(['nombre' => "PE\xD1A", 'material' => "CER\xC1MICA"]);
+        DB::table('proveedor')->where('id', 1)->update(['nombre' => "GASTRON\xD3MICOS"]);
+        DB::table('categorias')->where('id', 1)->update(['nombre' => "PLATER\xCDA"]);
+        $bearer = ['Authorization' => 'Bearer ' . $this->token()];
+
+        $this->withHeaders($bearer)
+            ->postJson('/api/auth/productos')
+            ->assertStatus(201)
+            ->assertJsonPath('0.nombre', 'PEÑA')
+            ->assertJsonPath('0.categoria', 'PLATERÍA')
+            ->assertJsonPath('0.nombre_proveedor', 'GASTRONÓMICOS');
+
+        $this->withHeaders($bearer)
+            ->postJson('/api/auth/productosPorSucursal', ['nombre_sucursal' => 'Centro'])
+            ->assertStatus(201)
+            ->assertJsonPath('0.nombre', 'PEÑA')
+            ->assertJsonPath('0.material', 'CERÁMICA');
+    }
+
+    /** @test */
     public function el_token_vence_en_un_dia_como_informa_el_login()
     {
         $this->usuarioApi();
