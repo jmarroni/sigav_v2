@@ -8,6 +8,8 @@ services:
       - "8080:80"
     volumes:
       - .:/var/www/html
+      # Misma protección Apache que prod (vendor, AFIP, manifiestos) para poder probarla local.
+      - ./deploy/afip-protect.conf:/etc/apache2/conf-enabled/zz-afip-protect.conf:ro
     depends_on:
       db:
         condition: service_healthy
