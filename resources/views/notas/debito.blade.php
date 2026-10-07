@@ -98,25 +98,39 @@
                 });
         });
 
-        // Emitir (procesador legacy probado)
+        // Emitir (procesador legacy). Botón y select bloqueados en vuelo; se rehabilita
+        // solo cuando el servidor confirma que NO se emitió nada.
+        var ndEnVuelo = false;
         jQuery('#concretar').on('click', function () {
             $err.hide();
+            if (ndEnVuelo) return;
             if (!$factura.val()) { $err.text('Seleccioná una nota de crédito.').show(); return; }
             var $btn = jQuery(this).prop('disabled', true);
+            ndEnVuelo = true;
+            $factura.prop('disabled', true);
             jQuery.post('/nota_de_debito.php', { id: $factura.val(), observaciones: $obs.val() })
                 .done(function (msg) {
+                    ndEnVuelo = false;
+                    $factura.prop('disabled', false);
                     if (msg && msg.factura) {
                         jQuery('#nd-resultado').show();
                         jQuery('#nd-iframe').attr('src', msg.factura);
                         setTimeout(function () { try { document.getElementById('nd-iframe').contentWindow.print(); } catch (e) {} }, 1500);
+                    } else if (msg && msg.emitida_sin_pdf) {
+                        $err.text(msg.mensaje).show();
                     } else {
-                        var m = (msg && msg.mensaje) ? msg.mensaje : 'Error desconocido';
-                        $err.text('AFIP no emitió el comprobante: ' + m).show();
+                        var m = (msg && msg.mensaje) ? msg.mensaje : ((msg && msg.error) ? msg.error : 'Error desconocido');
+                        $err.text('No se emitió el comprobante: ' + m).show();
+                        if (msg && msg.error !== 'No se pudo confirmar la emisión') $btn.prop('disabled', false);
                     }
                 })
-                .fail(function () { $err.text('Error de comunicación al emitir la nota de débito.').show(); })
-                .always(function () { $btn.prop('disabled', false); });
+                .fail(function () {
+                    ndEnVuelo = false;
+                    $err.text('Error de comunicación al emitir la nota de débito. NO vuelva a intentar hasta verificar si se emitió; si se repite, avise al administrador.').show();
+                });
         });
+        // Al elegir otra NC se vuelve a habilitar la emisión (nunca en vuelo).
+        $factura.on('change', function () { if (!ndEnVuelo) jQuery('#concretar').prop('disabled', false); });
     })();
 </script>
 @endsection

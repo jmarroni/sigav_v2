@@ -45,7 +45,8 @@ class NotasController extends Controller
         $desde = $data['desde'] ?? null;
         $hasta = $data['hasta'] ?? null;
 
-        $q = NotaCredito::leftJoin('sucursales', 'sucursales.id', '=', 'nota_de_credito.sucursal_id')
+        $q = NotaCredito::sinReservas()
+            ->leftJoin('sucursales', 'sucursales.id', '=', 'nota_de_credito.sucursal_id')
             ->select('nota_de_credito.*', 'sucursales.nombre as nombre_sucursal');
 
         if ($desde) {

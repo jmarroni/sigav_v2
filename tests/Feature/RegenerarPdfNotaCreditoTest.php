@@ -82,6 +82,7 @@ class RegenerarPdfNotaCreditoTest extends TestCase
         Schema::create('nota_de_credito', function (Blueprint $t) {
             $t->increments('id');
             $t->integer('sucursal_id')->nullable();
+            $t->integer('factura_id')->nullable()->unique();
             $t->string('fecha', 20)->nullable();
             $t->string('usuario', 100)->nullable();
             $t->integer('numero')->nullable();
