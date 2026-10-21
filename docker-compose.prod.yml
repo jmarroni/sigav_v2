@@ -12,6 +12,9 @@ services:
       - ./deploy/afip-protect.conf:/etc/apache2/conf-enabled/zz-afip-protect.conf:ro
       # AFIP producción negocia DH débil: OpenSSL a SECLEVEL=1 (ver deploy/openssl-afip.cnf)
       - ./deploy/openssl-afip.cnf:/etc/ssl/openssl-afip.cnf:ro
+      # Límites de subida de imágenes (mismo archivo que copia el Dockerfile): montado para
+      # que aplique sin rebuild de la imagen.
+      - ./deploy/php-uploads.ini:/usr/local/etc/php/conf.d/zz-sigav-uploads.ini:ro
     depends_on:
       db:
         condition: service_healthy

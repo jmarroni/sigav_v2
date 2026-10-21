@@ -10,6 +10,7 @@ services:
       - .:/var/www/html
       # Misma protección Apache que prod (vendor, AFIP, manifiestos) para poder probarla local.
       - ./deploy/afip-protect.conf:/etc/apache2/conf-enabled/zz-afip-protect.conf:ro
+      - ./deploy/php-uploads.ini:/usr/local/etc/php/conf.d/zz-sigav-uploads.ini:ro
     depends_on:
       db:
         condition: service_healthy
