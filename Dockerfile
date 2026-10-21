@@ -37,6 +37,9 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
         mbstring \
         pdo_sqlite
 
+# Límites de subida (imágenes de producto): ver comentarios en deploy/php-uploads.ini
+COPY deploy/php-uploads.ini /usr/local/etc/php/conf.d/zz-sigav-uploads.ini
+
 # Apache: docroot en public/ + mod_rewrite (necesario para Laravel y rutas legacy)
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \

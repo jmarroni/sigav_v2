@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
 use Illuminate\Http\Request;
 use App\Support\Utf8;
+use App\Models\Imagen_producto;
 use App\Producto;
 
 class ProductoController extends Controller
@@ -40,7 +41,7 @@ class ProductoController extends Controller
             $array_imagenes = array();
             foreach ($imagenes as $imagen) {
                 if ( $producto->id == $imagen->productos_id ) {
-                    array_push($array_imagenes, $imagen->imagen_url);
+                    array_push($array_imagenes, Imagen_producto::absoluta($imagen->imagen_url));
                 }
             }
             $producto->id = null;

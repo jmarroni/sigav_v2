@@ -13,8 +13,14 @@
         </header>
 
         <div class="sg-card__body">
+            @if (session('error_carga'))
+            <div class="sg-alert sg-alert--error" role="alert">
+                <i class="fa fa-exclamation-triangle"></i>
+                <span>{{ session('error_carga') }}</span>
+            </div>
+            @endif
             <form class="sg-form form-horizontal" action="/carga" enctype="multipart/form-data" method="post">
-                <input type="hidden" value="" name="id" id="id" />
+                <input type="hidden" value="{{ old('id') }}" name="id" id="id" />
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
                 <div class="sg-fieldset">
@@ -22,20 +28,20 @@
                     <div class="sg-grid sg-grid--3">
                         <div class="sg-field">
                             <label for="producto">Nombre <span class="sg-req">*</span></label>
-                            <input type="text" class="form-control lettersNumbers" name="producto" id="producto" value="" placeholder="Nombre del producto completo" />
+                            <input type="text" class="form-control lettersNumbers" name="producto" id="producto" value="{{ old('producto') }}" placeholder="Nombre del producto completo" />
                         </div>
                         <div class="sg-field">
                             <label for="codigo_de_barras">Código de Barras <i>(autogenerado si se deja vacío)</i></label>
-                            <input type="text" class="form-control" name="codigo_de_barras" id="codigo_de_barras" value="" placeholder="Código de barras" />
+                            <input type="text" class="form-control" name="codigo_de_barras" id="codigo_de_barras" value="{{ old('codigo_de_barras') }}" placeholder="Código de barras" />
                         </div>
                         <div class="sg-field">
                             <label for="material">Material</label>
-                            <input type="text" class="form-control lettersNumbers" name="material" id="material" value="" placeholder="Madera, metal, alpaca…" />
+                            <input type="text" class="form-control lettersNumbers" name="material" id="material" value="{{ old('material') }}" placeholder="Madera, metal, alpaca…" />
                         </div>
                     </div>
                     <div style="display:none;">
-                        <input type="text" class="form-control numbers" name="stock" id="stock" value="0" />
-                        <input type="text" class="form-control numbers" name="stock_minimo" id="stock_minimo" value="0" />
+                        <input type="text" class="form-control numbers" name="stock" id="stock" value="{{ old('stock', 0) }}" />
+                        <input type="text" class="form-control numbers" name="stock_minimo" id="stock_minimo" value="{{ old('stock_minimo', 0) }}" />
                     </div>
                 </div>
 
@@ -47,19 +53,19 @@
                             <select class="form-control" id="proveedor" name="proveedor">
                                 <option value="0">Seleccione un proveedor</option>
                                 @foreach($proveedores as $provedor)
-                                <option value="{{$provedor->id}}">{{$provedor->nombre}} {{$provedor->apellido}}</option>
+                                <option value="{{$provedor->id}}" @if((string) old('proveedor') === (string) $provedor->id) selected="selected" @endif>{{$provedor->nombre}} {{$provedor->apellido}}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="sg-field">
                             <label for="categoria">Categoría <span class="sg-req">*</span></label>
-                            <select class="form-control" disabled="disabled" name="categoria" id="categoria">
+                            <select class="form-control" disabled="disabled" name="categoria" id="categoria" data-old-categoria="{{ old('categoria') }}">
                                 <option value="">Seleccione un rubro</option>
                             </select>
                         </div>
                         <div class="sg-field">
                             <label for="costo">Precio Última Compra <span class="sg-req">*</span></label>
-                            <input type="text" class="form-control prices" name="costo" id="costo" value="" placeholder="Costo por unidad" />
+                            <input type="text" class="form-control prices" name="costo" id="costo" value="{{ old('costo') }}" placeholder="Costo por unidad" />
                         </div>
                     </div>
                 </div>
@@ -69,25 +75,29 @@
                     <div class="sg-grid sg-grid--3">
                         <div class="sg-field">
                             <label for="precio_unidad">Precio Minorista <span class="sg-req">*</span></label>
-                            <input type="text" class="form-control prices" name="precio_unidad" id="precio_unidad" value="" placeholder="Use . para decimales (5.5)" />
+                            <input type="text" class="form-control prices" name="precio_unidad" id="precio_unidad" value="{{ old('precio_unidad') }}" placeholder="Use . para decimales (5.5)" />
                         </div>
                         <div class="sg-field">
                             <label for="precio_mayorista">Precio Mayorista <i>(opcional)</i></label>
-                            <input type="text" class="form-control prices" name="precio_mayorista" id="precio_mayorista" value="" placeholder="Use . para decimales (5.5)" />
+                            <input type="text" class="form-control prices" name="precio_mayorista" id="precio_mayorista" value="{{ old('precio_mayorista') }}" placeholder="Use . para decimales (5.5)" />
                         </div>
                         <div class="sg-field">
                             <label for="precio_reposicion">Precio Reposición <i>(opcional)</i></label>
-                            <input type="text" class="form-control prices" name="precio_reposicion" id="precio_reposicion" value="" placeholder="Use . para decimales (5.5)" />
+                            <input type="text" class="form-control prices" name="precio_reposicion" id="precio_reposicion" value="{{ old('precio_reposicion') }}" placeholder="Use . para decimales (5.5)" />
                         </div>
                         <div class="sg-field">
                             <label for="descuento">Descuento <i>(% — opcional)</i></label>
-                            <input type="text" class="form-control numbers" name="descuento" id="descuento" value="0" placeholder="Descuento del producto en % (0 a 100)" />
+                            <input type="text" class="form-control numbers" name="descuento" id="descuento" value="{{ old('descuento', 0) }}" placeholder="Descuento del producto en % (0 a 100)" />
                         </div>
                     </div>
                 </div>
 
                 <div class="sg-fieldset">
-                    <span class="sg-fieldset__label">Imágenes</span>
+                    <span class="sg-fieldset__label">Imágenes <i class="sg-fieldset__hint">jpg, png, gif o bmp, hasta 10 MB cada una</i></span>
+                    <div id="imagenes_actuales" class="sg-imgs-actuales" hidden>
+                        <span class="sg-imgs-actuales__label">Imágenes actuales <i>(si subís nuevas, reemplazan a estas)</i></span>
+                        <div class="sg-imgs-actuales__lista"></div>
+                    </div>
                     <div class="sg-grid sg-grid--imgs">
                         <div class="sg-field sg-field--file">
                             <label for="imagen1">Imagen 1</label>
@@ -121,15 +131,15 @@
                     <div class="sg-grid sg-grid--3">
                         <div class="sg-field">
                             <label for="descripcion">Descripción <span class="sg-req">*</span></label>
-                            <textarea class="form-control lettersNumbers" name="descripcion" id="descripcion" placeholder="Describa el producto"></textarea>
+                            <textarea class="form-control lettersNumbers" name="descripcion" id="descripcion" placeholder="Describa el producto">{{ old('descripcion') }}</textarea>
                         </div>
                         <div class="sg-field">
                             <label for="descripcion_en">Descripción Inglés</label>
-                            <textarea class="form-control lettersNumbers" name="descripcion_en" id="descripcion_en" placeholder="Product description"></textarea>
+                            <textarea class="form-control lettersNumbers" name="descripcion_en" id="descripcion_en" placeholder="Product description">{{ old('descripcion_en') }}</textarea>
                         </div>
                         <div class="sg-field">
                             <label for="descripcion_pr">Descripción Portugués</label>
-                            <textarea class="form-control lettersNumbers" name="descripcion_pr" id="descripcion_pr" placeholder="Descrição do produto"></textarea>
+                            <textarea class="form-control lettersNumbers" name="descripcion_pr" id="descripcion_pr" placeholder="Descrição do produto">{{ old('descripcion_pr') }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -166,6 +176,7 @@
             <table id="tabla_productos" class="sg-table">
                 <thead>
                     <tr>
+                        <th class="sg-thumb-th">Imagen</th>
                         <th>Código</th>
                         <th>Producto</th>
                         <th>Proveedor</th>
@@ -187,7 +198,7 @@
 @endsection
 @section("scripts")
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<script src="/assets/js/pages/carga.js?v=1.12"></script>
+<script src="/assets/js/pages/carga.js?v=1.13"></script>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" />
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -217,17 +228,18 @@
             language: {
                 url: '/assets/language/Spanish.json'
             },
-            order: [[1, 'asc']],
+            order: [[2, 'asc']],
             columns: [
-                { data: 0, className: 'sg-mono sg-muted', orderable: false },
-                { data: 1, className: 'sg-strong' },
-                { data: 2, orderable: false },
+                { data: 0, className: 'sg-thumb-cell', orderable: false },
+                { data: 1, className: 'sg-mono sg-muted', orderable: false },
+                { data: 2, className: 'sg-strong' },
                 { data: 3, orderable: false },
-                { data: 4, className: 'sg-num', orderable: false },
-                { data: 5, className: 'sg-num sg-mono' },
+                { data: 4, orderable: false },
+                { data: 5, className: 'sg-num', orderable: false },
                 { data: 6, className: 'sg-num sg-mono' },
-                { data: 7, className: 'sg-num sg-mono sg-muted', orderable: false },
-                { data: 8, className: 'sg-actions', orderable: false }
+                { data: 7, className: 'sg-num sg-mono' },
+                { data: 8, className: 'sg-num sg-mono sg-muted', orderable: false },
+                { data: 9, className: 'sg-actions', orderable: false }
             ]
         });
     });
@@ -391,6 +403,32 @@
 .sigav-carga .sg-field--inline select.form-control{ min-width:220px; height:38px; min-height:38px; }
 
 .sigav-carga .sg-table-wrap{ padding:8px 12px 18px; overflow-x:auto; }
+
+/* ---------- Imágenes de producto ---------- */
+.sigav-carga .sg-alert{
+    display:flex; align-items:flex-start; gap:10px; margin:0 0 18px; padding:12px 14px;
+    border-radius:var(--sg-r-sm); font-size:13.5px; line-height:1.45;
+}
+.sigav-carga .sg-alert--error{ background:var(--sg-danger-soft); color:#8f2d2d; border:1px solid rgba(214,69,69,.25); }
+.sigav-carga .sg-alert--error i{ margin-top:2px; color:var(--sg-danger); }
+.sigav-carga .sg-fieldset__hint{ font-style:normal; font-weight:400; color:var(--sg-muted); font-size:12px; margin-left:8px; }
+.sigav-carga .sg-imgs-actuales{ margin:0 0 14px; }
+.sigav-carga .sg-imgs-actuales__label{ display:block; font-size:12px; color:var(--sg-ink-2); margin-bottom:8px; }
+.sigav-carga .sg-imgs-actuales__label i{ color:var(--sg-muted); }
+.sigav-carga .sg-imgs-actuales__lista{ display:flex; flex-wrap:wrap; gap:8px; }
+.sigav-carga .sg-thumb{
+    width:44px; height:44px; object-fit:cover; border-radius:8px; display:block;
+    border:1px solid var(--sg-line); background:var(--sg-surface-2);
+}
+.sigav-carga .sg-imgs-actuales .sg-thumb{ width:72px; height:72px; }
+.sigav-carga .sg-thumb--vacia{ opacity:.45; }
+.sigav-carga .sg-thumb-link{ display:inline-block; transition: transform .12s ease, box-shadow .15s ease; }
+.sigav-carga .sg-thumb-link:hover{ transform:scale(1.06); box-shadow:var(--sg-shadow); }
+.sigav-carga .sg-thumb-cell{ width:64px; white-space:nowrap; position:relative; }
+.sigav-carga .sg-thumb-count{
+    position:absolute; top:6px; right:6px; font:600 10px/1 var(--sg-mono);
+    background:var(--sg-ink); color:#fff; border-radius:999px; padding:3px 5px;
+}
 
 .sigav-carga table.sg-table{ width:100%; border-collapse:separate; border-spacing:0; }
 .sigav-carga table.sg-table thead th{

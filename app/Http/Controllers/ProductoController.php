@@ -12,6 +12,7 @@ use App\Models\LogsCostosPrecios;
 use App\Models\Stock;
 use App\Models\SitesSucursalesOpencart;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image;
 use GuzzleHttp\Client;
 use Curl\curl;
@@ -65,7 +66,7 @@ class ProductoController extends Controller
         // Query base: mismos joins/selects/eager-load que usaba index()
         $query = Producto::with(['stock_' => function ($q) use ($sucursal) {
                 $q->where('sucursal_id', $sucursal);
-            }])
+            }, 'imagenes'])
             ->leftjoin('categorias', 'categorias.id', '=', 'productos.categorias_id')
             ->leftjoin('proveedor', 'proveedor.id', '=', 'productos.proveedores_id')
             ->select(
@@ -90,12 +91,13 @@ class ProductoController extends Controller
         $recordsFiltered = (clone $query)->count('productos.id');
 
         // Orden: solo columnas con respaldo directo en DB (las demás son no-ordenables)
+        // (la columna 0 es la miniatura de la imagen)
         $orderColumns = [
-            1 => 'productos.nombre',
-            5 => 'productos.precio_unidad',
-            6 => 'productos.precio_reposicion',
+            2 => 'productos.nombre',
+            6 => 'productos.precio_unidad',
+            7 => 'productos.precio_reposicion',
         ];
-        $orderCol = (int) $request->input('order.0.column', 1);
+        $orderCol = (int) $request->input('order.0.column', 2);
         $orderDir = strtolower((string) $request->input('order.0.dir', 'asc')) === 'desc' ? 'desc' : 'asc';
         $orderBy  = $orderColumns[$orderCol] ?? 'productos.nombre';
         $query->orderBy($orderBy, $orderDir);
@@ -132,6 +134,7 @@ class ProductoController extends Controller
 
             $data[] = [
                 'DT_RowId' => (string) $p->id,
+                $this->celdaMiniatura($p),
                 e($p->codigo_barras),
                 e($p->nombre),
                 $proveedor,
@@ -150,6 +153,21 @@ class ProductoController extends Controller
             'recordsFiltered' => $recordsFiltered,
             'data'            => $data,
         ]);
+    }
+
+    /** Celda de la grilla: miniatura de la primera imagen (o placeholder) + cantidad de imágenes. */
+    private function celdaMiniatura(Producto $p): string
+    {
+        $primera = $p->imagenes->first();
+        if ($primera === null) {
+            return '<img class="sg-thumb sg-thumb--vacia" src="'.e(Imagen_producto::SIN_IMAGEN).'" alt="Sin imagen" loading="lazy" />';
+        }
+        $html = '<a class="sg-thumb-link" href="'.e($primera->imagen_url).'" target="_blank" rel="noopener" title="Ver imagen">'
+            .'<img class="sg-thumb" src="'.e($primera->miniatura).'" alt="" loading="lazy" /></a>';
+        if ($p->imagenes->count() > 1) {
+            $html .= '<span class="sg-thumb-count">+'.($p->imagenes->count() - 1).'</span>';
+        }
+        return $html;
     }
 
 
@@ -226,6 +244,16 @@ class ProductoController extends Controller
      */
     public function store(Request $request)
     {
+        // Imágenes: se validan ANTES de tocar la base. Antes una foto que superaba el
+        // límite de PHP se descartaba en silencio y el alta decía "exitosa" igual.
+        $errorImagenes = $this->validarImagenes($request);
+        if ($errorImagenes !== null) {
+            // Se conserva lo tipeado (los archivos no se pueden re-enviar, se piden de nuevo).
+            return redirect('carga')
+                ->with('error_carga', $errorImagenes)
+                ->withInput($request->except(self::CAMPOS_IMAGEN));
+        }
+
         $productoApi=array();
         $id=0;
         $codigo_barras='';
@@ -334,30 +362,7 @@ class ProductoController extends Controller
         $stock_logs->barra=$codigo_barras;
         $stock_logs->save();
          
-        $imagenes = array();
-        for($i = 0;$i < 7; $i ++){
-            if ($request->hasFile('imagen'.$i)) {
-                $path = $request->{"imagen".$i}->store('public/productos/images/'.$productos->id);
-                $image_resize = Image::make(storage_path('app')."/".$path);
-                $image_resize->fit(300, 300);
-                $image_resize->save(str_replace("/".$productos->id."/","/".$productos->id."/thumb_300x300_",storage_path('app')."/".$path));
-                $imagenes[] = $path;
-                if ($i==0)
-                {
-                    $productoApi[0]['imagen']=$request->{"imagen".$i};
-                }
-            }
-        }
-        
-        if (count($imagenes) > 0){
-            Imagen_producto::where("productos_id",$productos->id)->delete();
-            foreach($imagenes as $imagen){
-                $imagen_producto = new Imagen_producto();
-                $imagen_producto->imagen_url = env("APP_URL").str_replace("public","/storage",$imagen);
-                $imagen_producto->productos_id = $productos->id;
-                $imagen_producto->save();
-            }
-        }
+        $this->guardarImagenes($request, $productos);
         // $token=$this->loginTiendaOpencart($sucursal);
         // if ($token!=-1 && $token!=-2)
         // { 
@@ -375,6 +380,79 @@ class ProductoController extends Controller
         return redirect('carga/mensaje/'.base64_encode($mensaje));
     }
 
+    /** Campos de archivo del formulario de alta (imagen1..imagen6; imagen0 por compatibilidad). */
+    const CAMPOS_IMAGEN = ['imagen0', 'imagen1', 'imagen2', 'imagen3', 'imagen4', 'imagen5', 'imagen6'];
+    const IMAGEN_MAX_KB = 10240;
+    /** Formatos que GD (sin libwebp en la imagen Docker) puede leer para generar la miniatura. SVG queda afuera a propósito: GD no lo procesa y puede traer script. */
+    const IMAGEN_FORMATOS = 'jpg,jpeg,png,gif,bmp';
+
+    /**
+     * Valida las imágenes del alta. Devuelve el texto del error o null si está todo bien.
+     * Un archivo que PHP ya descartó por tamaño (UPLOAD_ERR_INI_SIZE) también cae acá
+     * (regla implícita "uploaded"), en vez de pasar desapercibido.
+     */
+    private function validarImagenes(Request $request): ?string
+    {
+        $reglas = $nombres = [];
+        foreach (self::CAMPOS_IMAGEN as $i => $campo) {
+            $reglas[$campo]  = 'nullable|file|image|mimes:'.self::IMAGEN_FORMATOS.'|max:'.self::IMAGEN_MAX_KB;
+            $nombres[$campo] = 'Imagen '.$i;
+        }
+        $mensajes = [
+            'image'    => ':attribute debe ser una imagen (jpg, png, gif o bmp).',
+            'mimes'    => ':attribute debe ser jpg, png, gif o bmp.',
+            'file'     => ':attribute no es un archivo válido.',
+            'max'      => ':attribute supera el tamaño máximo de '.(self::IMAGEN_MAX_KB / 1024).' MB.',
+            'uploaded' => ':attribute no se pudo subir: supera el tamaño máximo permitido por el servidor.',
+        ];
+        $validador = Validator::make($request->all(), $reglas, $mensajes, $nombres);
+        if ($validador->fails()) {
+            return 'No se guardó el producto. '.implode(' ', $validador->errors()->all());
+        }
+        return null;
+    }
+
+    /**
+     * Guarda las imágenes subidas en storage/app/public/productos/images/{id}/ con su
+     * miniatura 300x300 y reemplaza las filas de imagen_producto del producto.
+     * La URL persistida es relativa al host (ver Imagen_producto).
+     */
+    private function guardarImagenes(Request $request, Producto $producto): void
+    {
+        $disco = Storage::disk('local');
+        $paths = [];
+        foreach (self::CAMPOS_IMAGEN as $campo) {
+            if (! $request->hasFile($campo)) {
+                continue;
+            }
+            $path = $request->file($campo)->store('public/productos/images/'.$producto->id);
+            $miniatura = dirname($path).'/'.Imagen_producto::PREFIJO_MINIATURA.basename($path);
+            try {
+                Image::make($disco->path($path))->fit(300, 300)->save($disco->path($miniatura));
+            } catch (\Throwable $e) {
+                // El producto ya está guardado: no se aborta el alta por una imagen corrupta,
+                // se descarta ese archivo y queda registrado para diagnóstico.
+                \Log::warning('Imagen de producto descartada: no se pudo generar la miniatura', [
+                    'producto_id' => $producto->id, 'campo' => $campo, 'error' => $e->getMessage(),
+                ]);
+                $disco->delete($path);
+                continue;
+            }
+            $paths[] = $path;
+        }
+
+        if (count($paths) === 0) {
+            return;
+        }
+        Imagen_producto::where('productos_id', $producto->id)->delete();
+        foreach ($paths as $path) {
+            $imagen = new Imagen_producto();
+            $imagen->imagen_url   = Imagen_producto::relativaDesdePath($path);
+            $imagen->productos_id = $producto->id;
+            $imagen->save();
+        }
+    }
+
     /**
      * Display the specified resource.
      *
@@ -383,8 +461,8 @@ class ProductoController extends Controller
      */
     public function show($id)
     {
-
-        return response()->json(Producto::find($id));
+        // Incluye las imágenes para que el formulario de edición las muestre.
+        return response()->json(Producto::with('imagenes')->find($id));
     }
 
     /**
