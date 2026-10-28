@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Producto;
 use App\Models\Stock;
 use App\Models\Stock_log;
+use App\Support\Precio;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,9 @@ use Illuminate\Support\Facades\Validator;
  */
 class VentaController extends Controller
 {
+    /** Código de documento AFIP por tipo que acepta la API. */
+    private const CODIGO_DOC = ['CUIT' => '80', 'DNI' => '96'];
+
     public function venta(Request $request)
     {
         $validador = Validator::make($request->all(), [
@@ -32,6 +36,12 @@ class VentaController extends Controller
             'items' => 'required|array|min:1',
             'items.*.codigo_barras' => 'required|string|max:100',
             'items.*.cantidad' => 'required|integer|min:1|max:100000',
+            // Opcional: si falta, la factura va a Consumidor final.
+            'cliente' => 'nullable|array',
+            'cliente.tipo_documento' => 'required_with:cliente|in:CUIT,DNI',
+            'cliente.numero_documento' => 'required_with:cliente|digits_between:7,11',
+            'cliente.nombre' => 'required_with:cliente|string|max:200',
+            'cliente.condicion_iva' => 'nullable|in:1,2,3,4',
         ]);
         if ($validador->fails()) {
             return response()->json([
@@ -57,8 +67,9 @@ class VentaController extends Controller
         ksort($pedido);
 
         try {
-            DB::transaction(function () use ($usuario, $referencia, $pedido) {
-                $this->descontar($usuario, $referencia, $pedido);
+            $cliente = $request->input('cliente');
+            DB::transaction(function () use ($usuario, $referencia, $pedido, $cliente) {
+                $this->descontar($usuario, $referencia, $pedido, $cliente);
             });
         } catch (ReferenciaDuplicada $e) {
             // Otro pedido con la misma referencia confirmó en paralelo.
@@ -87,7 +98,7 @@ class VentaController extends Controller
      * incluida la fila de referencia (así un reintento tras reponer stock sí procesa).
      * El stock que se descuenta es el de la sucursal configurada en ECOMMERCE_SUCURSAL_ID.
      */
-    private function descontar($usuario, string $referencia, array $pedido): void
+    private function descontar($usuario, string $referencia, array $pedido, ?array $cliente): void
     {
         $sucursalId = (int) config('ecommerce.sucursal_id');
         if ($sucursalId <= 0) {
@@ -102,6 +113,10 @@ class VentaController extends Controller
                 'user_id' => $usuario->id,
                 'referencia' => $referencia,
                 'created_at' => now(),
+                'cliente_tipo_documento' => $cliente ? self::CODIGO_DOC[$cliente['tipo_documento']] : null,
+                'cliente_documento' => $cliente['numero_documento'] ?? null,
+                'cliente_nombre' => $cliente ? mb_substr($cliente['nombre'], 0, 200) : null,
+                'cliente_condicion_iva' => $cliente['condicion_iva'] ?? null,
             ]);
         } catch (QueryException $e) {
             if (strpos($e->getMessage(), 'Duplicate entry') !== false
@@ -126,6 +141,7 @@ class VentaController extends Controller
 
         $faltantes = [];
         $desconocido = false;
+        $sinPrecio = [];
         foreach ($pedido as $codigo => $cantidad) {
             $producto = $productos->get($codigo);
             if ($producto === null) {
@@ -133,10 +149,17 @@ class VentaController extends Controller
                 $faltantes[] = ['codigo_barras' => $codigo, 'disponible' => 0];
                 continue;
             }
+            if (Precio::normalizar($producto->precio_unidad) === null) {
+                $sinPrecio[] = ['codigo_barras' => $codigo, 'disponible' => 0];
+                continue;
+            }
             $disponible = $filas->has($producto->id) ? (int) $filas[$producto->id]->stock : 0;
             if ($disponible < $cantidad) {
                 $faltantes[] = ['codigo_barras' => $codigo, 'disponible' => $disponible];
             }
+        }
+        if ($sinPrecio) {
+            throw new VentaRechazada('precio_invalido', $sinPrecio);
         }
         if ($faltantes) {
             throw new VentaRechazada($desconocido ? 'codigo_desconocido' : 'sin_stock', $faltantes);
@@ -148,6 +171,23 @@ class VentaController extends Controller
             $anterior = (int) $fila->stock;
             $fila->stock = $anterior - $cantidad;
             $fila->save();
+
+            // Renglón en `ventas` (estado 1 = sin facturar) para que aparezca en reportes y se facture.
+            DB::table('ventas')->insert([
+                'productos_id' => $producto->id,
+                'cantidad' => $cantidad,
+                'precio' => Precio::normalizar($producto->precio_unidad),
+                'costo' => (string) $producto->costo,
+                'fecha' => now()->format('Y-m-d H:i:s'),
+                'usuario' => mb_substr('API e-commerce', 0, 100),
+                'sucursal_id' => $sucursalId,
+                'estado' => 1,
+                'factura_id' => null,
+                'tipo_pago' => null,
+                'lista_precio' => 1,
+                'descuento' => 0,
+                'referencia_api' => $referencia,
+            ]);
 
             $log = new Stock_log();
             $log->productos_id = $producto->id;

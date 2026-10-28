@@ -144,5 +144,10 @@ Route::get('cliente.getCliente/{id}', 'ClienteController@getCliente');
 Route::get('pedido', 'PedidoController@index');
 Route::post('pedido.save', 'PedidoController@save');
 
+// Ventas del web service del e-commerce: listado y facturación por pedido.
+Route::get('ventas-ecommerce', 'EcommerceFacturaController@index');
+Route::post('ventas-ecommerce/{id}/facturar', 'EcommerceFacturaController@facturar')->where('id', '[0-9]+')->middleware('throttle:10,1');
+Route::post('ventas-ecommerce/{id}/liberar', 'EcommerceFacturaController@liberar')->where('id', '[0-9]+');
+
 
 Route::get('tipo/{type}', 'SweetController@notification');
