@@ -38,6 +38,15 @@
                             <label for="material">Material</label>
                             <input type="text" class="form-control lettersNumbers" name="material" id="material" value="{{ old('material') }}" placeholder="Madera, metal, alpaca…" />
                         </div>
+                        <div class="sg-field">
+                            <label for="envio_tamano">Tamaño de envío <i>(opcional — para el e-commerce)</i></label>
+                            <select class="form-control" name="envio_tamano" id="envio_tamano">
+                                <option value="">Sin definir</option>
+                                @foreach(config('envios.tamanos') as $codigo => $tamano)
+                                <option value="{{ $codigo }}" @if((string) old('envio_tamano') === (string) $codigo) selected="selected" @endif>{{ $tamano['nombre'] }} — {{ $tamano['etiqueta'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                     <div style="display:none;">
                         <input type="text" class="form-control numbers" name="stock" id="stock" value="{{ old('stock', 0) }}" />

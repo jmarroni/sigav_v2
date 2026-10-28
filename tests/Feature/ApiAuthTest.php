@@ -21,6 +21,7 @@ class ApiAuthTest extends TestCase
         Schema::create('sucursales', function (Blueprint $t) {
             $t->increments('id');
             $t->string('nombre');
+            $t->string('codigo_postal')->nullable();
         });
         Schema::create('relacion_users_sucursales', function (Blueprint $t) {
             $t->increments('id');
@@ -45,6 +46,7 @@ class ApiAuthTest extends TestCase
             foreach (['precio_unidad', 'costo', 'precio_mayorista', 'stock', 'stock_minimo', 'es_comodato'] as $c) {
                 $t->decimal($c)->nullable();
             }
+            $t->unsignedTinyInteger('envio_tamano')->nullable();
             $t->integer('proveedores_id');
             $t->integer('categorias_id');
         });

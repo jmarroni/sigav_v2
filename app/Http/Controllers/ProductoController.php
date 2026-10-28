@@ -13,6 +13,7 @@ use App\Models\Stock;
 use App\Models\SitesSucursalesOpencart;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use App\Support\Envio;
 use Intervention\Image\Facades\Image;
 use GuzzleHttp\Client;
 use Curl\curl;
@@ -244,6 +245,13 @@ class ProductoController extends Controller
      */
     public function store(Request $request)
     {
+        $errorEnvio = $this->validarEnvio($request);
+        if ($errorEnvio !== null) {
+            return redirect('carga')
+                ->with('error_carga', $errorEnvio)
+                ->withInput($request->except(self::CAMPOS_IMAGEN));
+        }
+
         // Imágenes: se validan ANTES de tocar la base. Antes una foto que superaba el
         // límite de PHP se descartaba en silencio y el alta decía "exitosa" igual.
         $errorImagenes = $this->validarImagenes($request);
@@ -335,6 +343,8 @@ class ProductoController extends Controller
         $productos->descripcion_en      = $request->descripcion_en;
         $productos->material            = $request->material;
         $productos->precio_reposicion   = ($request->precio_reposicion == "")?0:$request->precio_reposicion;
+        // Opcional: sin tamaño el producto no tiene medidas ni peso para el e-commerce.
+        $productos->envio_tamano        = ($request->envio_tamano === null || $request->envio_tamano === '') ? null : (int) $request->envio_tamano;
         $productos->save();
         if (floatval($descuentoAnterior) != floatval($productos->descuento)) {
             $descuentoLog = new \App\Models\DescuentoLog();
@@ -385,6 +395,20 @@ class ProductoController extends Controller
     const IMAGEN_MAX_KB = 10240;
     /** Formatos que GD (sin libwebp en la imagen Docker) puede leer para generar la miniatura. SVG queda afuera a propósito: GD no lo procesa y puede traer script. */
     const IMAGEN_FORMATOS = 'jpg,jpeg,png,gif,bmp';
+
+    /** Devuelve el texto del error si el tamaño de envío no es uno de los predefinidos. */
+    private function validarEnvio(Request $request): ?string
+    {
+        $validador = Validator::make($request->only('envio_tamano'), [
+            'envio_tamano' => 'nullable|in:'.implode(',', Envio::tamanosValidos()),
+        ], [
+            'in' => 'El tamaño de envío no es válido.',
+        ]);
+        if ($validador->fails()) {
+            return 'No se guardó el producto. '.implode(' ', $validador->errors()->all());
+        }
+        return null;
+    }
 
     /**
      * Valida las imágenes del alta. Devuelve el texto del error o null si está todo bien.

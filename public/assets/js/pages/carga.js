@@ -270,6 +270,7 @@ function modificar(identificador){
             $("#descripcion_en").val(jsonData.descripcion_en);
             $("#descripcion_pr").val(jsonData.descripcion_pr);
             $("#material").val(jsonData.material);
+            $("#envio_tamano").val(jsonData.envio_tamano != null ? String(jsonData.envio_tamano) : "");
             $("#precio_mayorista").val(jsonData.precio_mayorista);
             $("#descuento").val(jsonData.descuento != null ? jsonData.descuento : 0);
             if (jsonData.es_comodato) $("#es_comodato").prop('checked',true); else $("#es_comodato").prop('checked',false);;

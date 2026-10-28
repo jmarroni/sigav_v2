@@ -42,6 +42,22 @@ class CargaProductoImagenesTest extends TestCase
     }
 
     /** @test */
+    public function alta_guarda_el_tamano_de_envio_elegido()
+    {
+        $this->logueado()->post('/carga', $this->campos() + ['envio_tamano' => 2])->assertRedirect();
+
+        $this->assertSame(2, (int) DB::table('productos')->where('nombre', 'Gorro')->value('envio_tamano'));
+    }
+
+    /** @test */
+    public function tamano_de_envio_fuera_de_rango_no_guarda_el_producto()
+    {
+        $this->logueado()->post('/carga', $this->campos() + ['envio_tamano' => 9])->assertRedirect();
+
+        $this->assertSame(0, DB::table('productos')->where('nombre', 'Gorro')->count());
+    }
+
+    /** @test */
     public function alta_con_imagen_guarda_archivo_miniatura_y_url_relativa()
     {
         $resp = $this->logueado()->post('/carga', $this->campos() + [
@@ -213,6 +229,7 @@ class CargaProductoImagenesTest extends TestCase
                 $t->string('material', 200)->nullable();
                 $t->string('precio_reposicion', 50)->nullable();
                 $t->decimal('descuento', 5, 2)->default(0);
+                $t->unsignedTinyInteger('envio_tamano')->nullable();
                 $t->timestamps();
             },
             'imagen_producto' => function (Blueprint $t) {
