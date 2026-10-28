@@ -6,6 +6,7 @@ use App\Exceptions\ReferenciaDuplicada;
 use App\Exceptions\VentaRechazada;
 use App\Http\Controllers\Controller;
 use App\Models\Producto;
+use App\Models\Stock;
 use App\Models\Stock_log;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -84,9 +85,18 @@ class VentaController extends Controller
     /**
      * Dentro de una transacción. Si algo falla lanza excepción y se deshace todo,
      * incluida la fila de referencia (así un reintento tras reponer stock sí procesa).
+     * El stock que se descuenta es el de la sucursal configurada en ECOMMERCE_SUCURSAL_ID.
      */
     private function descontar($usuario, string $referencia, array $pedido): void
     {
+        $sucursalId = (int) config('ecommerce.sucursal_id');
+        if ($sucursalId <= 0) {
+            // Falla cerrada: sin sucursal configurada no se descuenta nada.
+            throw new VentaRechazada('sin_stock', array_map(function ($codigo) {
+                return ['codigo_barras' => $codigo, 'disponible' => 0];
+            }, array_keys($pedido)));
+        }
+
         try {
             DB::table('api_ventas_referencias')->insert([
                 'user_id' => $usuario->id,
@@ -107,6 +117,13 @@ class VentaController extends Controller
             ->get()
             ->keyBy('codigo_barras');
 
+        $filas = Stock::where('sucursal_id', $sucursalId)
+            ->whereIn('productos_id', $productos->pluck('id')->all())
+            ->orderBy('productos_id')
+            ->lockForUpdate()
+            ->get()
+            ->keyBy('productos_id');
+
         $faltantes = [];
         $desconocido = false;
         foreach ($pedido as $codigo => $cantidad) {
@@ -114,34 +131,31 @@ class VentaController extends Controller
             if ($producto === null) {
                 $desconocido = true;
                 $faltantes[] = ['codigo_barras' => $codigo, 'disponible' => 0];
-            } elseif ((int) $producto->stock < $cantidad) {
-                $faltantes[] = ['codigo_barras' => $codigo, 'disponible' => (int) $producto->stock];
+                continue;
+            }
+            $disponible = $filas->has($producto->id) ? (int) $filas[$producto->id]->stock : 0;
+            if ($disponible < $cantidad) {
+                $faltantes[] = ['codigo_barras' => $codigo, 'disponible' => $disponible];
             }
         }
         if ($faltantes) {
             throw new VentaRechazada($desconocido ? 'codigo_desconocido' : 'sin_stock', $faltantes);
         }
 
-        // La sucursal del log sólo se completa si el usuario de API tiene exactamente una.
-        $sucursales = DB::table('relacion_users_sucursales')
-            ->where('user_id', $usuario->id)
-            ->pluck('sucursal_id')
-            ->unique();
-        $sucursalId = $sucursales->count() === 1 ? $sucursales->first() : null;
-
         foreach ($pedido as $codigo => $cantidad) {
             $producto = $productos->get($codigo);
-            $anterior = (int) $producto->stock;
-            $producto->stock = $anterior - $cantidad;
-            $producto->save();
+            $fila = $filas[$producto->id];
+            $anterior = (int) $fila->stock;
+            $fila->stock = $anterior - $cantidad;
+            $fila->save();
 
             $log = new Stock_log();
             $log->productos_id = $producto->id;
             $log->sucursal_id = $sucursalId;
             $log->stock_anterior = $anterior;
-            $log->stock_minimo_anterior = $producto->stock_minimo;
-            $log->stock = $producto->stock;
-            $log->stock_minimo = $producto->stock_minimo;
+            $log->stock_minimo_anterior = $fila->stock_minimo;
+            $log->stock = $fila->stock;
+            $log->stock_minimo = $fila->stock_minimo;
             $log->usuario = mb_substr('API e-commerce: ' . $usuario->name, 0, 200);
             $log->tipo_operacion = 'Venta e-commerce';
             $log->barra = $codigo;

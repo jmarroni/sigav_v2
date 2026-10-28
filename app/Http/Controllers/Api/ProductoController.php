@@ -32,6 +32,12 @@ class ProductoController extends Controller
                 select('imagen_producto.imagen_url', 'imagen_producto.productos_id')
                 ->get()->groupBy('productos_id');
 
+        // Stock que ve el e-commerce: fila de `stock` de la sucursal configurada.
+        $sucursalEcommerce = (int) config('ecommerce.sucursal_id');
+        $stockEcommerce = $sucursalEcommerce > 0
+            ? DB::table('stock')->where('sucursal_id', $sucursalEcommerce)->pluck('stock', 'productos_id')
+            : collect();
+
         // Delegación = sucursal donde se dio de alta el producto (la primera fila de stock).
         $delegaciones = DB::table('stock')->
             join('sucursales', 'sucursales.id', 'stock.sucursal_id')->
@@ -39,7 +45,7 @@ class ProductoController extends Controller
             select('stock.productos_id', 'sucursales.nombre', 'sucursales.codigo_postal')
             ->get()->unique('productos_id')->keyBy('productos_id');
 
-        $salida = $productos->map(function ($producto) use ($imagenes, $delegaciones) {
+        $salida = $productos->map(function ($producto) use ($imagenes, $delegaciones, $stockEcommerce) {
             $delegacion = $delegaciones->get($producto->id);
             $imagenesProducto = ($imagenes->get($producto->id) ?? collect())
                 ->map(function ($imagen) { return Imagen_producto::absoluta($imagen->imagen_url); })
@@ -53,7 +59,7 @@ class ProductoController extends Controller
                 // Formato único: "60000.00" o null (ver App\Support\Precio).
                 'precio_unidad' => Precio::normalizar($producto->precio_unidad),
                 'precio_mayorista' => Precio::normalizar($producto->precio_mayorista),
-                'stock' => (int) $producto->stock,
+                'stock' => (int) ($stockEcommerce->get($producto->id) ?? 0),
                 'stock_minimo' => (int) $producto->stock_minimo,
                 'categoria' => $producto->categoria,
                 'es_comodato' => (int) $producto->es_comodato,

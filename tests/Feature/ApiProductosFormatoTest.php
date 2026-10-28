@@ -56,6 +56,7 @@ class ApiProductosFormatoTest extends TestCase
             $t->increments('id');
             $t->integer('productos_id');
             $t->integer('sucursal_id');
+            $t->integer('stock')->default(0);
         });
         Schema::create('imagen_producto', function (Blueprint $t) {
             $t->increments('id');
@@ -86,9 +87,9 @@ class ApiProductosFormatoTest extends TestCase
         ]);
         // Producto 1 dado de alta en Jacobacci y luego también en Viedma: manda la primera fila.
         DB::table('stock')->insert([
-            ['productos_id' => 1, 'sucursal_id' => 1],
-            ['productos_id' => 1, 'sucursal_id' => 2],
-            ['productos_id' => 2, 'sucursal_id' => 2],
+            ['productos_id' => 1, 'sucursal_id' => 1, 'stock' => 0],
+            ['productos_id' => 1, 'sucursal_id' => 2, 'stock' => 7],
+            ['productos_id' => 2, 'sucursal_id' => 2, 'stock' => 2],
         ]);
     }
 
@@ -137,6 +138,25 @@ class ApiProductosFormatoTest extends TestCase
         $this->assertSame('Ingeniero Jacobacci', $productos['20_ACUE00224561269']['delegacion']);
         $this->assertSame('8418', $productos['20_ACUE00224561269']['delegacion_codigo_postal']);
         $this->assertSame('Viedma', $productos['13_ACER00076217185']['delegacion']);
+    }
+
+    /** @test */
+    public function el_stock_del_listado_es_el_de_la_sucursal_ecommerce()
+    {
+        config(['ecommerce.sucursal_id' => 2]);
+        $productos = collect($this->listado())->keyBy('codigo_barras');
+
+        $this->assertSame(7, $productos['20_ACUE00224561269']['stock']);
+        $this->assertSame(2, $productos['13_ACER00076217185']['stock']);
+    }
+
+    /** @test */
+    public function sin_sucursal_ecommerce_configurada_el_stock_figura_en_cero()
+    {
+        config(['ecommerce.sucursal_id' => null]);
+        $productos = collect($this->listado())->keyBy('codigo_barras');
+
+        $this->assertSame(0, $productos['20_ACUE00224561269']['stock']);
     }
 
     /** @test */

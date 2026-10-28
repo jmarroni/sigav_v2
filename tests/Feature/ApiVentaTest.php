@@ -13,6 +13,9 @@ class ApiVentaTest extends TestCase
 {
     use RefreshDatabase;
 
+    private const SUCURSAL_ECOMMERCE = 1;
+    private const SUCURSAL_OTRA = 2;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -35,6 +38,15 @@ class ApiVentaTest extends TestCase
             $t->timestamp('created_at')->nullable();
             $t->timestamp('updated_at')->nullable();
         });
+        Schema::create('stock', function (Blueprint $t) {
+            $t->increments('id');
+            $t->integer('productos_id');
+            $t->integer('sucursal_id');
+            $t->integer('stock')->default(0);
+            $t->integer('stock_minimo')->default(0);
+            $t->timestamp('created_at')->nullable();
+            $t->timestamp('updated_at')->nullable();
+        });
         Schema::create('stock_logs', function (Blueprint $t) {
             $t->increments('id');
             $t->integer('productos_id')->nullable();
@@ -52,10 +64,21 @@ class ApiVentaTest extends TestCase
 
         $this->artisan('passport:client', ['--personal' => true, '--name' => 'test']);
 
-        DB::table('sucursales')->insert(['id' => 1, 'nombre' => 'Central']);
+        config(['ecommerce.sucursal_id' => self::SUCURSAL_ECOMMERCE]);
+
+        DB::table('sucursales')->insert([
+            ['id' => self::SUCURSAL_ECOMMERCE, 'nombre' => 'e-commerce'],
+            ['id' => self::SUCURSAL_OTRA, 'nombre' => 'Otra'],
+        ]);
+        // productos.stock global en 0 a propósito: la venta NO debe usarlo.
         DB::table('productos')->insert([
-            ['id' => 1, 'codigo_barras' => '13_ACER00076217185', 'nombre' => 'Mate', 'stock' => 5],
-            ['id' => 2, 'codigo_barras' => '18_ALAN00084500323', 'nombre' => 'Cuchillo', 'stock' => 1],
+            ['id' => 1, 'codigo_barras' => '13_ACER00076217185', 'nombre' => 'Mate', 'stock' => 0],
+            ['id' => 2, 'codigo_barras' => '18_ALAN00084500323', 'nombre' => 'Cuchillo', 'stock' => 0],
+        ]);
+        DB::table('stock')->insert([
+            ['productos_id' => 1, 'sucursal_id' => self::SUCURSAL_ECOMMERCE, 'stock' => 5],
+            ['productos_id' => 2, 'sucursal_id' => self::SUCURSAL_ECOMMERCE, 'stock' => 1],
+            ['productos_id' => 1, 'sucursal_id' => self::SUCURSAL_OTRA, 'stock' => 100],
         ]);
     }
 
@@ -89,9 +112,12 @@ class ApiVentaTest extends TestCase
             ->postJson('/api/auth/productos/venta', ['referencia' => $referencia, 'items' => $items]);
     }
 
-    private function stock(int $id): int
+    private function stock(int $productoId, int $sucursalId = self::SUCURSAL_ECOMMERCE): int
     {
-        return (int) DB::table('productos')->where('id', $id)->value('stock');
+        return (int) DB::table('stock')
+            ->where('productos_id', $productoId)
+            ->where('sucursal_id', $sucursalId)
+            ->value('stock');
     }
 
     /** @test */
@@ -101,7 +127,7 @@ class ApiVentaTest extends TestCase
     }
 
     /** @test */
-    public function una_venta_descuenta_el_stock_y_registra_el_log()
+    public function una_venta_descuenta_el_stock_de_la_sucursal_ecommerce_y_registra_el_log()
     {
         $this->usuarioApi();
 
@@ -110,8 +136,10 @@ class ApiVentaTest extends TestCase
         ])->assertOk()->assertExactJson(['ok' => true]);
 
         $this->assertSame(3, $this->stock(1));
+        $this->assertSame(100, $this->stock(1, self::SUCURSAL_OTRA), 'no toca otras sucursales');
         $this->assertDatabaseHas('stock_logs', [
             'productos_id' => 1,
+            'sucursal_id' => self::SUCURSAL_ECOMMERCE,
             'stock_anterior' => 5,
             'stock' => 3,
             'tipo_operacion' => 'Venta e-commerce',
@@ -151,13 +179,42 @@ class ApiVentaTest extends TestCase
     }
 
     /** @test */
+    public function un_producto_sin_fila_de_stock_en_la_sucursal_figura_con_cero()
+    {
+        $this->usuarioApi();
+        DB::table('productos')->insert(['id' => 3, 'codigo_barras' => 'SIN-FILA', 'nombre' => 'Otro', 'stock' => 50]);
+
+        $this->venta('PED-S', [['codigo_barras' => 'SIN-FILA', 'cantidad' => 1]])
+            ->assertStatus(409)
+            ->assertExactJson([
+                'ok' => false,
+                'motivo' => 'sin_stock',
+                'items' => [['codigo_barras' => 'SIN-FILA', 'disponible' => 0]],
+            ]);
+    }
+
+    /** @test */
+    public function sin_sucursal_configurada_la_venta_se_rechaza_sin_descontar()
+    {
+        $this->usuarioApi();
+        config(['ecommerce.sucursal_id' => null]);
+
+        $this->venta('PED-N', [['codigo_barras' => '13_ACER00076217185', 'cantidad' => 1]])
+            ->assertStatus(409)
+            ->assertJsonPath('motivo', 'sin_stock');
+
+        $this->assertSame(5, $this->stock(1));
+        $this->assertDatabaseMissing('api_ventas_referencias', ['referencia' => 'PED-N']);
+    }
+
+    /** @test */
     public function tras_un_rechazo_la_misma_referencia_se_procesa_al_reponer_stock()
     {
         $this->usuarioApi();
         $items = [['codigo_barras' => '18_ALAN00084500323', 'cantidad' => 2]];
 
         $this->venta('PED-4', $items)->assertStatus(409);
-        DB::table('productos')->where('id', 2)->update(['stock' => 4]);
+        DB::table('stock')->where('productos_id', 2)->where('sucursal_id', self::SUCURSAL_ECOMMERCE)->update(['stock' => 4]);
 
         $this->venta('PED-4', $items)->assertOk()->assertExactJson(['ok' => true]);
         $this->assertSame(2, $this->stock(2));
