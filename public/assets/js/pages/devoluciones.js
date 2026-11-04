@@ -4,35 +4,58 @@ var precio = 0;
     jQuery("document").ready(function(){
         $( "#codigo-barras" ).focus();
 
-        jQuery("#concretar_venta").click(function(){    
-            
+        // Emite la nota de crédito. El botón queda deshabilitado mientras la
+        // petición está en vuelo y DESPUÉS de emitir: un segundo clic no puede
+        // generar otra nota (incidente 2026-09-23). Solo se rehabilita cuando
+        // el servidor confirma que NO se emitió nada.
+        var ncEnVuelo = false;
+        jQuery("#concretar_venta").click(function(){
+            var $btn = $(this);
+            if (ncEnVuelo || $btn.prop("disabled")) return;
+            if (!$("#factura").val() || $("#factura").val() == "0") {
+                alert("Seleccione la factura a anular.");
+                return;
+            }
+            ncEnVuelo = true;
+            $btn.prop("disabled", true);
+            $("#factura").prop("disabled", true);
+
             $.ajax({
                 method: "POST",
                 url: "nota_de_credito.php",
-                datatype: 'json',
+                dataType: 'json',
                 data: {id: $("#factura").val(), observaciones: $("#observacion").val()}
             })
             .done(function (msg) {
-                    if (msg.factura){
+                    ncEnVuelo = false;
+                    $("#factura").prop("disabled", false);
+                    if (msg && msg.factura){
                         $("#factura_iframe").show();
                         $("#iframe").attr("src",msg.factura);
                         setTimeout(function(){
                             $("#tablaProductos").html("");
                             $("#total_ventas").html(0);
                             $("#iframe")[0].contentWindow.print();
-                            
-                        },2000);  
-                    }else{
-                        var error = '';
-                        if (msg.error) error = msg.error;
-                        else error = msg; 
-                        alert('Sucedio un error en la facturacion, no se emitio factura, por favor comuniquese con el administrador o verifique el error que nos indica AFIP, : ' + msg.mensaje + '. Recargaremos la web .-');
-                    } 
-                });
+                        },2000);
+                    } else if (msg && msg.emitida_sin_pdf) {
+                        alert(msg.mensaje);
+                    } else {
+                        var mensaje = (msg && msg.mensaje) ? msg.mensaje : ((msg && msg.error) ? msg.error : 'Error desconocido');
+                        alert('No se emitió la nota de crédito: ' + mensaje);
+                        // Solo se rehabilita si el servidor confirmó que NO se emitió nada.
+                        if (msg && msg.error !== 'No se pudo confirmar la emisión') $btn.prop("disabled", false);
+                    }
+                })
+            .fail(function () {
+                // Resultado desconocido: no rehabilitar.
+                ncEnVuelo = false;
+                alert('Error de comunicación al emitir la nota de crédito. NO vuelva a intentar hasta verificar en el reporte de notas de crédito si se emitió; si se repite, avise al administrador.');
+            });
         });
 
-
+        // Al cambiar de factura se vuelve a habilitar la emisión.
         jQuery("#factura").change(function(){
+            if (!ncEnVuelo) $("#concretar_venta").prop("disabled", false);
             $.ajax({
                 method: "POST",
                 url: "get_factura.php",
@@ -42,10 +65,8 @@ var precio = 0;
             .done(function (msg) {
                 $("#tablaProductos").html("");
                 for (let index = 0; index < msg.items.length; index++) {
-                    console.log(msg.items[index]);
                     addRow(msg.items[index]);
                 }
-                console.log(msg.items[0].tipo_pago);
                 // TIPO PAGO
                 if (msg.items[0].tipo_pago == 1) $("#efectivo").prop('checked',true);
                 if (msg.items[0].tipo_pago == 2) $("#debito").prop('checked',true);
@@ -56,7 +77,6 @@ var precio = 0;
                 if (msg.items[0].iva == 2) $("#mono").prop('checked',true);
                 if (msg.items[0].iva == 3) $("#excento").prop('checked',true);
                 if (msg.items[0].iva == 4) $("#final").prop('checked',true);
-                console.log(msg.items[0].fecha.substring(1,10));
                 $("#nombre-cliente").val(msg.items[0].nombre);
                 $("#direccion-cliente").val(msg.items[0].direccion);
                 $("#tipo").val(msg.items[0].tipo_documento);
@@ -100,7 +120,4 @@ var precio = 0;
         '</td>' +
         '</tr>';
         $("#tablaProductos").append(rowAdd);
-        //Actualizo el total
-        //total_ventas = total_ventas + (jsonData.precio_unidad * jQuery("#cantidad").val());
-        //$("#total_ventas").html(total_ventas);
     }

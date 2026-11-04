@@ -25,3 +25,9 @@ yarn-error.log
 # Credenciales AFIP (nunca commitear)
 /storage/app/afip/*
 !/storage/app/afip/.gitkeep
+
+# Workspace de superpowers (ledgers, briefs, reports de planes)
+.superpowers/
+
+# Dump de producción de Mercado Artesanal (nunca commitear)
+/c2101314_ma.sql

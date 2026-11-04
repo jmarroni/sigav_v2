@@ -20,7 +20,7 @@
 - Errors from the MP API are never leaked raw to the caller: generic message, real detail to `Log::error`, catch `\GuzzleHttp\Exception\GuzzleException` (established pattern in `MercadoPagoService`).
 - `mercadopago_pagos.estado_facturacion` remains untouched (not in the upsert payload — it's excluded from `$fillable` and reserved for the future invoicing stage).
 - **Test command:** the host PHP CLI fatals on Laravel 7 — ALWAYS run PHPUnit via Docker: `docker compose exec -T app vendor/bin/phpunit [path]`. Containers: `sigav_app` / `sigav_db` (`docker compose up -d` if down).
-- **Manual verification:** forge legacy cookies. SEMILLA `'$%Reset20122017AnnaLuca#^'`; `rol`/`sucursal` = `sha1(SEMILLA . <id> . SEMILLA)`; `kiosco` = username. Live-query the user first (`docker exec sigav_db mysql -uroot -psecret laravel -N -e "SELECT usuario, rol_id, sucursal_id FROM usuarios WHERE rol_id >= 2 LIMIT 5"`) — hardcoded ids have gone stale twice in this project. Gotcha: `php -r "echo sha1('$SEMILLA'.$X.'$SEMILLA');"` fails to parse on the host CLI (dot-concat lexing); put spaces around the `.` operators.
+- **Manual verification:** forge legacy cookies. SEMILLA `'<LEGACY_SEMILLA>'`; `rol`/`sucursal` = `sha1(SEMILLA . <id> . SEMILLA)`; `kiosco` = username. Live-query the user first (`docker exec sigav_db mysql -uroot -psecret laravel -N -e "SELECT usuario, rol_id, sucursal_id FROM usuarios WHERE rol_id >= 2 LIMIT 5"`) — hardcoded ids have gone stale twice in this project. Gotcha: `php -r "echo sha1('$SEMILLA'.$X.'$SEMILLA');"` fails to parse on the host CLI (dot-concat lexing); put spaces around the `.` operators.
 - The dev DB's sucursal has a **real** MP Access Token configured. Read-only calls (`payments/search`) and creating preferences are harmless (no money moves unless someone pays the QR) — but never pay a generated QR during verification.
 - `App\Services\MercadoPago\MercadoPagoService` resolves through a contextual binding in `AppServiceProvider` (gives it a Guzzle client with `base_uri`/timeouts). The new methods reuse `$this->client` — do not construct clients inside methods, do not touch the binding.
 
@@ -520,7 +520,7 @@ Manual (live DB; note the real token means `estado` does a real read-only MP sea
 docker compose up -d
 ROW=$(docker exec sigav_db mysql -uroot -psecret laravel -N -e "SELECT usuario, rol_id, sucursal_id FROM usuarios WHERE rol_id >= 2 LIMIT 1")
 USER=$(echo "$ROW" | awk '{print $1}'); ROL_ID=$(echo "$ROW" | awk '{print $2}'); SUC_ID=$(echo "$ROW" | awk '{print $3}')
-SEMILLA='$%Reset20122017AnnaLuca#^'
+SEMILLA='<LEGACY_SEMILLA>'
 ROL_HASH=$(php -r "echo sha1('$SEMILLA' . $ROL_ID . '$SEMILLA');")
 SUC_HASH=$(php -r "echo sha1('$SEMILLA' . $SUC_ID . '$SEMILLA');")
 COOKIES="kiosco=$USER; rol=$ROL_HASH; sucursal=$SUC_HASH"

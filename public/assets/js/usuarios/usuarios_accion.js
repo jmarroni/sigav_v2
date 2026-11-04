@@ -72,7 +72,7 @@ function modificarUsuario(identificador){
 function eliminarUsuario(identificador){
     if (confirm('¿Está seguro que desea eliminar el usuario?')) {
         var url= "/usuario.delete/" + identificador;
-        $.get(url, function(data, status){  
+        $.ajax({ url: url, type: 'DELETE', headers: {'X-CSRF-TOKEN': $('input[name="_token"]').first().val()}, success: function(data, status){  
             if(data.proceso == "OK"){
                 swal({
                     "title":"Perfecto !!",
@@ -93,6 +93,6 @@ function eliminarUsuario(identificador){
                 });
             }
 
-        });
+        }, error: function() { swal({ "title": "Error", 'icon': 'error', "text": "Error al realizar la eliminación", 'confirmButtonText': 'Listo' }); }});
     }
 }

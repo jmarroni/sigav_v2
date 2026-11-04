@@ -70,7 +70,7 @@ if ($resultado->num_rows > 0) {
         $precio = $row["precio_unidad"];
         $descuento = is_numeric($row["descuento"]) ? max(0, min(100, floatval($row["descuento"]))) : 0;
         $row["stock_sucursal"] =  $row["stock_sucursal"] - $_POST["cantidad"];
-        $row["imagen"] = (isset($row["imagen"]))?$row["imagen"]:"http://sistema.mercado-artesanal.com.ar/assets/img/photos/no-image-featured-image.png";
+        $row["imagen"] = (isset($row["imagen"]))?$row["imagen"]:legacy_imagen_default($_SERVER['HTTP_HOST']);
         $datos = $row;
     }
     

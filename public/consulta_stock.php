@@ -40,7 +40,11 @@ if ($resultado_caja->num_rows > 0) {
 	$html .= '</table>';
 }
 $conn->close();
-$to = "jmarroni@gmail.com";
+$to = legacy_env('MAIL_FROM_ADDRESS');
+if (! $to) {
+    // Sin casilla configurada no hay a quién avisar.
+    exit;
+}
 $subject = "Faltantes de stock en el kiosco";
 
 // Always set content-type when sending HTML email
@@ -48,7 +52,7 @@ $headers = "MIME-Version: 1.0" . "\r\n";
 $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
 
 // More headers
-$headers .= 'From: <jmarroni@fidegroup.com.ar>' . "\r\n";
+$headers .= 'From: <'.$to.'>' . "\r\n";
 
 mail($to,$subject,$html,$headers);
 

@@ -17,7 +17,8 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrustProxies::class,
         \Fruitcake\Cors\HandleCors::class,
         \App\Http\Middleware\CheckForMaintenanceMode::class,
-        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+        // ValidatePostSize se movió a los grupos web/api: en web tiene que correr DESPUÉS
+        // de StartSession para que el 413 pueda volver al formulario con un mensaje flash.
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
     ];
@@ -32,6 +33,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
             // \Illuminate\Session\Middleware\AuthenticateSession::class,
             \App\Http\Middleware\LegacyCookieAuth::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
@@ -40,6 +42,7 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
+            \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
             'throttle:60,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],

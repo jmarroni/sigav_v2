@@ -10,10 +10,18 @@ if (getRol()!=1 && getRol()!=4 && getRol()!=5) {
     exit();
 }
 ?>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         .ui-autocomplete-loading {
             background: white url("assets/img/favicons/ui-anim_basic_16x16.gif") right center no-repeat;
         }
+        .sg-pdf { white-space: nowrap; }
+        .sg-pdf__link--falta { color: #c0392b; font-weight: 600; }
+        .sg-pdf__regenerar { margin-left: 8px; padding: 2px 10px; font-size: 12px; }
+        .sg-pdf__regenerar[disabled] { opacity: .6; cursor: progress; }
+        .sg-pdf__aviso { display: none; margin: 0 0 12px; padding: 10px 14px; border-radius: 6px; font-weight: 600; }
+        .sg-pdf__aviso--ok { background: #e6f6ec; color: #1e7a46; }
+        .sg-pdf__aviso--error { background: #fdecea; color: #a3261a; }
     </style>
         <!-- Page Content -->
         <div class="content content-boxed sigav-app">
@@ -52,6 +60,7 @@ if (getRol()!=1 && getRol()!=4 && getRol()!=5) {
                     <div class="sg-card__title"><span class="sg-dot"></span><h3>Resultados</h3></div>
                 </header>
                 <div class="sg-card__body sg-table-wrap">
+                    <p id="pdf_aviso" class="sg-pdf__aviso" role="status"></p>
                     <table id="tabla_compras" class="sg-table">
                         <thead>
                             <tr>
@@ -62,7 +71,7 @@ if (getRol()!=1 && getRol()!=4 && getRol()!=5) {
                                 <th>Sucursal</th>
                                 <th>CAE</th>
                                 <th>Fecha CAE</th>
-                                <th>Link</th>
+                                <th>PDF</th>
                                 <th>Mail Reenvio</th>
                             </tr>
                         </thead>
@@ -77,7 +86,12 @@ if (getRol()!=1 && getRol()!=4 && getRol()!=5) {
                                 <td>{{$factura->nombre_sucursal}}</td>
                                 <td class="sg-mono">{{$factura->cae}}</td>
                                 <td>{{$factura->fechacae}}</td>
-                                <td><a id="reenvio_pdf_{{$factura->numero}}" target="_blank" href="{{$factura->pdf}}">LINK</a></td>
+                                <td class="sg-pdf" data-factura-id="{{$factura->id}}">
+                                    <a id="reenvio_pdf_{{$factura->numero}}" target="_blank" href="{{$factura->pdf}}" class="sg-pdf__link {{ $factura->pdf_existe ? '' : 'sg-pdf__link--falta' }}">{{ $factura->pdf_existe ? 'LINK' : 'FALTA PDF' }}</a>
+                                    @if ($puedeRegenerar)
+                                    <button type="button" class="sg-btn sg-btn--ghost sg-pdf__regenerar" title="Volver a generar el PDF desde los datos de la factura (no vuelve a facturar)">Regenerar PDF</button>
+                                    @endif
+                                </td>
                                 <td><a id="reenvio_mail_{{$factura->numero}}" href="#">REENVIAR MAIL</a></td>
                             </tr>
                             @endforeach
@@ -161,6 +175,34 @@ if (getRol()!=1 && getRol()!=4 && getRol()!=5) {
             ],
             "order": [[ 3, "desc" ]]
         });
+        // Regenerar PDF: POST a Laravel, actualiza el link de la fila sin recargar.
+        var csrf = $('meta[name="csrf-token"]').attr('content');
+        function avisoPdf(tipo, texto) {
+            $('#pdf_aviso').removeClass('sg-pdf__aviso--ok sg-pdf__aviso--error')
+                .addClass('sg-pdf__aviso--' + tipo).text(texto).show();
+        }
+        $('#tabla_compras').on('click', '.sg-pdf__regenerar', function () {
+            var boton = $(this), celda = boton.closest('.sg-pdf'), link = celda.find('.sg-pdf__link');
+            boton.prop('disabled', true).text('Generando...');
+            $.ajax({
+                method: 'POST',
+                url: '/facturas/' + celda.data('factura-id') + '/regenerar-pdf',
+                headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' }
+            })
+            .done(function (r) {
+                link.attr('href', r.pdf + '?v=' + Date.now()).removeClass('sg-pdf__link--falta').text('LINK');
+                avisoPdf('ok', r.mensaje);
+            })
+            .fail(function (xhr) {
+                var msg = (xhr.responseJSON && xhr.responseJSON.mensaje) ? xhr.responseJSON.mensaje
+                    : 'No se pudo regenerar el PDF (error ' + xhr.status + '). Avise al administrador.';
+                avisoPdf('error', msg);
+            })
+            .always(function () {
+                boton.prop('disabled', false).text('Regenerar PDF');
+            });
+        });
+
         var id_seleccionado = ''
         $("*[id^=reenvio_mail_]").click(function(e){
             e.preventDefault();

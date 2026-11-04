@@ -64,6 +64,19 @@ class AfipService
         try {
             $this->validarEntorno($entorno);
             $cfg = AfipConfig::where('entorno', $entorno)->firstOrFail();
+
+            // Sin estos tres datos AFIP responde un SOAP Fault genérico ("Input
+            // string was not in a correct format") que no dice qué falta.
+            $faltan = [];
+            foreach (['cuit' => 'CUIT', 'ptovta' => 'punto de venta', 'comprobante' => 'tipo de comprobante'] as $campo => $nombre) {
+                if ($cfg->{$campo} === null || $cfg->{$campo} === '') {
+                    $faltan[] = $nombre;
+                }
+            }
+            if ($faltan) {
+                return ['ok' => false, 'mensaje' => 'Faltan datos para probar la conexión: '.implode(', ', $faltan).'.'];
+            }
+
             $afip = $this->instanciaDesde($cfg);
             $num = $afip->ElectronicBilling->GetLastVoucher($cfg->ptovta, $cfg->comprobante);
 

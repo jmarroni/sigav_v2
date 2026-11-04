@@ -26,7 +26,19 @@ Route::get('/loginejemplo', function(){
 	return view('login/login');
 });
 
-Route::get('signup', ['uses' =>'Api\AuthController@signup']);
+// Botón "Regenerar PDF" del reporte de facturación (rol >= 4): reescribe el PDF desde la base.
+Route::post('facturas/{id}/regenerar-pdf', 'FacturaPdfController@regenerar')->where('id', '[0-9]+')->middleware('throttle:30,1');
+Route::post('notas-credito/{id}/regenerar-pdf', 'NotaCreditoPdfController@regenerar')->where('id', '[0-9]+')->middleware('throttle:30,1');
+
+// Usuarios de la API (/api/auth/*): reemplaza a public/usuarios_api*.php y al viejo GET signup
+Route::middleware('throttle:20,1')->group(function () {
+    Route::get('usuarios-api', 'UsuarioApiController@index');
+    Route::post('usuarios-api', 'UsuarioApiController@store');
+    Route::put('usuarios-api/{id}', 'UsuarioApiController@update')->where('id', '[0-9]+');
+    Route::delete('usuarios-api/{id}', 'UsuarioApiController@destroy')->where('id', '[0-9]+');
+    Route::post('usuarios-api/{id}/sucursales', 'UsuarioApiController@asignarSucursal')->where('id', '[0-9]+');
+    Route::delete('usuarios-api/{id}/sucursales/{sucursalId}', 'UsuarioApiController@quitarSucursal')->where(['id' => '[0-9]+', 'sucursalId' => '[0-9]+']);
+});
 //Producto
 Route::get('productos/datatable', 'ProductoController@datatable');
 Route::resource('carga', 'ProductoController');
@@ -35,6 +47,8 @@ Route::get('consultarStock/sucursal/{sucursal}','ProductoController@consultarSto
 // SEGURIDAD: Cambiado de GET a POST/DELETE para prevenir ataques CSRF
 Route::post('producto.actualizar.stock/{id}','ProductoController@update_stock' );
 Route::delete('producto.eliminar.stock/{id}','ProductoController@delete_stock' );
+// Publicar / retirar de la venta online (solo roles Carga y Administrador; ver ProductoController).
+Route::post('productos/{id}/venta-online', 'ProductoController@ventaOnline')->where('id', '[0-9]+');
 Route::get('buscarProductos', 'ProductoController@searchProductsSinStock');
 //Proveedor
 Route::get('proveedor', 'ProveedorController@index');
@@ -131,6 +145,11 @@ Route::delete('cliente/{id}','ClienteController@delete' );
 Route::get('cliente.getCliente/{id}', 'ClienteController@getCliente');
 Route::get('pedido', 'PedidoController@index');
 Route::post('pedido.save', 'PedidoController@save');
+
+// Ventas del web service del e-commerce: listado y facturación por pedido.
+Route::get('ventas-ecommerce', 'EcommerceFacturaController@index');
+Route::post('ventas-ecommerce/{id}/facturar', 'EcommerceFacturaController@facturar')->where('id', '[0-9]+')->middleware('throttle:10,1');
+Route::post('ventas-ecommerce/{id}/liberar', 'EcommerceFacturaController@liberar')->where('id', '[0-9]+');
 
 
 Route::get('tipo/{type}', 'SweetController@notification');

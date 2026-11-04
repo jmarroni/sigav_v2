@@ -15,6 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->bind(\App\Facturacion\ConsultaComprobanteAfip::class, \App\Facturacion\ConsultaComprobanteAfipSdk::class);
         // Sin este binding, el contenedor auto-resuelve el parámetro opcional
         // `?Client $client = null` de MercadoPagoService construyendo un
         // `new Client()` vacío (sin base_uri), porque Client es una clase

@@ -211,7 +211,7 @@
 </div>
 @endsection
 @section("scripts")
-<script src="/assets/js/usuarios/usuarios_accion.js?v=1.08"></script>
+<script src="/assets/js/usuarios/usuarios_accion.js?v=1.09"></script>
 <script>
     (function () {
         var input = document.getElementById('filtro-usuarios');

@@ -11,11 +11,12 @@ class Rol extends Model
 	
 	public static function getRol(){
 
+		$semilla = config('app.legacy_semilla');
 
-		for ($i=0; $i < 99; $i++) { 
-			if (sha1("$%Reset20122017AnnaLuca#^".$i."$%Reset20122017AnnaLuca#^")  == $_COOKIE["rol"]) return $i;
+		for ($i=0; $i < 99; $i++) {
+			if (sha1($semilla.$i.$semilla)  == $_COOKIE["rol"]) return $i;
 		}
-		
+
 		exit();
 	}
 

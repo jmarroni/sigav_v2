@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Laravel\Passport\Passport;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,8 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        // Api\AuthController@login informa expires_at = +1 día; el JWT tiene que
+        // vencer igual (el default de Passport es 1 año).
+        Passport::personalAccessTokensExpireIn(now()->addDay());
     }
 }

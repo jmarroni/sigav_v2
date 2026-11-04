@@ -567,7 +567,7 @@ Then verify the AFIP screen still works end-to-end against the dockerized MySQL 
 
 ```bash
 docker compose up -d
-SEMILLA='$%Reset20122017AnnaLuca#^'
+SEMILLA='<LEGACY_SEMILLA>'
 USER=jmarroni   # usuarios.rol_id = 5 en el dump (dump/c2101314_ma.sql:921) -> pasa el gate >= 2
 ROL_ID=$(docker exec sigav_db mysql -uroot -psecret laravel -N -e "SELECT rol_id FROM usuarios WHERE usuario='$USER'")
 SUC_ID=$(docker exec sigav_db mysql -uroot -psecret laravel -N -e "SELECT sucursal_id FROM usuarios WHERE usuario='$USER'")
@@ -1063,7 +1063,7 @@ Save as `app/Http/Controllers/MercadoPagoConfigController.php`.
 ```bash
 docker compose up -d
 docker exec sigav_app php artisan migrate
-SEMILLA='$%Reset20122017AnnaLuca#^'
+SEMILLA='<LEGACY_SEMILLA>'
 USER=jmarroni   # usuarios.rol_id = 5 (dump/c2101314_ma.sql:921) -> pasa el gate >= 2
 ROL_ID=$(docker exec sigav_db mysql -uroot -psecret laravel -N -e "SELECT rol_id FROM usuarios WHERE usuario='$USER'")
 SUC_ID=$(docker exec sigav_db mysql -uroot -psecret laravel -N -e "SELECT sucursal_id FROM usuarios WHERE usuario='$USER'")
@@ -1173,7 +1173,7 @@ Save as `app/Http/Controllers/MercadoPagoMovimientosController.php`.
 ```bash
 docker compose up -d
 docker exec sigav_app php artisan migrate
-SEMILLA='$%Reset20122017AnnaLuca#^'
+SEMILLA='<LEGACY_SEMILLA>'
 USER=jmarroni
 ROL_ID=$(docker exec sigav_db mysql -uroot -psecret laravel -N -e "SELECT rol_id FROM usuarios WHERE usuario='$USER'")
 SUC_ID=$(docker exec sigav_db mysql -uroot -psecret laravel -N -e "SELECT sucursal_id FROM usuarios WHERE usuario='$USER'")
@@ -1376,7 +1376,7 @@ Save as `resources/views/mercadopago/movimientos.blade.php`.
 ```bash
 docker compose up -d
 docker exec sigav_app php artisan migrate
-SEMILLA='$%Reset20122017AnnaLuca#^'
+SEMILLA='<LEGACY_SEMILLA>'
 USER=jmarroni
 ROL_ID=$(docker exec sigav_db mysql -uroot -psecret laravel -N -e "SELECT rol_id FROM usuarios WHERE usuario='$USER'")
 SUC_ID=$(docker exec sigav_db mysql -uroot -psecret laravel -N -e "SELECT sucursal_id FROM usuarios WHERE usuario='$USER'")
@@ -1458,7 +1458,7 @@ Insert immediately after it (still before the `PERFIL` block):
 
 ```bash
 docker compose up -d
-SEMILLA='$%Reset20122017AnnaLuca#^'
+SEMILLA='<LEGACY_SEMILLA>'
 USER=jmarroni
 ROL_ID=$(docker exec sigav_db mysql -uroot -psecret laravel -N -e "SELECT rol_id FROM usuarios WHERE usuario='$USER'")
 SUC_ID=$(docker exec sigav_db mysql -uroot -psecret laravel -N -e "SELECT sucursal_id FROM usuarios WHERE usuario='$USER'")

@@ -1,10 +1,12 @@
 <?php
-if ($_COOKIE["kiosco"] != "jmarroni"){    exit();}
+require_once ("conection.php");
+if (getRol() < 4 && getRol() != 1) {
+    exit();
+}
 $menu["ventas"] = "";
 $menu["cargas"] = "";
 $menu["reportes"] = "active";
 $proveedor_id = 0;
-require_once ("conection.php");
 require ('header.php');
 
 if (getRol() < 2) {

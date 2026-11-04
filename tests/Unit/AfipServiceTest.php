@@ -37,6 +37,28 @@ class AfipServiceTest extends TestCase
     }
 
     /** @test */
+    public function probar_avisa_que_datos_faltan_antes_de_llamar_a_afip()
+    {
+        AfipConfig::create(['entorno' => 'prod', 'cuit' => '20111111112', 'ptovta' => '20']);
+
+        $r = app(AfipService::class)->probar('prod');
+
+        $this->assertFalse($r['ok']);
+        $this->assertSame('Faltan datos para probar la conexión: tipo de comprobante.', $r['mensaje']);
+    }
+
+    /** @test */
+    public function probar_lista_todos_los_datos_que_faltan()
+    {
+        AfipConfig::create(['entorno' => 'prod']);
+
+        $r = app(AfipService::class)->probar('prod');
+
+        $this->assertFalse($r['ok']);
+        $this->assertSame('Faltan datos para probar la conexión: CUIT, punto de venta, tipo de comprobante.', $r['mensaje']);
+    }
+
+    /** @test */
     public function instancia_homologacion_usa_url_homo_y_no_produccion()
     {
         AfipConfig::create(['entorno' => 'homo', 'cuit' => '20111111112']);

@@ -45,7 +45,8 @@ class NotasController extends Controller
         $desde = $data['desde'] ?? null;
         $hasta = $data['hasta'] ?? null;
 
-        $q = NotaCredito::leftJoin('sucursales', 'sucursales.id', '=', 'nota_de_credito.sucursal_id')
+        $q = NotaCredito::sinReservas()
+            ->leftJoin('sucursales', 'sucursales.id', '=', 'nota_de_credito.sucursal_id')
             ->select('nota_de_credito.*', 'sucursales.nombre as nombre_sucursal');
 
         if ($desde) {
@@ -56,6 +57,12 @@ class NotasController extends Controller
         }
 
         $notas = $q->orderBy('nota_de_credito.fecha', 'desc')->get();
+
+        // Botón "Regenerar PDF": se marca qué notas no tienen el archivo en disco.
+        $regenerador = app(\App\Facturacion\RegeneradorPdfNotaCredito::class);
+        foreach ($notas as $nota) {
+            $nota->pdf_existe = $regenerador->pdfExiste($nota);
+        }
 
         return view('notas.credito', compact('notas', 'desde', 'hasta'));
     }

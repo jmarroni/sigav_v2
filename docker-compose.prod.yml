@@ -10,15 +10,31 @@ services:
     volumes:
       - ./:/var/www/html
       - ./deploy/afip-protect.conf:/etc/apache2/conf-enabled/zz-afip-protect.conf:ro
+      # AFIP producción negocia DH débil: OpenSSL a SECLEVEL=1 (ver deploy/openssl-afip.cnf)
+      - ./deploy/openssl-afip.cnf:/etc/ssl/openssl-afip.cnf:ro
+      # Límites de subida de imágenes (mismo archivo que copia el Dockerfile): montado para
+      # que aplique sin rebuild de la imagen.
+      - ./deploy/php-uploads.ini:/usr/local/etc/php/conf.d/zz-sigav-uploads.ini:ro
     depends_on:
       db:
         condition: service_healthy
     environment:
       APACHE_DOCUMENT_ROOT: /var/www/html/public
+      OPENSSL_CONF: /etc/ssl/openssl-afip.cnf
       LEGACY_DB_HOST: db
       LEGACY_DB_USER: ${DB_USERNAME}
       LEGACY_DB_PASS: ${DB_PASSWORD}
       LEGACY_DB_NAME: ${DB_DATABASE}
+      LEGACY_SEMILLA: ${LEGACY_SEMILLA}
+      API_SECRET_KEY: ${API_SECRET_KEY}
+      MAIL_HOST: ${MAIL_HOST:-}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-SIGAV}
+      SMARTSUPP_KEY: ${SMARTSUPP_KEY:-}
     networks: [sigav]
 
   db:

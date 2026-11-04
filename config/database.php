@@ -52,8 +52,13 @@ return [
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
+            // Por defecto utf8mb4. Instancias nacidas de un dump legacy que guardan
+            // bytes UTF-8 dentro de columnas latin1 (Mercado Artesanal) necesitan
+            // DB_CHARSET=latin1 / DB_COLLATION=latin1_swedish_ci para que Laravel
+            // lea y escriba los bytes tal cual, igual que el POS legacy (mysqli sin
+            // set_charset). Con utf8mb4 esas filas se ven como "NIÃ‘EZ".
+            'charset' => env('DB_CHARSET', 'utf8mb4'),
+            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
             'prefix' => '',
             'prefix_indexes' => true,
             'strict' => true,

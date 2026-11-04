@@ -80,7 +80,7 @@ require ('header.php');
                 </div><div class="form-group">
                     <div class="col-xs-4 col-xs-offset-2">
                         <label for="bd-qsettings-name">IMAP</label>
-                        <input type="text" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Cadena de caracteres de imap paara acceso" class="form-control" name="imap" id="imap" value="<?php echo $datos["imap"]; ?>" placeholder="{c0380494.ferozo.com:993/ssl}INBOX" />
+                        <input type="text" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Cadena de caracteres de imap paara acceso" class="form-control" name="imap" id="imap" value="<?php echo $datos["imap"]; ?>" placeholder="{imap.ejemplo.com:993/imap/ssl}" />
                     </div>
                     <div class="col-xs-4">
                         <label for="bd-qsettings-name">Asunto</label>

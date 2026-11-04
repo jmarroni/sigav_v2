@@ -2,11 +2,27 @@
 jQuery("document").ready(function() {
     // CSRF token para peticiones POST/DELETE a rutas Laravel (web group).
     $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
+    // Proveedor preseleccionado por old() (alta rechazada): cargar sus categorías.
+    if ($("#proveedor").val() && $("#proveedor").val() != 0) {
+        $("#proveedor").change();
+    }
     setTimeout(function () {
         $("#add_success").hide('slow');
     }, 3000);
     $("#anadir").click(function(event){
         event.preventDefault();
+        // Chequeo previo de las imágenes en el navegador: evita mandar un POST de varios MB
+        // que el servidor va a rechazar igual (y con el que se perdería lo tipeado).
+        var errorImagen = validarImagenesLocal();
+        if (errorImagen){
+            swal({
+                "title":"Verificar",
+                'icon': 'warning',
+                "text": errorImagen,
+                'confirmButtonText': 'Listo'
+            });
+            return;
+        }
         if ($("#producto").val() == ""){
             swal({
                 "title":"Verificar",
@@ -119,6 +135,47 @@ jQuery("document").ready(function() {
         });
     });
 
+    // Venta online: manda el estado deseado (el opuesto al actual), no "invertir".
+    $(document).on("click", "button[id^='ventaonline_']", function() {
+        var boton = $(this);
+        var identificador = boton.attr("id").split("_")[1];
+        var deseado = boton.attr("data-online") == "1" ? 0 : 1;
+
+        boton.prop("disabled", true);
+        $.ajax({
+            url: "/productos/" + identificador + "/venta-online",
+            method: "POST",
+            data: { venta_online: deseado },
+            success: function(data){
+                if (data && data.ok) {
+                    // Recarga la página actual de la grilla para que se vean la marca y el precio web.
+                    window.tablaProductos.ajax.reload(null, false);
+                    swal({
+                        "title": "Perfecto !!",
+                        "icon": "success",
+                        "text": data.venta_online == 1
+                            ? "El producto se publica en la venta online (con el recargo en la web)."
+                            : "El producto ya no se publica en la venta online.",
+                        "confirmButtonText": "Listo"
+                    });
+                } else {
+                    boton.prop("disabled", false);
+                }
+            },
+            error: function(xhr){
+                boton.prop("disabled", false);
+                swal({
+                    "title": "Error",
+                    "icon": "error",
+                    "text": xhr.status == 403
+                        ? "Solo los roles Carga y Administrador pueden cambiar la venta online."
+                        : "No se pudo actualizar la venta online, intente de nuevo.",
+                    "confirmButtonText": "Listo"
+                });
+            }
+        });
+    });
+
     $(document).on("click", "button[id^='editar_']", function( index ) {
         var identificador = $(this).attr("id").split("_")[1];
         modificar(identificador);
@@ -193,9 +250,15 @@ jQuery("document").ready(function() {
 
     $("#proveedor").change(function(){
         if ($(this).val() != 0){
-            $.post("/list_categorias.php?proveedor=" + $(this).val(), function(data, status){  
+            $.post("/list_categorias.php?proveedor=" + $(this).val(), function(data, status){
                 $("#categoria").html(data);
                 $("#categoria").removeAttr("disabled");
+                // Tras un alta rechazada (imagen inválida) el server repuebla el form con old():
+                // la categoría elegida viene en data-old-categoria y se restaura una sola vez.
+                var oldCategoria = $("#categoria").attr("data-old-categoria");
+                if (oldCategoria) {
+                    $("#categoria").val(oldCategoria).removeAttr("data-old-categoria");
+                }
             });
         }else{
             $("#categoria").html("<option value='0'>Seleccione un proveedor</option>");
@@ -248,10 +311,12 @@ function modificar(identificador){
             $("#descripcion_en").val(jsonData.descripcion_en);
             $("#descripcion_pr").val(jsonData.descripcion_pr);
             $("#material").val(jsonData.material);
+            $("#envio_tamano").val(jsonData.envio_tamano != null ? String(jsonData.envio_tamano) : "");
             $("#precio_mayorista").val(jsonData.precio_mayorista);
             $("#descuento").val(jsonData.descuento != null ? jsonData.descuento : 0);
             if (jsonData.es_comodato) $("#es_comodato").prop('checked',true); else $("#es_comodato").prop('checked',false);;
             $("#proveedor").change();
+            mostrarImagenesActuales(jsonData.imagenes || []);
             // Llevar la vista al formulario para que se note que se cargaron los datos.
             // (El anchor viejo #bg-black-op ya no existe en el rediseño.)
             var $form = $("form.sg-form").first();
@@ -259,11 +324,49 @@ function modificar(identificador){
                 $("html, body").animate({ scrollTop: $form.offset().top - 20 }, 400);
                 $("#producto").focus();
             }
-           /* setTimeout(function(){ 
+           /* setTimeout(function(){
                 $("#categoria").val(jsonData.categorias_id + '_' + jsonData.abreviatura);
             // $("#proveedor").attr("disabled","disabled");
             // $("#categoria").attr("disabled","disabled");
             },1000);   */
         });
     }
+}
+
+// Mismas reglas que ProductoController@validarImagenes (10 MB, jpg/png/gif/bmp).
+var IMAGEN_MAX_BYTES = 10 * 1024 * 1024;
+var IMAGEN_EXTENSIONES = /\.(jpe?g|png|gif|bmp)$/i;
+function validarImagenesLocal(){
+    var error = null;
+    $("input[type=file][name^='imagen']").each(function(){
+        var archivo = this.files && this.files[0];
+        if (!archivo) return;
+        var etiqueta = $("label[for='" + this.id + "']").text() || this.name;
+        if (!IMAGEN_EXTENSIONES.test(archivo.name)) {
+            error = etiqueta + ": el archivo debe ser jpg, png, gif o bmp.";
+            return false;
+        }
+        if (archivo.size > IMAGEN_MAX_BYTES) {
+            error = etiqueta + ": supera el máximo de 10 MB (" + (archivo.size / 1048576).toFixed(1) + " MB).";
+            return false;
+        }
+    });
+    return error;
+}
+
+// Miniaturas del producto que se está editando (vienen en GET /carga/{id} -> imagenes[]).
+// Se arma con DOM (no con HTML concatenado) para que las URLs no se interpreten como markup.
+function mostrarImagenesActuales(imagenes){
+    var $caja  = $("#imagenes_actuales");
+    var $lista = $caja.find(".sg-imgs-actuales__lista").empty();
+    if (!imagenes || imagenes.length === 0) {
+        $caja.attr("hidden", true);
+        return;
+    }
+    $.each(imagenes, function(_, img){
+        var $a = $("<a>", { "class": "sg-thumb-link", href: img.imagen_url, target: "_blank", rel: "noopener", title: "Ver imagen" });
+        $a.append($("<img>", { "class": "sg-thumb", src: img.miniatura || img.imagen_url, alt: "" }));
+        $lista.append($a);
+    });
+    $caja.removeAttr("hidden");
 }

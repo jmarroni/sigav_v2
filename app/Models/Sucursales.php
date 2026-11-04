@@ -13,8 +13,9 @@ class Sucursales extends Model
     public static function getSucursal($sucursal = null){
       $sucursal = (isset($sucursal))?$sucursal:$_COOKIE["sucursal"];
       if (isset($sucursal)){
-        for ($i=0; $i < 99; $i++) { 
-          if (sha1("$%Reset20122017AnnaLuca#^".$i."$%Reset20122017AnnaLuca#^") == $_COOKIE["sucursal"]) return $i;
+        $semilla = config('app.legacy_semilla');
+        for ($i=0; $i < 99; $i++) {
+          if (sha1($semilla.$i.$semilla) == $_COOKIE["sucursal"]) return $i;
         }
       }else exit();
     }

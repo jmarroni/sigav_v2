@@ -1,0 +1,23 @@
+# Configuración de OpenSSL para los contenedores de la app (se activa con
+# OPENSSL_CONF=/etc/ssl/openssl-afip.cnf en docker compose).
+#
+# Por qué existe: el WSFE de producción de AFIP (servicios1.afip.gov.ar)
+# negocia Diffie-Hellman con parámetros de 1024 bits. OpenSSL 1.1.1+ con el
+# nivel de seguridad por defecto de Debian (SECLEVEL=2) lo rechaza con
+# "dh key too small" y la app no puede facturar en producción (homologación,
+# wswhomo.afip.gov.ar, sí acepta el nivel 2). Bajar a SECLEVEL=1 mantiene
+# TLS >= 1.2 y solo relaja el tamaño mínimo de DH/RSA a 1024 bits.
+#
+# Aplica a todo el proceso (PHP SoapClient, curl, file_get_contents). Cuando
+# AFIP actualice sus parámetros, volver a SECLEVEL=2 borrando OPENSSL_CONF.
+openssl_conf = default_conf
+
+[default_conf]
+ssl_conf = ssl_sect
+
+[ssl_sect]
+system_default = system_default_sect
+
+[system_default_sect]
+MinProtocol = TLSv1.2
+CipherString = DEFAULT@SECLEVEL=1

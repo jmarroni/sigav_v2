@@ -10,7 +10,6 @@ if (isset($_GET["identificador"]) && intval($_GET["identificador"]) != "" && iss
 
     $sql = "UPDATE clientes SET deshabilitado = '".$habilitar."' WHERE id = ".intval($_GET["identificador"]);
     if ($conn->query($sql) === TRUE) {
-    //  mail('jmarroni@gmail.com','actualizo un articulo '.$_COOKIE["kiosco"],"Se cargo articulo o actualizo");
         header('Location: /cliente.php?mensaje='.base64_encode("Se elimino el cliente {$_POST["razon_social"]} ok"));
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
@@ -37,7 +36,6 @@ if (intval($_POST["id"]) != ""){
                                     entrega_retiros = '{$_POST["entrega_retiros"]}' WHERE id = ".intval($_POST["id"]);
 
     if ($conn->query($sql) === TRUE) {
-	  //  mail('jmarroni@gmail.com','actualizo un articulo '.$_COOKIE["kiosco"],"Se cargo articulo o actualizo");
       header('Location: /cliente.php?mensaje='.base64_encode("Se actualizo el cliente {$_POST["razon_social"]} ok"));
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
@@ -157,9 +155,7 @@ if (intval($_POST["id"]) != ""){
         $html2pdf->Output(dirname(__FILE__).$nombre, "F");
         $devolucion["cliente"] = $nombre;
         echo json_encode($devolucion);
-	//    mail('jmarroni@gmail.com', 'cargo un articulo '.$_COOKIE["kiosco"],"Se cargo articulo o actualizo");
 	    header('Location: /cliente.php?mensaje='.base64_encode("Se ingreso el cliente {$_POST["razon_social"]} ok"));
-	  //  mail('jmarroni@gmail.com', 'carga o actualizacion '.$_COOKIE["kiosco"],"Se cargo articulo o actualizo");
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }

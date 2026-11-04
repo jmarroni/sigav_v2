@@ -33,7 +33,6 @@ if (isset($_GET["identificador"]) && intval($_GET["identificador"]) != "" && iss
     if ($_GET["action"] == "eliminar"){
         $sql = "DELETE FROM sucursales WHERE id = ".intval($_GET["identificador"]);
         if ($conn->query($sql) === TRUE) {
-        //  mail('jmarroni@gmail.com','actualizo un articulo '.$_COOKIE["kiosco"],"Se cargo articulo o actualizo");
         header('Location: /sucursales.php?mensaje='.base64_encode("Se elimino la sucursal correctamente"));
         } else {
             echo "Error: " . $sql . "<br>" . $conn->error;
@@ -59,7 +58,6 @@ if (intval($_POST["id"]) != ""){
     $sql .= " WHERE id = ".intval($_POST["id"]);
 
     if ($conn->query($sql) === TRUE) {
-	  //  mail('jmarroni@gmail.com','actualizo un articulo '.$_COOKIE["kiosco"],"Se cargo articulo o actualizo");
       header('Location: /sucursales.php?mensaje='.base64_encode("Se actualizo la sucursal {$_POST["nombre"]} ok"));
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;

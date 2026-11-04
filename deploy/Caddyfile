@@ -104,3 +104,26 @@ gimnasio.sigav.ar {
 		-Server
 	}
 }
+
+# Mercado Artesanal — segunda instancia de SIGAV en la misma VM (ver
+# deploy/mercado/). El alias mercado-artesanal.sigav.ar es la pre-producción:
+# se prueba ahí con HTTPS real antes de apuntar el dominio definitivo.
+# Caddy emite el certificado solo (Cloudflare en DNS only). Cutover del
+# dominio definitivo hecho el 2026-09-18.
+# OJO: al agregar un host nuevo, `caddy reload` NO dispara la emisión del
+# certificado en esta VM; hace falta `docker restart sigav_caddy` (~2 s de corte).
+sistema.mercado-artesanal.com.ar {
+	encode gzip
+	reverse_proxy mercado_app:80
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+}
+
+# Alias de pre-producción de Mercado: tras el cutover solo redirige al dominio definitivo.
+mercado-artesanal.sigav.ar {
+	redir https://sistema.mercado-artesanal.com.ar{uri} permanent
+}

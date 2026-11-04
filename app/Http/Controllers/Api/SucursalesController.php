@@ -5,23 +5,23 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Support\Precio;
+use App\Support\Utf8;
 use App\Sucursales;
 
 class SucursalesController extends Controller
 {
     public function sucursales(Request $request)
     {
-        if (!$request->user_id) {
-            return response()->json('Debe de ingresar su id de usuario.');
-        }
-
+        // El usuario sale del token, nunca del request: si no, cualquier
+        // usuario de la API podía leer las sucursales de otro.
         $sucursales = DB::table('sucursales')->
                 join('relacion_users_sucursales', 'sucursales.id', 'relacion_users_sucursales.sucursal_id')->
                 select('sucursales.nombre')->
-                where('relacion_users_sucursales.user_id', $request->user_id)->
+                where('relacion_users_sucursales.user_id', $request->user()->id)->
                 get();
 
-        return response()->json($sucursales, 201);
+        return response()->json(Utf8::sanear($sucursales), 201);
     }
 
     public function productosPorSucursal(Request $request)
@@ -30,23 +30,26 @@ class SucursalesController extends Controller
             return response()->json('Debe de ingresar el nombre de la sucursal.');
         }
 
-        if (!$request->user_id) {
-            return response()->json('Debe de ingresar su id de usuario.');
-        }
-
         $productos = DB::table('productos')->
         		join('stock', 'stock.productos_id', 'productos.id')->
         		join('sucursales', 'stock.sucursal_id', 'sucursales.id')->
                 join('relacion_users_sucursales', 'relacion_users_sucursales.sucursal_id','sucursales.id')->
                 join('categorias', 'categorias.id', 'productos.categorias_id')->
                 join('proveedor', 'proveedor.id', 'productos.proveedores_id')->
-                select('productos.codigo_barras','productos.id as id', 'productos.nombre', 'productos.precio_unidad as precio', 'productos.costo', 'productos.usuario', 'productos.fecha','productos.descripcion','productos.descripcion_en','productos.descripcion_pr','productos.material','productos.precio_mayorista', 'proveedor.nombre AS nombre_proveedor', 'proveedor.apellido AS apellido_proveedor')->
+                select('productos.codigo_barras','productos.id as id', 'productos.nombre', 'productos.precio_unidad as precio', 'productos.usuario', 'productos.fecha','productos.descripcion','productos.descripcion_en','productos.descripcion_pr','productos.material','productos.precio_mayorista', 'proveedor.nombre AS nombre_proveedor', 'proveedor.apellido AS apellido_proveedor')->
                 where('sucursales.nombre', $request->nombre_sucursal)->
-                where('relacion_users_sucursales.user_id', $request->user_id)->
+                where('relacion_users_sucursales.user_id', $request->user()->id)->
+                // Solo lo marcado para la web, con el precio online (recargo, al entero).
+                where('productos.venta_online', 1)->
                 get();
 
-
-        
+        $recargo = Precio::recargoOnline();
+        $productos = $productos->map(function ($producto) use ($recargo) {
+            $producto->precio = Precio::online($producto->precio, $recargo);
+            return $producto;
+        })->filter(function ($producto) {
+            return $producto->precio !== null;
+        })->values();
 
         foreach ($productos as $producto) {
             $array_imagenes = array();
@@ -55,11 +58,9 @@ class SucursalesController extends Controller
                 ->get();
             foreach ($imagenes as $imagen) {
                 if ( $producto->id == $imagen->productos_id ) {
-                   // if (file_exists('http://www.mercado-artesanal.com.ar'.$imagen->imagen_url)){
                     if ($imagen->imagen_url != "assets/img/photos/no-image-featured-image.png"){
-                        array_push($array_imagenes, "http://www.mercado-artesanal.com.ar".$imagen->imagen_url);
+                        array_push($array_imagenes, url($imagen->imagen_url));
                     }
-                   //s }
                 }
                 $producto->material = $producto->material;
                 $producto->categoria = 3;
@@ -70,6 +71,7 @@ class SucursalesController extends Controller
             $producto->id = null;
             $producto->imagenes = $array_imagenes;
         }
-        return response()->json($productos, 201);
+        // Hay celdas en latin1 real en la base: sin esto json_encode falla y la API da 500.
+        return response()->json(Utf8::sanear($productos), 201);
     }
 }

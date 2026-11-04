@@ -23,6 +23,8 @@ use DB;
 
 class ReporteController extends Controller
 {
+  use Concerns\AutorizaRolAdmin;
+
   public function __construct(){
     // Protección mediante middleware de autenticación de Laravel
     $this->middleware('auth');
@@ -83,13 +85,17 @@ class ReporteController extends Controller
     }
   }
 
+  // Botón "Regenerar PDF": solo rol >= 4, y se marca qué facturas no tienen el archivo en disco.
+  $regenerador = new \App\Facturacion\RegeneradorPdfFactura();
+  $puedeRegenerar = $this->tieneRol(4);
   foreach($facturas as $factura)
   {
     if ($factura->nombre_sucursal==NULL)
       $factura->nombre_sucursal="Eliminada";
+    $factura->pdf_existe = $regenerador->pdfExiste($factura);
   }
 
-  return view("reportes.factura",compact("facturas","reporte_desde","reporte_hasta"));
+  return view("reportes.factura",compact("facturas","reporte_desde","reporte_hasta","puedeRegenerar"));
 }
 
 public function cierreCajaReporte(Request $request)
@@ -165,10 +171,14 @@ if (count($cajasAperturadas)>0)
   }
 }
 
-$cabeceras = 'From: jmarroni@fidegroup.com.ar' . "\r\n" .
-'Reply-To: jmarroni@fidegroup.com.ar' . "\r\n" .
+$remitenteCierre = config('mail.from.address');
+$cabeceras = 'From: '.$remitenteCierre . "\r\n" .
+'Reply-To: '.$remitenteCierre . "\r\n" .
 'X-Mailer: PHP/' . phpversion();
-mail("jmarroni@gmail.com", "Cierre de caja fecha ".date("Y-m-d H:i:s"), "Cierre de caja por ".$_COOKIE["kiosco"].", \n\r Billeter: \n\r- Cien: ".$request->cien." \n\r- Cincuenta: ".$request->cincuenta." \n\r- Veinte: ".$request->veinte." \n\r- Diez: ".$request->diez." \n\r- Cinco: ".$request->cinco." \n\r Operacion \n\r {$request->operacion} \n\r Observacion \n\r {$request->observacion} \n\r Total: $caja_total Total marcado en venta: ".($total + $totalcaja),$cabeceras);
+$destinatarioCierre = config('mail.from.address');
+if ($destinatarioCierre) {
+    mail($destinatarioCierre, "Cierre de caja fecha ".date("Y-m-d H:i:s"), "Cierre de caja por ".$_COOKIE["kiosco"].", \n\r Billeter: \n\r- Cien: ".$request->cien." \n\r- Cincuenta: ".$request->cincuenta." \n\r- Veinte: ".$request->veinte." \n\r- Diez: ".$request->diez." \n\r- Cinco: ".$request->cinco." \n\r Operacion \n\r {$request->operacion} \n\r Observacion \n\r {$request->observacion} \n\r Total: $caja_total Total marcado en venta: ".($total + $totalcaja),$cabeceras);
+}
 
 $mensaje="Caja ingresada correctamente";   
 return redirect('cierreCajaReporte/mensaje/'.base64_encode($mensaje));       
