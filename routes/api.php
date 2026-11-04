@@ -17,5 +17,6 @@ Route::group([
         Route::post('sucursales', ['uses' => 'Api\SucursalesController@sucursales']);
         Route::post('productosPorSucursal', ['uses' => 'Api\SucursalesController@productosPorSucursal']);
         Route::post('productos/venta', ['uses' => 'Api\VentaController@venta']);
+        Route::post('proveedores', ['uses' => 'Api\ProveedorController@proveedores']);
     });
 });

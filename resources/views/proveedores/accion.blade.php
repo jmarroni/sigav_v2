@@ -31,36 +31,66 @@
 
     <div class="block block-rounded">
         <div class="block-content">
+            @if ($errors->any())
+                <div class="alert alert-danger" role="alert">
+                    <ul class="remove-margin-b">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <form class="form-horizontal" id="form-artesano" action="/proveedor.save" enctype="multipart/form-data" method="post" >
                 <input type="hidden" value="" name="id" id="id" />
                 <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
-                <input type="hidden" value="" name="id_proveedor" id="id_proveedor"/>
+                <input type="hidden" value="{{ old('id_proveedor') }}" name="id_proveedor" id="id_proveedor"/>
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <label for="titulo">T&iacute;tulo (*) <small>(ficha p&uacute;blica)</small></label>
+                        <input type="text" class="form-control" id="titulo" name="titulo" value="{{ old('titulo') }}" placeholder="Ej: Tejidos en telar de la Patagonia" maxlength="150" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <label for="descripcion">Descripci&oacute;n (*)</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="4" maxlength="2000" placeholder="Historia, técnica y productos del artesano">{{ old('descripcion') }}</textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    @for ($i = 1; $i <= 3; $i++)
+                    <div class="col-xs-4">
+                        <label for="imagen{{ $i }}">Imagen {{ $i }} <small>(opcional)</small></label>
+                        <input type="file" class="form-control" id="imagen{{ $i }}" name="imagen{{ $i }}" accept="image/jpeg,image/png,image/gif,image/bmp" />
+                        <div id="preview_imagen{{ $i }}" style="margin-top:6px;"></div>
+                    </div>
+                    @endfor
+                </div>
                 <div class="form-group">
                     <div class="col-xs-4">
                         <label for="bd-qsettings-name">Nombre (*)</label>
-                        <input type="text" class="form-control letters" id="nombre" name="nombre" value="" placeholder="Nombre del Proveedor" maxlength="70" />
+                        <input type="text" class="form-control letters" id="nombre" name="nombre" value="{{ old('nombre') }}" placeholder="Nombre del Proveedor" maxlength="70" />
                     </div>
                     <div class="col-xs-4">
                         <label>Apellido (*)</label>
-                        <input type="text" class="form-control letters" id="apellido" name="apellido" value="" placeholder="Apelllido del Proveedor" maxlength="70" />
+                        <input type="text" class="form-control letters" id="apellido" name="apellido" value="{{ old('apellido') }}" placeholder="Apelllido del Proveedor" maxlength="70" />
                     </div>
                     <div class="col-xs-4">
                         <label>Direcci&oacute;n (*)</label>
-                        <input type="text" class="form-control lettersNumbers" id="direccion" name="direccion" value="" placeholder="Alvear 453 local 3" maxlength="200"/>
+                        <input type="text" class="form-control lettersNumbers" id="direccion" name="direccion" value="{{ old('direccion') }}" placeholder="Alvear 453 local 3" maxlength="200"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-xs-4">
                         <label>Ciudad (*)</label>
-                        <input type="text" class="form-control lettersNumbers" id="ciudad" name="ciudad" value="" placeholder="Viedma" maxlength="70" />
+                        <input type="text" class="form-control lettersNumbers" id="ciudad" name="ciudad" value="{{ old('ciudad') }}" placeholder="Viedma" maxlength="70" />
                     </div>
                     <div class="col-xs-4">
                         <label>Provincia (*)</label>
-                        <input type="text" class="form-control lettersNumbers" id="provincia" name="provincia" value="" placeholder="Rio Negro" maxlength="70"/>
+                        <input type="text" class="form-control lettersNumbers" id="provincia" name="provincia" value="{{ old('provincia') }}" placeholder="Rio Negro" maxlength="70"/>
                     </div>
                     <div class="col-xs-4">
                         <label>Tel&eacute;fono / Celular (*)</label>
-                        <input type="text" class="form-control numbers" id="telefono" name="telefono" value="" placeholder="2920 425672" maxlength="12"/>
+                        <input type="text" class="form-control numbers" id="telefono" name="telefono" value="{{ old('telefono') }}" placeholder="2920 425672" maxlength="12"/>
                     </div>
 
                 </div>
@@ -76,11 +106,11 @@
                     </div>
                     <div class="col-xs-4">
                         <label>Mail</label>
-                        <input type="text" class="form-control lettersNumbers" id="mail" name="mail" value="" placeholder="mail@mail.com" onblur="validarMail();" />
+                        <input type="text" class="form-control lettersNumbers" id="mail" name="mail" value="{{ old('mail') }}" placeholder="mail@mail.com" onblur="validarMail();" />
                     </div>
                     <div class="col-xs-4">
                         <label>Sitio web <small>(url)</small></label>
-                        <input type="url" class="form-control lettersNumbers" id="sitio_web" name="sitio_web" value="" placeholder="www.ejemplo.com"/>
+                        <input type="url" class="form-control lettersNumbers" id="sitio_web" name="sitio_web" value="{{ old('sitio_web') }}" placeholder="www.ejemplo.com"/>
                     </div>
                     <div class="col-xs-4">
                         <button class="btn btn-sm btn-minw btn-rounded btn-primary" id="enviar" style="width: 100%;margin-top: 7%;" type="submit">
@@ -110,7 +140,7 @@
                     <tr id="<?php echo $proveedor->id; ?>">
                         <td class="text-center">
                             <div style="width: 180px;">
-                                <img class="img-responsive" src="/assets/img/photos/no-image-featured-image.png" alt="">
+                                <img class="img-responsive" src="{{ $proveedor->imagenes->first()->imagen_url ?? '/assets/img/photos/no-image-featured-image.png' }}" alt="">
                             </div>
                         </td>
                         <td>
@@ -153,5 +183,5 @@
 <!-- END Proveedores -->
 @endsection
 @section("scripts")
-<script src="/assets/js/proveedores/proveedores_accion.js?v=1.08"></script>    
+<script src="/assets/js/proveedores/proveedores_accion.js?v=1.10"></script>    
 @endsection

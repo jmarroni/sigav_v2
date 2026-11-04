@@ -16,8 +16,9 @@ use App\Models\FacturasProveedores;
 use App\Models\DetalleFacturasProveedores;
 use App\Models\FacturasProveedoresLogs;
 use App\Models\RemitoFacturasProveedores;
+use App\Models\ProveedorImagen;
 use Spipu\Html2Pdf\Html2Pdf;
-use storage;
+use Illuminate\Support\Facades\Storage;
 use Image;
 
 
@@ -35,7 +36,7 @@ class ProveedorController extends Controller
     public function index(Request $request)
     {
       $mensaje = $request->mensaje;
-      $proveedores = Proveedor::orderBy('nombre')->get();
+      $proveedores = Proveedor::with('imagenes')->orderBy('nombre')->get();
       $sucursales = Sucursales::all();
       $sucursal = (isset($request->sucursal)?$request->sucursal:Sucursales::getSucursal());
       $productos = Producto::with(['stock_' => 
@@ -52,13 +53,40 @@ class ProveedorController extends Controller
     }
 
 
+    /** Imágenes de la ficha pública: campos imagen1..imagen3, mismos formatos que los productos. */
+    const IMAGEN_MAX_KB = 10240;
+    const IMAGEN_FORMATOS = 'jpg,jpeg,png,gif,bmp';
+
     public function save(Request $request)
     {
+        $request->validate([
+            'titulo' => 'required|string|max:150',
+            'descripcion' => 'required|string|max:2000',
+            'imagen1' => 'nullable|image|mimes:'.self::IMAGEN_FORMATOS.'|max:'.self::IMAGEN_MAX_KB,
+            'imagen2' => 'nullable|image|mimes:'.self::IMAGEN_FORMATOS.'|max:'.self::IMAGEN_MAX_KB,
+            'imagen3' => 'nullable|image|mimes:'.self::IMAGEN_FORMATOS.'|max:'.self::IMAGEN_MAX_KB,
+        ], [
+            'required' => 'El campo :attribute es obligatorio.',
+            'image' => ':attribute debe ser una imagen (jpg, png, gif o bmp).',
+            'mimes' => ':attribute debe ser jpg, png, gif o bmp.',
+            'imagen1.max' => 'La Imagen 1 supera el tamaño máximo de '.(self::IMAGEN_MAX_KB / 1024).' MB.',
+            'imagen2.max' => 'La Imagen 2 supera el tamaño máximo de '.(self::IMAGEN_MAX_KB / 1024).' MB.',
+            'imagen3.max' => 'La Imagen 3 supera el tamaño máximo de '.(self::IMAGEN_MAX_KB / 1024).' MB.',
+            'titulo.max' => 'El título no puede superar los 150 caracteres.',
+            'descripcion.max' => 'La descripción no puede superar los 2000 caracteres.',
+        ], [
+            'titulo' => 'Título',
+            'descripcion' => 'Descripción',
+            'imagen1' => 'Imagen 1',
+            'imagen2' => 'Imagen 2',
+            'imagen3' => 'Imagen 3',
+        ]);
+
         $accion=0;//Nuevo registro
         if ($request->id_proveedor != "")
         {
             $accion=1;//Modificar
-            $proveedor = Proveedor::find($request->id_proveedor);
+            $proveedor = Proveedor::findOrFail($request->id_proveedor);
             $mensaje = "Modificación realizada exitosamente";
             RelacionCategoriaProveedor::where('proveedor_id', '=', $request->id_proveedor)->delete();        
           }
@@ -76,6 +104,8 @@ class ProveedorController extends Controller
           $proveedor->mail = $request->mail;
           $proveedor->usuario = $_COOKIE["kiosco"];
           $proveedor->sitio_web =$request->sitio_web;
+          $proveedor->titulo = $request->titulo;
+          $proveedor->descripcion = $request->descripcion;
           $proveedor->save();
 
         //Se recorren las categorías seleccionadas para ingresarlas en la tabla relacion_categoria_proveedor
@@ -96,8 +126,57 @@ class ProveedorController extends Controller
             $relacionCategoria->save();
           }  
         }  
+        // Al final: si el guardado de archivos falla, el artesano y sus categorías ya quedaron bien.
+        $this->guardarImagenes($request, $proveedor);
+
         return redirect('proveedor/mensaje/'.base64_encode($mensaje));
       }
+
+    /**
+     * Guarda cada imagen subida en su slot (orden 1..3) de storage/app/public/proveedores/{id}/.
+     * Subir en un slot reemplaza la imagen anterior de ese slot; los demás slots no cambian.
+     */
+    private function guardarImagenes(Request $request, Proveedor $proveedor): void
+    {
+        for ($orden = 1; $orden <= ProveedorImagen::MAX_IMAGENES; $orden++) {
+            $campo = 'imagen'.$orden;
+            if (!$request->hasFile($campo)) {
+                continue;
+            }
+            // Primero se guarda la nueva y se actualiza la fila; el archivo anterior se borra recién al final.
+            // Si el guardado falla, la fila sigue apuntando a un archivo que existe.
+            $anterior = ProveedorImagen::where('proveedor_id', $proveedor->id)->where('orden', $orden)->value('imagen_url');
+            $path = $request->file($campo)->store('public/proveedores/'.$proveedor->id);
+            if ($path === false) {
+                continue;
+            }
+            ProveedorImagen::updateOrCreate(
+                ['proveedor_id' => $proveedor->id, 'orden' => $orden],
+                ['imagen_url' => '/storage/'.preg_replace('#^public/#', '', $path)]
+            );
+            if ($anterior) {
+                $this->borrarArchivo($anterior);
+            }
+        }
+    }
+
+    /** Quita las imágenes de la ficha: archivos y filas. */
+    private function borrarImagenes(int $proveedorId): void
+    {
+        foreach (ProveedorImagen::where('proveedor_id', $proveedorId)->pluck('imagen_url') as $url) {
+            $this->borrarArchivo($url);
+        }
+        ProveedorImagen::where('proveedor_id', $proveedorId)->delete();
+    }
+
+    /** Borra el archivo de una URL /storage/proveedores/... (nunca fuera de esa carpeta). */
+    private function borrarArchivo(string $url): void
+    {
+        if (strpos($url, '/storage/proveedores/') !== 0) {
+            return;
+        }
+        Storage::disk('local')->delete('public/'.substr($url, strlen('/storage/')));
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -158,6 +237,8 @@ class ProveedorController extends Controller
     }
      //Elimina las relaciones de las categorías anidadas a ese proveedor
     RelacionCategoriaProveedor::where('proveedor_id', '=', $id)->delete();
+    //Elimina las imágenes de la ficha (archivos y filas)
+    $this->borrarImagenes((int) $id);
     //Elimina el proveedor
     Proveedor::destroy($id);
 
@@ -174,8 +255,8 @@ class ProveedorController extends Controller
 }
 
 public function getProveedor(Request $request, $id)
-{ 
-  return response()->json(Proveedor::find($id));
+{
+  return response()->json(Proveedor::with('imagenes')->find($id));
 }
 
 public function getCategoriasProveedor(Request $request, $id)
