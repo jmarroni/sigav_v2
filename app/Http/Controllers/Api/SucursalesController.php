@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Support\Precio;
 use App\Support\Utf8;
 use App\Sucursales;
 
@@ -38,10 +39,17 @@ class SucursalesController extends Controller
                 select('productos.codigo_barras','productos.id as id', 'productos.nombre', 'productos.precio_unidad as precio', 'productos.usuario', 'productos.fecha','productos.descripcion','productos.descripcion_en','productos.descripcion_pr','productos.material','productos.precio_mayorista', 'proveedor.nombre AS nombre_proveedor', 'proveedor.apellido AS apellido_proveedor')->
                 where('sucursales.nombre', $request->nombre_sucursal)->
                 where('relacion_users_sucursales.user_id', $request->user()->id)->
+                // Solo lo marcado para la web, con el precio online (recargo, al entero).
+                where('productos.venta_online', 1)->
                 get();
 
-
-        
+        $recargo = Precio::recargoOnline();
+        $productos = $productos->map(function ($producto) use ($recargo) {
+            $producto->precio = Precio::online($producto->precio, $recargo);
+            return $producto;
+        })->filter(function ($producto) {
+            return $producto->precio !== null;
+        })->values();
 
         foreach ($productos as $producto) {
             $array_imagenes = array();

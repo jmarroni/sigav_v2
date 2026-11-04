@@ -142,6 +142,10 @@ class VentaController extends Controller
         $faltantes = [];
         $desconocido = false;
         $sinPrecio = [];
+        $noOnline = [];
+        // Precio de cada código al momento de vender: precio_unidad + recargo online, al entero.
+        $recargo = Precio::recargoOnline();
+        $precios = [];
         foreach ($pedido as $codigo => $cantidad) {
             $producto = $productos->get($codigo);
             if ($producto === null) {
@@ -149,7 +153,12 @@ class VentaController extends Controller
                 $faltantes[] = ['codigo_barras' => $codigo, 'disponible' => 0];
                 continue;
             }
-            if (Precio::normalizar($producto->precio_unidad) === null) {
+            if ((int) $producto->venta_online !== 1) {
+                $noOnline[] = ['codigo_barras' => $codigo, 'disponible' => 0];
+                continue;
+            }
+            $precios[$codigo] = Precio::online($producto->precio_unidad, $recargo);
+            if ($precios[$codigo] === null) {
                 $sinPrecio[] = ['codigo_barras' => $codigo, 'disponible' => 0];
                 continue;
             }
@@ -158,7 +167,11 @@ class VentaController extends Controller
                 $faltantes[] = ['codigo_barras' => $codigo, 'disponible' => $disponible];
             }
         }
-        if ($sinPrecio) {
+        // Un código inexistente manda sobre el resto (mismo contrato que antes).
+        if ($noOnline && !$desconocido) {
+            throw new VentaRechazada('no_disponible_online', $noOnline);
+        }
+        if ($sinPrecio && !$desconocido) {
             throw new VentaRechazada('precio_invalido', $sinPrecio);
         }
         if ($faltantes) {
@@ -176,7 +189,8 @@ class VentaController extends Controller
             DB::table('ventas')->insert([
                 'productos_id' => $producto->id,
                 'cantidad' => $cantidad,
-                'precio' => Precio::normalizar($producto->precio_unidad),
+                // Precio online (con recargo): es lo que cobró la web y lo que se factura.
+                'precio' => $precios[$codigo],
                 'costo' => (string) $producto->costo,
                 'fecha' => now()->format('Y-m-d H:i:s'),
                 'usuario' => mb_substr('API e-commerce', 0, 100),

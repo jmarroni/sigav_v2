@@ -47,6 +47,8 @@ Route::get('consultarStock/sucursal/{sucursal}','ProductoController@consultarSto
 // SEGURIDAD: Cambiado de GET a POST/DELETE para prevenir ataques CSRF
 Route::post('producto.actualizar.stock/{id}','ProductoController@update_stock' );
 Route::delete('producto.eliminar.stock/{id}','ProductoController@delete_stock' );
+// Publicar / retirar de la venta online (solo roles Carga y Administrador; ver ProductoController).
+Route::post('productos/{id}/venta-online', 'ProductoController@ventaOnline')->where('id', '[0-9]+');
 Route::get('buscarProductos', 'ProductoController@searchProductsSinStock');
 //Proveedor
 Route::get('proveedor', 'ProveedorController@index');

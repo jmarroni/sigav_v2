@@ -27,7 +27,7 @@ class CargaProductoImagenesTest extends TestCase
     {
         parent::setUp();
         Storage::fake('local');
-        foreach (['productos', 'imagen_producto', 'stock', 'stock_logs', 'usuarios', 'sucursales', 'categorias', 'proveedor'] as $tabla) {
+        foreach (['productos', 'imagen_producto', 'stock', 'stock_logs', 'usuarios', 'roles', 'sucursales', 'categorias', 'proveedor'] as $tabla) {
             $this->crearTabla($tabla);
         }
         DB::table('sucursales')->insert(['id' => 1, 'nombre' => 'Central']);
@@ -47,6 +47,17 @@ class CargaProductoImagenesTest extends TestCase
         $this->logueado()->post('/carga', $this->campos() + ['envio_tamano' => 2])->assertRedirect();
 
         $this->assertSame(2, (int) DB::table('productos')->where('nombre', 'Gorro')->value('envio_tamano'));
+    }
+
+    /** @test */
+    public function editar_por_el_formulario_no_apaga_la_venta_online()
+    {
+        // Mismo precio y costo que el formulario: así no entra al log de cambios de precio.
+        DB::table('productos')->insert(['id' => 7, 'codigo_barras' => 'GOR-1', 'nombre' => 'Gorro', 'precio_unidad' => '100', 'costo' => '50', 'venta_online' => 1]);
+
+        $this->logueado()->post('/carga', ['id' => '7'] + $this->campos())->assertRedirect();
+
+        $this->assertSame(1, (int) DB::table('productos')->where('id', 7)->value('venta_online'));
     }
 
     /** @test */
@@ -230,6 +241,7 @@ class CargaProductoImagenesTest extends TestCase
                 $t->string('precio_reposicion', 50)->nullable();
                 $t->decimal('descuento', 5, 2)->default(0);
                 $t->unsignedTinyInteger('envio_tamano')->nullable();
+                $t->boolean('venta_online')->default(false);
                 $t->timestamps();
             },
             'imagen_producto' => function (Blueprint $t) {
@@ -267,6 +279,10 @@ class CargaProductoImagenesTest extends TestCase
                 $t->string('apellido', 100)->nullable();
                 $t->integer('rol_id')->nullable();
                 $t->integer('sucursal_id')->nullable();
+            },
+            'roles' => function (Blueprint $t) {
+                $t->increments('id');
+                $t->string('nombre', 100);
             },
             'sucursales' => function (Blueprint $t) {
                 $t->increments('id');

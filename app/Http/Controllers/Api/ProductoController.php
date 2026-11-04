@@ -8,7 +8,6 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Http\Request;
 use App\Support\Utf8;
 use App\Models\Imagen_producto;
-use App\Producto;
 use App\Support\Envio;
 use App\Support\Precio;
 
@@ -26,7 +25,18 @@ class ProductoController extends Controller
             join('categorias', 'categorias.id', 'productos.categorias_id')->
             join('proveedor', 'proveedor.id', 'productos.proveedores_id')->
             select('productos.id', 'productos.codigo_barras', 'productos.nombre', 'productos.descripcion', 'productos.precio_unidad', 'productos.precio_mayorista', 'productos.stock', 'productos.stock_minimo', 'productos.usuario', 'productos.fecha', 'productos.es_comodato', 'productos.envio_tamano', 'productos.proveedores_id AS proveedor_id', 'categorias.nombre AS categoria', 'proveedor.nombre AS nombre_proveedor', 'proveedor.apellido AS apellido_proveedor')
+            // Solo lo que el operador marcó para la web (botón "Venta online" en /carga).
+            ->where('productos.venta_online', 1)
             ->get();
+
+        // Precio web = precio_unidad + recargo, al entero. Sin precio vendible no se publica.
+        $recargo = Precio::recargoOnline();
+        $productos = $productos->map(function ($producto) use ($recargo) {
+            $producto->precio_online = Precio::online($producto->precio_unidad, $recargo);
+            return $producto;
+        })->filter(function ($producto) {
+            return $producto->precio_online !== null;
+        });
 
         $imagenes = DB::table('imagen_producto')->
                 select('imagen_producto.imagen_url', 'imagen_producto.productos_id')
@@ -56,8 +66,8 @@ class ProductoController extends Controller
                 'codigo_barras' => $producto->codigo_barras,
                 'nombre' => $producto->nombre,
                 'descripcion' => $producto->descripcion,
-                // Formato único: "60000.00" o null (ver App\Support\Precio).
-                'precio_unidad' => Precio::normalizar($producto->precio_unidad),
+                // Precio de venta online con el recargo, formato "66000.00" (ver Precio::online).
+                'precio_unidad' => $producto->precio_online,
                 'precio_mayorista' => Precio::normalizar($producto->precio_mayorista),
                 'stock' => (int) ($stockEcommerce->get($producto->id) ?? 0),
                 'stock_minimo' => (int) $producto->stock_minimo,

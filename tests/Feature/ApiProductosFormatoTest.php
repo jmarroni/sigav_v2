@@ -49,6 +49,10 @@ class ApiProductosFormatoTest extends TestCase
             $t->string('fecha')->nullable();
             $t->integer('es_comodato')->default(0);
             $t->unsignedTinyInteger('envio_tamano')->nullable();
+            $t->string('descripcion_en')->nullable();
+            $t->string('descripcion_pr')->nullable();
+            $t->string('material')->nullable();
+            $t->boolean('venta_online')->default(false);
             $t->integer('proveedores_id');
             $t->integer('categorias_id');
         });
@@ -81,15 +85,24 @@ class ApiProductosFormatoTest extends TestCase
         DB::table('proveedor')->insert(['id' => 1, 'nombre' => 'PLACIDO', 'apellido' => 'DEL CASTILLO']);
         DB::table('productos')->insert([
             ['id' => 1, 'codigo_barras' => '20_ACUE00224561269', 'nombre' => 'CUCHILLO', 'precio_unidad' => '60.000',
-                'precio_mayorista' => null, 'stock' => 3, 'proveedores_id' => 1, 'categorias_id' => 1, 'envio_tamano' => 2],
+                'precio_mayorista' => null, 'stock' => 3, 'proveedores_id' => 1, 'categorias_id' => 1, 'envio_tamano' => 2, 'venta_online' => 1],
             ['id' => 2, 'codigo_barras' => '13_ACER00076217185', 'nombre' => 'MATE', 'precio_unidad' => '1.200,000',
-                'precio_mayorista' => '2025-07-02', 'stock' => 1, 'proveedores_id' => 1, 'categorias_id' => 1, 'envio_tamano' => null],
+                'precio_mayorista' => '2025-07-02', 'stock' => 1, 'proveedores_id' => 1, 'categorias_id' => 1, 'envio_tamano' => null, 'venta_online' => 1],
+            // No marcado para venta online: no tiene que salir en la web.
+            ['id' => 3, 'codigo_barras' => '99_OFFLINE', 'nombre' => 'SOLO MOSTRADOR', 'precio_unidad' => '5000',
+                'precio_mayorista' => null, 'stock' => 1, 'proveedores_id' => 1, 'categorias_id' => 1, 'envio_tamano' => null, 'venta_online' => 0],
+            // Marcado, pero con precio que no sirve: tampoco se publica.
+            ['id' => 4, 'codigo_barras' => '99_SINPRECIO', 'nombre' => 'SIN PRECIO', 'precio_unidad' => '2025-07-02',
+                'precio_mayorista' => null, 'stock' => 1, 'proveedores_id' => 1, 'categorias_id' => 1, 'envio_tamano' => null, 'venta_online' => 1],
         ]);
+        config(['ecommerce.recargo_online_pct' => 10]);
         // Producto 1 dado de alta en Jacobacci y luego también en Viedma: manda la primera fila.
         DB::table('stock')->insert([
             ['productos_id' => 1, 'sucursal_id' => 1, 'stock' => 0],
             ['productos_id' => 1, 'sucursal_id' => 2, 'stock' => 7],
             ['productos_id' => 2, 'sucursal_id' => 2, 'stock' => 2],
+            ['productos_id' => 3, 'sucursal_id' => 1, 'stock' => 4],
+            ['productos_id' => 4, 'sucursal_id' => 1, 'stock' => 4],
         ]);
     }
 
@@ -107,13 +120,14 @@ class ApiProductosFormatoTest extends TestCase
     }
 
     /** @test */
-    public function los_precios_salen_con_un_formato_unico()
+    public function los_precios_salen_con_el_recargo_online_y_un_formato_unico()
     {
         $productos = collect($this->listado())->keyBy('codigo_barras');
 
-        $this->assertSame('60000.00', $productos['20_ACUE00224561269']['precio_unidad']);
+        // 60.000 y 1.200,000 + 10%, redondeado al entero.
+        $this->assertSame('66000.00', $productos['20_ACUE00224561269']['precio_unidad']);
         $this->assertNull($productos['20_ACUE00224561269']['precio_mayorista']);
-        $this->assertSame('1200.00', $productos['13_ACER00076217185']['precio_unidad']);
+        $this->assertSame('1320.00', $productos['13_ACER00076217185']['precio_unidad']);
         $this->assertNull($productos['13_ACER00076217185']['precio_mayorista']);
     }
 
@@ -167,5 +181,40 @@ class ApiProductosFormatoTest extends TestCase
         $this->assertSame(1, $producto['proveedor_id']);
         $this->assertSame('PLACIDO', $producto['nombre_proveedor']);
         $this->assertNull($producto['id']);
+    }
+
+    /** @test */
+    public function solo_salen_los_productos_marcados_para_venta_online_con_precio_valido()
+    {
+        $codigos = collect($this->listado())->pluck('codigo_barras')->sort()->values()->all();
+
+        $this->assertSame(['13_ACER00076217185', '20_ACUE00224561269'], $codigos);
+    }
+
+    /** @test */
+    public function el_recargo_sale_de_la_configuracion()
+    {
+        config(['ecommerce.recargo_online_pct' => 0]);
+        $producto = collect($this->listado())->firstWhere('codigo_barras', '20_ACUE00224561269');
+
+        $this->assertSame('60000.00', $producto['precio_unidad']);
+    }
+
+    /** @test */
+    public function productos_por_sucursal_tambien_filtra_y_aplica_el_recargo()
+    {
+        $token = $this->postJson('/api/auth/login', [
+            'email' => 'ecom@example.com',
+            'password' => 'clave-segura-123',
+        ])->assertOk()->json('access_token');
+
+        $productos = collect($this->withHeader('Authorization', 'Bearer ' . $token)
+            ->postJson('/api/auth/productosPorSucursal', ['nombre_sucursal' => 'Ingeniero Jacobacci'])
+            ->assertStatus(201)
+            ->json())->keyBy('codigo_barras');
+
+        // En Jacobacci hay stock de 1 (online), 3 (offline) y 4 (online sin precio).
+        $this->assertSame(['20_ACUE00224561269'], $productos->keys()->all());
+        $this->assertSame('66000.00', $productos['20_ACUE00224561269']['precio']);
     }
 }

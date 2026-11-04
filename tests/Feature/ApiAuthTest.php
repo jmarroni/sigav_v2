@@ -47,6 +47,7 @@ class ApiAuthTest extends TestCase
                 $t->decimal($c)->nullable();
             }
             $t->unsignedTinyInteger('envio_tamano')->nullable();
+            $t->boolean('venta_online')->default(false);
             $t->integer('proveedores_id');
             $t->integer('categorias_id');
         });
@@ -134,7 +135,7 @@ class ApiAuthTest extends TestCase
         DB::table('proveedor')->insert(['id' => 1, 'nombre' => 'Artesana']);
         DB::table('productos')->insert([
             'id' => 1, 'nombre' => 'Poncho', 'precio_unidad' => 1000, 'costo' => 400,
-            'proveedores_id' => 1, 'categorias_id' => 1,
+            'proveedores_id' => 1, 'categorias_id' => 1, 'venta_online' => 1,
         ]);
         DB::table('stock')->insert(['productos_id' => 1, 'sucursal_id' => 1]);
     }

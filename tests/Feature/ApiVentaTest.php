@@ -37,6 +37,7 @@ class ApiVentaTest extends TestCase
             $t->integer('stock_minimo')->default(0);
             $t->string('precio_unidad')->nullable();
             $t->string('costo')->nullable();
+            $t->boolean('venta_online')->default(false);
             $t->timestamp('created_at')->nullable();
             $t->timestamp('updated_at')->nullable();
         });
@@ -82,7 +83,7 @@ class ApiVentaTest extends TestCase
 
         $this->artisan('passport:client', ['--personal' => true, '--name' => 'test']);
 
-        config(['ecommerce.sucursal_id' => self::SUCURSAL_ECOMMERCE]);
+        config(['ecommerce.sucursal_id' => self::SUCURSAL_ECOMMERCE, 'ecommerce.recargo_online_pct' => 10]);
 
         DB::table('sucursales')->insert([
             ['id' => self::SUCURSAL_ECOMMERCE, 'nombre' => 'e-commerce'],
@@ -90,13 +91,15 @@ class ApiVentaTest extends TestCase
         ]);
         // productos.stock global en 0 a propósito: la venta NO debe usarlo.
         DB::table('productos')->insert([
-            ['id' => 1, 'codigo_barras' => '13_ACER00076217185', 'nombre' => 'Mate', 'stock' => 0, 'precio_unidad' => '60000.00', 'costo' => '400'],
-            ['id' => 2, 'codigo_barras' => '18_ALAN00084500323', 'nombre' => 'Cuchillo', 'stock' => 0, 'precio_unidad' => '15.000', 'costo' => '90'],
+            ['id' => 1, 'codigo_barras' => '13_ACER00076217185', 'nombre' => 'Mate', 'stock' => 0, 'precio_unidad' => '60000.00', 'costo' => '400', 'venta_online' => 1],
+            ['id' => 2, 'codigo_barras' => '18_ALAN00084500323', 'nombre' => 'Cuchillo', 'stock' => 0, 'precio_unidad' => '15.000', 'costo' => '90', 'venta_online' => 1],
+            ['id' => 30, 'codigo_barras' => '99_SOLO_MOSTRADOR', 'nombre' => 'Poncho', 'stock' => 0, 'precio_unidad' => '9000', 'costo' => '10', 'venta_online' => 0],
         ]);
         DB::table('stock')->insert([
             ['productos_id' => 1, 'sucursal_id' => self::SUCURSAL_ECOMMERCE, 'stock' => 5],
             ['productos_id' => 2, 'sucursal_id' => self::SUCURSAL_ECOMMERCE, 'stock' => 1],
             ['productos_id' => 1, 'sucursal_id' => self::SUCURSAL_OTRA, 'stock' => 100],
+            ['productos_id' => 30, 'sucursal_id' => self::SUCURSAL_ECOMMERCE, 'stock' => 9],
         ]);
     }
 
@@ -200,7 +203,7 @@ class ApiVentaTest extends TestCase
     public function un_producto_sin_fila_de_stock_en_la_sucursal_figura_con_cero()
     {
         $this->usuarioApi();
-        DB::table('productos')->insert(['id' => 3, 'codigo_barras' => 'SIN-FILA', 'nombre' => 'Otro', 'stock' => 50, 'precio_unidad' => '100']);
+        DB::table('productos')->insert(['id' => 3, 'codigo_barras' => 'SIN-FILA', 'nombre' => 'Otro', 'stock' => 50, 'precio_unidad' => '100', 'venta_online' => 1]);
 
         $this->venta('PED-S', [['codigo_barras' => 'SIN-FILA', 'cantidad' => 1]])
             ->assertStatus(409)
@@ -212,7 +215,7 @@ class ApiVentaTest extends TestCase
     }
 
     /** @test */
-    public function la_venta_crea_renglones_sin_facturar_con_la_referencia_y_el_precio()
+    public function la_venta_crea_renglones_sin_facturar_con_la_referencia_y_el_precio_online()
     {
         $this->usuarioApi();
 
@@ -222,12 +225,12 @@ class ApiVentaTest extends TestCase
         ])->assertOk();
 
         $this->assertDatabaseHas('ventas', [
-            'productos_id' => 1, 'cantidad' => 2, 'precio' => '60000.00', 'costo' => '400',
+            'productos_id' => 1, 'cantidad' => 2, 'precio' => '66000.00', 'costo' => '400',
             'sucursal_id' => self::SUCURSAL_ECOMMERCE, 'estado' => 1, 'factura_id' => null,
             'referencia_api' => 'PED-V', 'lista_precio' => 1,
         ]);
         $this->assertDatabaseHas('ventas', [
-            'productos_id' => 2, 'cantidad' => 1, 'precio' => '15000.00', 'referencia_api' => 'PED-V',
+            'productos_id' => 2, 'cantidad' => 1, 'precio' => '16500.00', 'referencia_api' => 'PED-V',
         ]);
     }
 
@@ -340,5 +343,67 @@ class ApiVentaTest extends TestCase
 
         $this->venta('PED-7', [])->assertStatus(422)->assertJsonPath('motivo', 'datos_invalidos');
         $this->venta('', [['codigo_barras' => 'X', 'cantidad' => 0]])->assertStatus(422);
+    }
+
+    /** @test */
+    public function un_producto_no_marcado_para_venta_online_se_rechaza_y_no_se_descuenta_nada()
+    {
+        $this->usuarioApi();
+
+        $this->venta('PED-OFF', [
+            ['codigo_barras' => '13_ACER00076217185', 'cantidad' => 1],
+            ['codigo_barras' => '99_SOLO_MOSTRADOR', 'cantidad' => 1],
+        ])->assertStatus(409)->assertExactJson([
+            'ok' => false,
+            'motivo' => 'no_disponible_online',
+            'items' => [['codigo_barras' => '99_SOLO_MOSTRADOR', 'disponible' => 0]],
+        ]);
+
+        $this->assertSame(5, $this->stock(1), 'todo o nada: el ítem online tampoco se descuenta');
+        $this->assertSame(9, $this->stock(30));
+        $this->assertDatabaseMissing('ventas', ['referencia_api' => 'PED-OFF']);
+        $this->assertDatabaseMissing('api_ventas_referencias', ['referencia' => 'PED-OFF']);
+    }
+
+    /** @test */
+    public function un_reintento_de_un_pedido_confirmado_sigue_ok_aunque_el_producto_se_despublique()
+    {
+        $this->usuarioApi();
+        $this->venta('PED-R', [['codigo_barras' => '13_ACER00076217185', 'cantidad' => 1]])->assertOk();
+
+        DB::table('productos')->where('id', 1)->update(['venta_online' => 0]);
+
+        $this->venta('PED-R', [['codigo_barras' => '13_ACER00076217185', 'cantidad' => 1]])
+            ->assertOk()->assertExactJson(['ok' => true]);
+        $this->assertSame(4, $this->stock(1), 'no descuenta dos veces');
+    }
+
+    /** @test */
+    public function un_precio_cero_se_rechaza_como_precio_invalido()
+    {
+        $this->usuarioApi();
+        DB::table('productos')->where('id', 1)->update(['precio_unidad' => '0']);
+
+        $this->venta('PED-0', [['codigo_barras' => '13_ACER00076217185', 'cantidad' => 1]])
+            ->assertStatus(409)
+            ->assertJsonPath('motivo', 'precio_invalido');
+
+        $this->assertSame(5, $this->stock(1));
+    }
+
+    /** @test */
+    public function un_codigo_desconocido_manda_sobre_uno_no_marcado()
+    {
+        $this->usuarioApi();
+
+        $this->venta('PED-MIX', [
+            ['codigo_barras' => '99_SOLO_MOSTRADOR', 'cantidad' => 1],
+            ['codigo_barras' => 'NO-EXISTE', 'cantidad' => 1],
+        ])->assertStatus(409)->assertExactJson([
+            'ok' => false,
+            'motivo' => 'codigo_desconocido',
+            'items' => [['codigo_barras' => 'NO-EXISTE', 'disponible' => 0]],
+        ]);
+        $this->assertSame(9, $this->stock(30));
     }
 }

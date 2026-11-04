@@ -14,6 +14,9 @@ use App\Models\SitesSucursalesOpencart;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Support\Envio;
+use App\Support\Precio;
+use App\Http\Controllers\Concerns\AutorizaRolAdmin;
+use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
 use GuzzleHttp\Client;
 use Curl\curl;
@@ -21,6 +24,10 @@ use Curl\curl;
 
 class ProductoController extends Controller
 {
+    use AutorizaRolAdmin;
+
+    /** Roles (por nombre, no por id: los ids varían entre instancias) que publican en la web. */
+    private const ROLES_VENTA_ONLINE = ['carga', 'administrador'];
     public function __construct(){
         // Protección mediante middleware de autenticación de Laravel
         $this->middleware('auth');
@@ -89,6 +96,10 @@ class ProductoController extends Controller
             });
         }
 
+        if ($request->boolean('solo_online')) {
+            $query->where('productos.venta_online', 1);
+        }
+
         $recordsFiltered = (clone $query)->count('productos.id');
 
         // Orden: solo columnas con respaldo directo en DB (las demás son no-ordenables)
@@ -109,6 +120,9 @@ class ProductoController extends Controller
         }
 
         $productos = $query->get();
+
+        $puedeVentaOnline = $this->puedeMarcarVentaOnline();
+        $recargo = self::recargoParaPantalla();
 
         $data = [];
         foreach ($productos as $p) {
@@ -132,6 +146,9 @@ class ProductoController extends Controller
             $acciones = '<button id="editar_' . $p->id . '" title="Editar" class="btn sg-icon-btn sg-icon-btn--edit" type="button"><i class="fa fa-pencil"></i></button>'
                 . '<button id="eliminar_' . $p->id . '" title="Eliminar" class="btn sg-icon-btn sg-icon-btn--del" type="button"><i class="fa fa-times"></i></button>'
                 . '<button id="actualizar_' . $p->id . '" title="Actualizar stock" class="btn sg-icon-btn sg-icon-btn--ok" type="button"><i class="fa fa-check"></i></button>';
+            if ($puedeVentaOnline) {
+                $acciones .= $this->botonVentaOnline($p);
+            }
 
             $data[] = [
                 'DT_RowId' => (string) $p->id,
@@ -141,7 +158,7 @@ class ProductoController extends Controller
                 $proveedor,
                 $categoria,
                 $stockInput,
-                e($p->precio_unidad),
+                $this->celdaPrecio($p, $recargo),
                 e($p->precio_reposicion),
                 e($p->costo),
                 $acciones,
@@ -154,6 +171,89 @@ class ProductoController extends Controller
             'recordsFiltered' => $recordsFiltered,
             'data'            => $data,
         ]);
+    }
+
+    /**
+     * Celda "Precio al Público": el precio de mostrador tal cual y, si el producto está
+     * marcado para la web, el precio online con el aviso del recargo.
+     */
+    private function celdaPrecio(Producto $p, ?int $recargo): string
+    {
+        $celda = e($p->precio_unidad);
+        if ((int) $p->venta_online !== 1) {
+            return $celda;
+        }
+        if ($recargo === null) {
+            return $celda . '<div class="sg-online sg-online--warn"><span class="sg-tag sg-tag--warn">Online</span>'
+                . ' recargo mal configurado (ECOMMERCE_RECARGO_PCT)</div>';
+        }
+        $online = Precio::online($p->precio_unidad, $recargo);
+        $aviso = 'En la tienda web el precio lleva un recargo del ' . $recargo
+            . '% redondeado al entero. El precio de mostrador no cambia.';
+        if ($online === null) {
+            return $celda . '<div class="sg-online sg-online--warn" title="' . e($aviso) . '">'
+                . '<span class="sg-tag sg-tag--warn">Online</span> precio inválido: no se publica</div>';
+        }
+        $web = number_format((int) $online, 0, ',', '.');
+
+        return $celda . '<div class="sg-online" title="' . e($aviso) . '">'
+            . '<span class="sg-tag sg-tag--online">Online</span> Web $' . e($web)
+            . '<small class="sg-online__aviso">+' . $recargo . '% en la web</small></div>';
+    }
+
+    /**
+     * Recargo para mostrar en /carga, o null si ECOMMERCE_RECARGO_PCT está mal: la pantalla
+     * de stock no se cae por eso (la API sí falla, para no publicar precios mal).
+     */
+    public static function recargoParaPantalla(): ?int
+    {
+        try {
+            return Precio::recargoOnline();
+        } catch (\InvalidArgumentException $e) {
+            \Log::error('venta online: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    /** Botón de la grilla con el estado actual; el JS manda el opuesto explícito. */
+    private function botonVentaOnline(Producto $p): string
+    {
+        $online = (int) $p->venta_online === 1 ? 1 : 0;
+        $titulo = $online ? 'Quitar de la venta online' : 'Publicar en la venta online';
+
+        return '<button id="ventaonline_' . $p->id . '" data-online="' . $online . '" title="' . $titulo . '"'
+            . ' class="btn sg-icon-btn sg-icon-btn--online' . ($online ? ' is-on' : '') . '" type="button">'
+            . '<i class="fa fa-globe"></i></button>';
+    }
+
+    /** ¿El usuario legacy logueado tiene rol Carga o Administrador? */
+    private function puedeMarcarVentaOnline(): bool
+    {
+        $usuario = $this->usuarioActual();
+        if ($usuario === null) {
+            return false;
+        }
+        $rol = DB::table('roles')->where('id', $usuario->rol_id)->value('nombre');
+
+        return $rol !== null && in_array(mb_strtolower(trim($rol)), self::ROLES_VENTA_ONLINE, true);
+    }
+
+    /**
+     * POST /productos/{id}/venta-online  {venta_online: 0|1}
+     * Publica o retira el producto de la API del e-commerce. Recibe el estado deseado
+     * (no invierte), así un doble clic o un reintento no lo deshace.
+     */
+    public function ventaOnline(Request $request, $id)
+    {
+        if (! $this->puedeMarcarVentaOnline()) {
+            abort(403, 'No autorizado');
+        }
+        $validado = $request->validate(['venta_online' => 'required|in:0,1']);
+        $producto = Producto::findOrFail($id);
+        $producto->venta_online = (int) $validado['venta_online'];
+        $producto->save();
+
+        return response()->json(['ok' => true, 'venta_online' => (int) $producto->venta_online]);
     }
 
     /** Celda de la grilla: miniatura de la primera imagen (o placeholder) + cantidad de imágenes. */

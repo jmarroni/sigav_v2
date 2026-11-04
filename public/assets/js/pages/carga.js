@@ -135,6 +135,47 @@ jQuery("document").ready(function() {
         });
     });
 
+    // Venta online: manda el estado deseado (el opuesto al actual), no "invertir".
+    $(document).on("click", "button[id^='ventaonline_']", function() {
+        var boton = $(this);
+        var identificador = boton.attr("id").split("_")[1];
+        var deseado = boton.attr("data-online") == "1" ? 0 : 1;
+
+        boton.prop("disabled", true);
+        $.ajax({
+            url: "/productos/" + identificador + "/venta-online",
+            method: "POST",
+            data: { venta_online: deseado },
+            success: function(data){
+                if (data && data.ok) {
+                    // Recarga la página actual de la grilla para que se vean la marca y el precio web.
+                    window.tablaProductos.ajax.reload(null, false);
+                    swal({
+                        "title": "Perfecto !!",
+                        "icon": "success",
+                        "text": data.venta_online == 1
+                            ? "El producto se publica en la venta online (con el recargo en la web)."
+                            : "El producto ya no se publica en la venta online.",
+                        "confirmButtonText": "Listo"
+                    });
+                } else {
+                    boton.prop("disabled", false);
+                }
+            },
+            error: function(xhr){
+                boton.prop("disabled", false);
+                swal({
+                    "title": "Error",
+                    "icon": "error",
+                    "text": xhr.status == 403
+                        ? "Solo los roles Carga y Administrador pueden cambiar la venta online."
+                        : "No se pudo actualizar la venta online, intente de nuevo.",
+                    "confirmButtonText": "Listo"
+                });
+            }
+        });
+    });
+
     $(document).on("click", "button[id^='editar_']", function( index ) {
         var identificador = $(this).attr("id").split("_")[1];
         modificar(identificador);

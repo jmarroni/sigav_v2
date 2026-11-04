@@ -179,7 +179,22 @@
                     @endforeach
                 </select>
             </div>
+            <label class="sg-online-filtro" for="solo_online">
+                <input type="checkbox" id="solo_online"> Solo venta online
+            </label>
         </header>
+        @php($recargoOnline = \App\Http\Controllers\ProductoController::recargoParaPantalla())
+        <p class="sg-online-aviso">
+            <span class="sg-tag sg-tag--online">Online</span>
+            @if($recargoOnline !== null)
+            Los productos marcados se publican en la tienda web con un recargo del
+            <strong>{{ $recargoOnline }}%</strong> sobre el precio al público,
+            redondeado al entero. El precio de mostrador no cambia.
+            @else
+            <strong>El recargo de la venta online está mal configurado (ECOMMERCE_RECARGO_PCT):</strong>
+            la tienda web no recibe productos hasta corregirlo.
+            @endif
+        </p>
 
         <div class="sg-card__body sg-table-wrap">
             <table id="tabla_productos" class="sg-table">
@@ -207,7 +222,7 @@
 @endsection
 @section("scripts")
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<script src="/assets/js/pages/carga.js?v=1.13"></script>
+<script src="/assets/js/pages/carga.js?v=1.14"></script>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" />
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -232,6 +247,7 @@
                 type: 'GET',
                 data: function (d) {
                     d.sucursal = $('#sucursal').val();
+                    d.solo_online = $('#solo_online').is(':checked') ? 1 : 0;
                 }
             },
             language: {
@@ -250,6 +266,9 @@
                 { data: 8, className: 'sg-num sg-mono sg-muted', orderable: false },
                 { data: 9, className: 'sg-actions', orderable: false }
             ]
+        });
+        $('#solo_online').on('change', function () {
+            window.tablaProductos.ajax.reload();
         });
     });
 </script>
@@ -496,6 +515,20 @@
 .sigav-carga .sg-icon-btn--del:hover{ color:var(--sg-danger); background:var(--sg-danger-soft); border-color:#f3cccc; }
 .sigav-carga .sg-icon-btn--ok:hover{ color:var(--sg-accent-700); background:var(--sg-accent-soft); border-color:#bfe7d5; }
 .sigav-carga .sg-icon-btn .fa{ font-size:13px; }
+
+/* Venta online: marca en la celda de precio, aviso del recargo, botón y filtro */
+.sigav-carga .sg-tag--online{ color:var(--sg-edit); background:var(--sg-edit-soft); border-color:#caddf7; font-weight:600; letter-spacing:.02em; }
+.sigav-carga .sg-online{ margin-top:4px; font-size:12px; color:var(--sg-edit); white-space:nowrap; cursor:help; }
+.sigav-carga .sg-online--warn{ color:var(--sg-warn); }
+.sigav-carga .sg-online .sg-tag{ padding:1px 6px; font-size:10.5px; margin-right:4px; }
+.sigav-carga .sg-online__aviso{ display:block; font-size:10.5px; color:var(--sg-muted); font-family:var(--sg-sans); }
+.sigav-carga .sg-online-aviso{ margin:0; padding:9px 20px; font-size:12.5px; color:var(--sg-ink-2); background:var(--sg-edit-soft); border-top:1px solid #caddf7; border-bottom:1px solid #caddf7; }
+.sigav-carga .sg-online-aviso .sg-tag{ margin-right:6px; }
+.sigav-carga .sg-online-filtro{ display:inline-flex; align-items:center; gap:6px; margin:0 0 0 14px; font-size:13px; font-weight:500; color:var(--sg-ink-2); cursor:pointer; }
+.sigav-carga .sg-icon-btn--online:hover{ color:var(--sg-edit); background:var(--sg-edit-soft); border-color:#caddf7; }
+.sigav-carga .sg-icon-btn--online.is-on{ color:#fff; background:var(--sg-edit); border-color:var(--sg-edit); }
+.sigav-carga .sg-icon-btn--online.is-on:hover{ color:#fff; filter:brightness(1.08); }
+.sigav-carga .sg-icon-btn--online:disabled{ opacity:.5; cursor:wait; transform:none; }
 
 /* ---------- Integración con DataTables ---------- */
 .sigav-carga .dataTables_wrapper{ padding-top:6px; }

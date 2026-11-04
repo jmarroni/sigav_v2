@@ -7,7 +7,7 @@ use RuntimeException;
 /** La venta no se puede descontar: nada se descuenta (todo o nada). */
 class VentaRechazada extends RuntimeException
 {
-    /** @var string sin_stock | codigo_desconocido */
+    /** @var string sin_stock | codigo_desconocido | precio_invalido | no_disponible_online */
     public $motivo;
 
     /** @var array<int, array{codigo_barras:string, disponible:int}> */
