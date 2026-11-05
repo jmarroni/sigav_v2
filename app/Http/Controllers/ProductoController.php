@@ -263,7 +263,12 @@ class ProductoController extends Controller
         if ($primera === null) {
             return '<img class="sg-thumb sg-thumb--vacia" src="'.e(Imagen_producto::SIN_IMAGEN).'" alt="Sin imagen" loading="lazy" />';
         }
-        $html = '<a class="sg-thumb-link" href="'.e($primera->imagen_url).'" target="_blank" rel="noopener" title="Ver imagen">'
+        // Las URLs van en data-galeria (JSON escapado) y carga.js abre el visor en la misma página.
+        $galeria = $p->imagenes->map(function ($img) {
+            return ['url' => $img->imagen_url, 'miniatura' => $img->miniatura];
+        })->values();
+        $html = '<a class="sg-thumb-link js-galeria" href="'.e($primera->imagen_url).'"'
+            .' data-galeria="'.e($galeria->toJson()).'" data-titulo="'.e($p->nombre).'" title="Ver imágenes">'
             .'<img class="sg-thumb" src="'.e($primera->miniatura).'" alt="" loading="lazy" /></a>';
         if ($p->imagenes->count() > 1) {
             $html .= '<span class="sg-thumb-count">+'.($p->imagenes->count() - 1).'</span>';
@@ -538,7 +543,7 @@ class ProductoController extends Controller
 
     /**
      * Guarda las imágenes subidas en storage/app/public/productos/images/{id}/ con su
-     * miniatura 300x300 y reemplaza las filas de imagen_producto del producto.
+     * miniatura 300x300 y las agrega a las filas de imagen_producto del producto.
      * La URL persistida es relativa al host (ver Imagen_producto).
      */
     private function guardarImagenes(Request $request, Producto $producto): void
@@ -565,16 +570,37 @@ class ProductoController extends Controller
             $paths[] = $path;
         }
 
-        if (count($paths) === 0) {
-            return;
-        }
-        Imagen_producto::where('productos_id', $producto->id)->delete();
+        // Se AGREGAN a las existentes: para sacar una imagen está eliminarImagen().
         foreach ($paths as $path) {
             $imagen = new Imagen_producto();
             $imagen->imagen_url   = Imagen_producto::relativaDesdePath($path);
             $imagen->productos_id = $producto->id;
             $imagen->save();
         }
+    }
+
+    /**
+     * DELETE /carga/{id}/imagenes/{imagenId}
+     * Borra una imagen del producto (fila + archivo + miniatura) y devuelve las que quedan.
+     * Lo puede hacer el mismo usuario legacy que puede editar el producto.
+     */
+    public function eliminarImagen($id, $imagenId)
+    {
+        if ($this->usuarioActual() === null) {
+            abort(403, 'No autorizado');
+        }
+        $imagen = Imagen_producto::where('productos_id', (int) $id)->findOrFail((int) $imagenId);
+
+        $paths = Imagen_producto::pathsEnDisco((string) $imagen->imagen_url, (int) $id);
+        $imagen->delete();
+        if (count($paths) > 0) {
+            Storage::disk('local')->delete($paths);
+        }
+
+        return response()->json([
+            'ok'       => true,
+            'imagenes' => Imagen_producto::where('productos_id', (int) $id)->orderBy('id')->get(),
+        ]);
     }
 
     /**

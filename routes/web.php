@@ -43,6 +43,7 @@ Route::middleware('throttle:20,1')->group(function () {
 Route::get('productos/datatable', 'ProductoController@datatable');
 Route::resource('carga', 'ProductoController');
 Route::get('carga/mensaje/{mensaje}','ProductoController@index');
+Route::delete('carga/{id}/imagenes/{imagenId}', 'ProductoController@eliminarImagen')->where(['id' => '[0-9]+', 'imagenId' => '[0-9]+']);
 Route::get('consultarStock/sucursal/{sucursal}','ProductoController@consultarStock');
 // SEGURIDAD: Cambiado de GET a POST/DELETE para prevenir ataques CSRF
 Route::post('producto.actualizar.stock/{id}','ProductoController@update_stock' );

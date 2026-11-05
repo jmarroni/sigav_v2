@@ -193,6 +193,93 @@ class CargaProductoImagenesTest extends TestCase
         $this->assertSame('/storage/productos/images/7/thumb_300x300_abc.jpg', $json['imagenes'][0]['miniatura']);
     }
 
+    /** @test */
+    public function eliminar_una_imagen_borra_la_fila_el_archivo_y_la_miniatura()
+    {
+        DB::table('productos')->insert(['id' => 7, 'nombre' => 'Con foto']);
+        $disco = Storage::disk('local');
+        $disco->put('public/productos/images/7/abc.jpg', 'x');
+        $disco->put('public/productos/images/7/thumb_300x300_abc.jpg', 'x');
+        $disco->put('public/productos/images/7/def.jpg', 'x');
+        $id = DB::table('imagen_producto')->insertGetId(['productos_id' => 7, 'imagen_url' => '/storage/productos/images/7/abc.jpg']);
+        DB::table('imagen_producto')->insert(['productos_id' => 7, 'imagen_url' => '/storage/productos/images/7/def.jpg']);
+
+        $json = $this->logueado()->deleteJson('/carga/7/imagenes/'.$id)->assertOk()->json();
+
+        $this->assertTrue($json['ok']);
+        $this->assertCount(1, $json['imagenes'], 'Devuelve las imágenes que quedan');
+        $this->assertSame(0, DB::table('imagen_producto')->where('id', $id)->count());
+        $disco->assertMissing('public/productos/images/7/abc.jpg');
+        $disco->assertMissing('public/productos/images/7/thumb_300x300_abc.jpg');
+        $disco->assertExists('public/productos/images/7/def.jpg');
+    }
+
+    /** @test */
+    public function no_se_puede_eliminar_la_imagen_de_otro_producto()
+    {
+        DB::table('productos')->insert(['id' => 7, 'nombre' => 'A']);
+        DB::table('productos')->insert(['id' => 8, 'nombre' => 'B']);
+        $id = DB::table('imagen_producto')->insertGetId(['productos_id' => 8, 'imagen_url' => '/storage/productos/images/8/abc.jpg']);
+
+        $this->logueado()->deleteJson('/carga/7/imagenes/'.$id)->assertNotFound();
+
+        $this->assertSame(1, DB::table('imagen_producto')->where('id', $id)->count());
+    }
+
+    /** @test */
+    public function eliminar_imagen_exige_usuario_legacy_valido()
+    {
+        DB::table('productos')->insert(['id' => 7, 'nombre' => 'A']);
+        $id = DB::table('imagen_producto')->insertGetId(['productos_id' => 7, 'imagen_url' => '/storage/productos/images/7/abc.jpg']);
+        $sesion = User::firstOrCreate(['email' => 'otro@legacy.local'], ['name' => 'x', 'password' => bcrypt('x')]);
+
+        $this->actingAs($sesion)->deleteJson('/carga/7/imagenes/'.$id)->assertForbidden();
+
+        $this->assertSame(1, DB::table('imagen_producto')->where('id', $id)->count());
+    }
+
+    /** @test */
+    public function eliminar_imagen_historica_con_url_absoluta_solo_borra_la_fila()
+    {
+        DB::table('productos')->insert(['id' => 7, 'nombre' => 'A']);
+        $disco = Storage::disk('local');
+        $disco->put('public/productos/images/7/abc.jpg', 'x');
+        $id = DB::table('imagen_producto')->insertGetId(['productos_id' => 7, 'imagen_url' => 'http://otro-host/../../7/abc.jpg']);
+
+        $this->logueado()->deleteJson('/carga/7/imagenes/'.$id)->assertOk();
+
+        $this->assertSame(0, DB::table('imagen_producto')->where('id', $id)->count());
+        $disco->assertExists('public/productos/images/7/abc.jpg');
+    }
+
+    /** @test */
+    public function subir_imagenes_al_editar_las_agrega_sin_borrar_las_existentes()
+    {
+        DB::table('productos')->insert(['id' => 7, 'codigo_barras' => 'GOR-1', 'nombre' => 'Gorro', 'precio_unidad' => '100', 'costo' => '50']);
+        DB::table('imagen_producto')->insert(['productos_id' => 7, 'imagen_url' => '/storage/productos/images/7/vieja.jpg']);
+
+        $this->logueado()->post('/carga', ['id' => '7'] + $this->campos() + [
+            'imagen1' => UploadedFile::fake()->image('nueva.jpg', 400, 400),
+        ])->assertRedirect();
+
+        $this->assertSame(2, DB::table('imagen_producto')->where('productos_id', 7)->count());
+    }
+
+    /** @test */
+    public function la_grilla_expone_todas_las_imagenes_para_la_galeria()
+    {
+        DB::table('productos')->insert(['id' => 7, 'nombre' => 'Con foto', 'codigo_barras' => 'A1', 'proveedores_id' => 10, 'categorias_id' => 10]);
+        DB::table('imagen_producto')->insert(['productos_id' => 7, 'imagen_url' => '/storage/productos/images/7/abc.jpg']);
+        DB::table('imagen_producto')->insert(['productos_id' => 7, 'imagen_url' => '/storage/productos/images/7/def.jpg']);
+
+        $json = $this->logueado()->get('/productos/datatable?sucursal=1&length=25')->assertOk()->json();
+        $celda = collect($json['data'])->firstWhere('DT_RowId', '7')[0];
+
+        $this->assertStringContainsString('data-galeria=', $celda);
+        $this->assertStringNotContainsString('target="_blank"', $celda, 'Ya no abre otra pestaña');
+        $this->assertStringContainsString('def.jpg', html_entity_decode($celda));
+    }
+
     private function campos(): array
     {
         return [

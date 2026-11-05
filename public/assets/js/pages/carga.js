@@ -355,6 +355,7 @@ function validarImagenesLocal(){
 }
 
 // Miniaturas del producto que se está editando (vienen en GET /carga/{id} -> imagenes[]).
+// Cada una abre la galería y tiene su botón para eliminarla.
 // Se arma con DOM (no con HTML concatenado) para que las URLs no se interpreten como markup.
 function mostrarImagenesActuales(imagenes){
     var $caja  = $("#imagenes_actuales");
@@ -363,10 +364,137 @@ function mostrarImagenesActuales(imagenes){
         $caja.attr("hidden", true);
         return;
     }
-    $.each(imagenes, function(_, img){
-        var $a = $("<a>", { "class": "sg-thumb-link", href: img.imagen_url, target: "_blank", rel: "noopener", title: "Ver imagen" });
-        $a.append($("<img>", { "class": "sg-thumb", src: img.miniatura || img.imagen_url, alt: "" }));
-        $lista.append($a);
+    var productoId = $("#id").val();
+    var items = $.map(imagenes, function(img){
+        return { id: img.id, url: img.imagen_url, miniatura: img.miniatura || img.imagen_url };
+    });
+    $.each(items, function(indice, item){
+        var $item = $("<div>", { "class": "sg-img-actual" });
+        var $ver  = $("<button>", { type: "button", "class": "sg-thumb-link", title: "Ver imagen " + (indice + 1) });
+        $ver.append($("<img>", { "class": "sg-thumb", src: item.miniatura, alt: "Imagen " + (indice + 1) }));
+        $ver.on("click", function(){
+            Galeria.abrir(items, indice, { titulo: $("#producto").val(), productoId: productoId });
+        });
+        var $borrar = $("<button>", { type: "button", "class": "sg-img-actual__borrar", title: "Eliminar imagen", "aria-label": "Eliminar imagen " + (indice + 1) })
+            .append($("<i>", { "class": "fa fa-trash" }));
+        $borrar.on("click", function(){ confirmarEliminarImagen(productoId, item.id); });
+        $item.append($ver, $borrar);
+        $lista.append($item);
     });
     $caja.removeAttr("hidden");
 }
+
+// Pide confirmación y borra la imagen; al terminar refresca el formulario, la galería y la grilla.
+function confirmarEliminarImagen(productoId, imagenId, alTerminar){
+    swal({
+        title: "¿Eliminar esta imagen?",
+        text: "Se borra del producto y no se puede recuperar.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+    }, function(confirmado){
+        if (!confirmado) return;
+        $.ajax({
+            url: "/carga/" + productoId + "/imagenes/" + imagenId,
+            method: "DELETE",
+            success: function(data){
+                var restantes = (data && data.imagenes) || [];
+                mostrarImagenesActuales(restantes);
+                if (window.tablaProductos) window.tablaProductos.ajax.reload(null, false);
+                if (alTerminar) alTerminar(restantes);
+            },
+            error: function(xhr){
+                swal({
+                    title: "Error",
+                    icon: "error",
+                    text: xhr.status == 403 ? "No tiene permiso para eliminar imágenes."
+                        : xhr.status == 404 ? "La imagen ya no existe (recargue la página)."
+                        : "No se pudo eliminar la imagen, intente de nuevo.",
+                    confirmButtonText: "Listo"
+                });
+            }
+        });
+    });
+}
+
+// ---------------------------------------------------------------------------
+// Galería: visor de imágenes en la misma página (sin abrir otra pestaña).
+// items = [{url, miniatura, id?}]. Si se pasa productoId, muestra "Eliminar".
+// Teclado: ← / → navegan, Esc cierra.
+// ---------------------------------------------------------------------------
+var Galeria = (function(){
+    var items = [], actual = 0, opciones = {}, $g, foco = null;
+
+    function el(){ return $g || ($g = $("#sg-galeria")); }
+
+    function pintar(){
+        var item = items[actual];
+        var $gal = el();
+        $gal.find(".sg-galeria__img").attr({ src: item.url, alt: (opciones.titulo || "Imagen") + " — " + (actual + 1) });
+        $gal.find(".sg-galeria__contador").text((actual + 1) + " / " + items.length);
+        $gal.find(".sg-galeria__titulo").text(opciones.titulo || "");
+        $gal.find(".sg-galeria__nav").prop("hidden", items.length < 2);
+        $gal.find(".sg-galeria__borrar").prop("hidden", !(opciones.productoId && item.id));
+        var $tira = $gal.find(".sg-galeria__tira").empty().prop("hidden", items.length < 2);
+        $.each(items, function(i, it){
+            var $b = $("<button>", { type: "button", "class": "sg-galeria__mini" + (i === actual ? " is-activa" : ""), "aria-label": "Ver imagen " + (i + 1) })
+                .append($("<img>", { src: it.miniatura || it.url, alt: "" }));
+            $b.on("click", function(){ ir(i); });
+            $tira.append($b);
+        });
+    }
+
+    function ir(i){
+        if (!items.length) return;
+        actual = (i + items.length) % items.length;
+        pintar();
+    }
+
+    function abrir(lista, indice, opts){
+        if (!lista || !lista.length) return;
+        items = lista; opciones = opts || {}; actual = 0;
+        foco = document.activeElement;
+        ir(indice || 0);
+        el().prop("hidden", false).addClass("is-abierta");
+        $("body").addClass("sg-galeria-abierta");
+        el().find(".sg-galeria__cerrar").trigger("focus");
+    }
+
+    function cerrar(){
+        el().removeClass("is-abierta").prop("hidden", true);
+        $("body").removeClass("sg-galeria-abierta");
+        el().find(".sg-galeria__img").attr("src", "");
+        if (foco && foco.focus) foco.focus();
+    }
+
+    $(document).on("click", "#sg-galeria .sg-galeria__cerrar", cerrar);
+    $(document).on("click", "#sg-galeria", function(e){ if (e.target === this || $(e.target).hasClass("sg-galeria__escena")) cerrar(); });
+    $(document).on("click", "#sg-galeria .sg-galeria__prev", function(){ ir(actual - 1); });
+    $(document).on("click", "#sg-galeria .sg-galeria__next", function(){ ir(actual + 1); });
+    $(document).on("click", "#sg-galeria .sg-galeria__borrar", function(){
+        var item = items[actual];
+        confirmarEliminarImagen(opciones.productoId, item.id, function(restantes){
+            items = $.map(restantes, function(img){ return { id: img.id, url: img.imagen_url, miniatura: img.miniatura || img.imagen_url }; });
+            if (!items.length) { cerrar(); return; }
+            ir(Math.min(actual, items.length - 1));
+        });
+    });
+    $(document).on("keydown", function(e){
+        if (!el().hasClass("is-abierta")) return;
+        if (e.key === "Escape") cerrar();
+        else if (e.key === "ArrowLeft") ir(actual - 1);
+        else if (e.key === "ArrowRight") ir(actual + 1);
+    });
+
+    // Miniatura de la grilla: abre la galería con todas las imágenes del producto.
+    $(document).on("click", "a.js-galeria", function(e){
+        var lista = [];
+        try { lista = JSON.parse($(this).attr("data-galeria") || "[]"); } catch (err) { lista = []; }
+        if (!lista.length) return; // sin datos: se deja el link normal
+        e.preventDefault();
+        abrir(lista, 0, { titulo: $(this).attr("data-titulo") });
+    });
+
+    return { abrir: abrir, cerrar: cerrar };
+})();

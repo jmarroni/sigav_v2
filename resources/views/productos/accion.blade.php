@@ -104,7 +104,7 @@
                 <div class="sg-fieldset">
                     <span class="sg-fieldset__label">Imágenes <i class="sg-fieldset__hint">jpg, png, gif o bmp, hasta 10 MB cada una</i></span>
                     <div id="imagenes_actuales" class="sg-imgs-actuales" hidden>
-                        <span class="sg-imgs-actuales__label">Imágenes actuales <i>(si subís nuevas, reemplazan a estas)</i></span>
+                        <span class="sg-imgs-actuales__label">Imágenes actuales <i>(las que subas se agregan; tocá una para verla o el tacho para eliminarla)</i></span>
                         <div class="sg-imgs-actuales__lista"></div>
                     </div>
                     <div class="sg-grid sg-grid--imgs">
@@ -218,11 +218,27 @@
         </div>
     </section>
 
+    <!-- Galería de imágenes (ver Galeria en carga.js) -->
+    <div id="sg-galeria" class="sg-galeria" role="dialog" aria-modal="true" aria-label="Galería de imágenes" hidden>
+        <div class="sg-galeria__barra">
+            <span class="sg-galeria__titulo"></span>
+            <span class="sg-galeria__contador"></span>
+            <button type="button" class="sg-galeria__borrar" hidden><i class="fa fa-trash"></i> Eliminar</button>
+            <button type="button" class="sg-galeria__cerrar" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="sg-galeria__escena">
+            <button type="button" class="sg-galeria__nav sg-galeria__prev" aria-label="Anterior">&#8249;</button>
+            <img class="sg-galeria__img" src="" alt="" />
+            <button type="button" class="sg-galeria__nav sg-galeria__next" aria-label="Siguiente">&#8250;</button>
+        </div>
+        <div class="sg-galeria__tira"></div>
+    </div>
+
 </div>
 @endsection
 @section("scripts")
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<script src="/assets/js/pages/carga.js?v=1.14"></script>
+<script src="/assets/js/pages/carga.js?v=1.15"></script>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" />
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -576,5 +592,63 @@
 .sigav-carga table.dataTable thead .sorting,
 .sigav-carga table.dataTable thead .sorting_asc,
 .sigav-carga table.dataTable thead .sorting_desc{ cursor:pointer; }
+/* ---- Imágenes actuales del producto en edición ---- */
+.sigav-carga .sg-img-actual{ position:relative; }
+.sigav-carga button.sg-thumb-link{ padding:0; border:0; background:none; cursor:zoom-in; border-radius:8px; }
+.sigav-carga .sg-thumb-link:focus-visible{ outline:2px solid var(--sg-accent); outline-offset:2px; }
+.sigav-carga .sg-img-actual__borrar{
+    position:absolute; top:-7px; right:-7px; width:26px; height:26px; border-radius:999px;
+    border:2px solid var(--sg-surface); background:var(--sg-danger); color:#fff; font-size:11px;
+    display:grid; place-items:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.18);
+    transition: transform .12s ease, background .12s ease;
+}
+.sigav-carga .sg-img-actual__borrar:hover{ transform:scale(1.12); background:#b83232; }
+.sigav-carga .sg-img-actual__borrar:focus-visible{ outline:2px solid var(--sg-danger); outline-offset:2px; }
+.sigav-carga a.js-galeria{ cursor:zoom-in; }
+
+/* ---- Galería (visor en la misma página) ---- */
+body.sg-galeria-abierta{ overflow:hidden; }
+.sg-galeria{
+    position:fixed; inset:0; z-index:2000; display:flex; flex-direction:column;
+    background:rgba(12,18,26,.92); color:#e9eef3; font-family:'IBM Plex Sans', system-ui, sans-serif;
+    opacity:0; transition:opacity .18s ease;
+}
+.sg-galeria.is-abierta{ opacity:1; }
+.sg-galeria[hidden]{ display:none; }
+.sg-galeria__barra{ display:flex; align-items:center; gap:14px; padding:14px 18px; }
+.sg-galeria__titulo{ font-weight:600; font-size:15px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sg-galeria__contador{ font:500 13px/1 'IBM Plex Mono', monospace; color:#9fb0c0; }
+.sg-galeria__barra button{ border:0; cursor:pointer; color:#fff; border-radius:9px; }
+.sg-galeria__borrar{ background:#d64545; padding:8px 12px; font-size:13px; font-weight:600; }
+.sg-galeria__borrar:hover{ background:#b83232; }
+.sg-galeria__borrar[hidden]{ display:none; }
+.sg-galeria__cerrar{ background:rgba(255,255,255,.1); width:38px; height:38px; font-size:26px; line-height:1; }
+.sg-galeria__cerrar:hover{ background:rgba(255,255,255,.2); }
+.sg-galeria__escena{ flex:1; min-height:0; display:flex; align-items:center; justify-content:center; gap:12px; padding:0 12px; }
+.sg-galeria__img{
+    max-width:min(100%, 1100px); max-height:100%; object-fit:contain; border-radius:10px;
+    box-shadow:0 20px 60px -20px rgba(0,0,0,.7); background:#1b2632;
+}
+.sg-galeria__nav{
+    flex:none; width:48px; height:48px; border-radius:999px; border:0; cursor:pointer;
+    background:rgba(255,255,255,.12); color:#fff; font-size:32px; line-height:1;
+    transition: background .12s ease, transform .12s ease;
+}
+.sg-galeria__nav:hover{ background:rgba(255,255,255,.24); transform:scale(1.06); }
+.sg-galeria__nav[hidden]{ visibility:hidden; display:block; }
+.sg-galeria button:focus-visible{ outline:2px solid #0e9f6e; outline-offset:2px; }
+.sg-galeria__tira{ display:flex; gap:8px; justify-content:center; padding:14px 16px 18px; overflow-x:auto; }
+.sg-galeria__tira[hidden]{ display:none; }
+.sg-galeria__mini{ flex:none; padding:0; border:2px solid transparent; border-radius:8px; background:none; cursor:pointer; opacity:.55; transition:opacity .12s ease, border-color .12s ease; }
+.sg-galeria__mini img{ width:58px; height:58px; object-fit:cover; border-radius:6px; display:block; }
+.sg-galeria__mini:hover{ opacity:.9; }
+.sg-galeria__mini.is-activa{ opacity:1; border-color:#0e9f6e; }
+@media (max-width:600px){
+    .sg-galeria__nav{ width:38px; height:38px; font-size:26px; }
+    .sg-galeria__escena{ gap:4px; padding:0 4px; }
+}
+@media (prefers-reduced-motion: reduce){
+    .sg-galeria, .sg-galeria__nav, .sigav-carga .sg-img-actual__borrar{ transition:none; }
+}
 </style>
 @endsection

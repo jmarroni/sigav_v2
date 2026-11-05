@@ -51,6 +51,27 @@ class Imagen_producto extends Model
         return url($url);
     }
 
+    /**
+     * Paths en el disco local (original + miniatura) de una URL de imagen del producto.
+     * Solo reconoce URLs con la carpeta propia del producto y usa el basename, así una
+     * URL histórica o manipulada nunca apunta fuera de `public/productos/images/{id}/`.
+     * Devuelve [] si la URL no es de un archivo propio (p.ej. absoluta de otro host).
+     */
+    public static function pathsEnDisco(string $url, int $productoId): array
+    {
+        $prefijo = '/storage/productos/images/'.$productoId.'/';
+        if (strpos($url, $prefijo) !== 0) {
+            return [];
+        }
+        $nombre = basename(substr($url, strlen($prefijo)));
+        if ($nombre === '' || $nombre === '.' || $nombre === '..') {
+            return [];
+        }
+        $carpeta = 'public/productos/images/'.$productoId.'/';
+
+        return [$carpeta.$nombre, $carpeta.self::PREFIJO_MINIATURA.$nombre];
+    }
+
     /** `public/productos/images/9/x.png` (path del disco local) -> `/storage/productos/images/9/x.png`. */
     public static function relativaDesdePath(string $path): string
     {
