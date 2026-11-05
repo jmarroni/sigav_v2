@@ -48,6 +48,10 @@ class ProductoController extends Controller
             ? DB::table('stock')->where('sucursal_id', $sucursalEcommerce)->pluck('stock', 'productos_id')
             : collect();
 
+        // Sucursales desde donde se vende online y que tienen stock del producto.
+        // Por ahora es solo la sucursal del e-commerce; el formato (lista) admite más a futuro.
+        $sucursalesConStock = $this->sucursalesConStock($sucursalEcommerce > 0 ? [$sucursalEcommerce] : []);
+
         // Delegación = sucursal donde se dio de alta el producto (la primera fila de stock).
         $delegaciones = DB::table('stock')->
             join('sucursales', 'sucursales.id', 'stock.sucursal_id')->
@@ -55,7 +59,7 @@ class ProductoController extends Controller
             select('stock.productos_id', 'sucursales.nombre', 'sucursales.codigo_postal')
             ->get()->unique('productos_id')->keyBy('productos_id');
 
-        $salida = $productos->map(function ($producto) use ($imagenes, $delegaciones, $stockEcommerce) {
+        $salida = $productos->map(function ($producto) use ($imagenes, $delegaciones, $stockEcommerce, $sucursalesConStock) {
             $delegacion = $delegaciones->get($producto->id);
             $imagenesProducto = ($imagenes->get($producto->id) ?? collect())
                 ->map(function ($imagen) { return Imagen_producto::absoluta($imagen->imagen_url); })
@@ -82,10 +86,44 @@ class ProductoController extends Controller
                 'delegacion_codigo_postal' => $delegacion->codigo_postal ?? null,
             ], Envio::datos($producto->envio_tamano), [
                 'imagenes' => $imagenesProducto,
+                'sucursales' => ($sucursalesConStock->get($producto->id) ?? collect())->values()->all(),
             ]);
         });
 
         // Hay celdas en latin1 real en la base: sin esto json_encode falla y la API da 500.
         return response()->json(Utf8::sanear($salida->values()->all()), 201);
+    }
+
+    /**
+     * Por producto, las sucursales (de las indicadas) con stock > 0 y sus datos de contacto
+     * / origen de envío. Devuelve collection productos_id => [ {id, nombre, ...}, ... ].
+     */
+    private function sucursalesConStock(array $sucursalIds)
+    {
+        if (count($sucursalIds) === 0) {
+            return collect();
+        }
+
+        return DB::table('stock')
+            ->join('sucursales', 'sucursales.id', 'stock.sucursal_id')
+            ->whereIn('stock.sucursal_id', $sucursalIds)
+            ->where('stock.stock', '>', 0)
+            ->orderBy('sucursales.id')
+            ->select('stock.productos_id', 'stock.stock', 'sucursales.id', 'sucursales.nombre',
+                'sucursales.direccion', 'sucursales.provincia', 'sucursales.codigo_postal')
+            ->get()
+            ->groupBy('productos_id')
+            ->map(function ($filas) {
+                return $filas->map(function ($fila) {
+                    return [
+                        'id' => (int) $fila->id,
+                        'nombre' => $fila->nombre,
+                        'direccion' => $fila->direccion,
+                        'provincia' => $fila->provincia,
+                        'codigo_postal' => $fila->codigo_postal,
+                        'stock' => (int) $fila->stock,
+                    ];
+                });
+            });
     }
 }

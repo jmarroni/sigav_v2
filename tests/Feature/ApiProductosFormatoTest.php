@@ -20,6 +20,8 @@ class ApiProductosFormatoTest extends TestCase
         Schema::create('sucursales', function (Blueprint $t) {
             $t->increments('id');
             $t->string('nombre');
+            $t->string('direccion')->nullable();
+            $t->string('provincia')->nullable();
             $t->string('codigo_postal')->nullable();
         });
         Schema::create('relacion_users_sucursales', function (Blueprint $t) {
@@ -77,8 +79,8 @@ class ApiProductosFormatoTest extends TestCase
         ]);
 
         DB::table('sucursales')->insert([
-            ['id' => 1, 'nombre' => 'Ingeniero Jacobacci', 'codigo_postal' => '8418'],
-            ['id' => 2, 'nombre' => 'Viedma', 'codigo_postal' => '8500'],
+            ['id' => 1, 'nombre' => 'Ingeniero Jacobacci', 'codigo_postal' => '8418', 'direccion' => null, 'provincia' => null],
+            ['id' => 2, 'nombre' => 'Viedma', 'codigo_postal' => '8500', 'direccion' => 'San Martín 123', 'provincia' => 'Río Negro'],
         ]);
         DB::table('relacion_users_sucursales')->insert(['sucursal_id' => 1, 'user_id' => 1]);
         DB::table('categorias')->insert(['id' => 1, 'nombre' => 'CUERO']);
@@ -171,6 +173,34 @@ class ApiProductosFormatoTest extends TestCase
         $productos = collect($this->listado())->keyBy('codigo_barras');
 
         $this->assertSame(0, $productos['20_ACUE00224561269']['stock']);
+    }
+
+    /** @test */
+    public function cada_producto_trae_la_sucursal_ecommerce_donde_tiene_stock()
+    {
+        config(['ecommerce.sucursal_id' => 2]);
+        DB::table('stock')->where(['productos_id' => 2, 'sucursal_id' => 2])->update(['stock' => 0]);
+        $productos = collect($this->listado())->keyBy('codigo_barras');
+
+        $this->assertSame([[
+            'id' => 2,
+            'nombre' => 'Viedma',
+            'direccion' => 'San Martín 123',
+            'provincia' => 'Río Negro',
+            'codigo_postal' => '8500',
+            'stock' => 7,
+        ]], $productos['20_ACUE00224561269']['sucursales']);
+        // Sin stock en la sucursal del e-commerce: lista vacía.
+        $this->assertSame([], $productos['13_ACER00076217185']['sucursales']);
+    }
+
+    /** @test */
+    public function sin_sucursal_ecommerce_configurada_no_se_informan_sucursales()
+    {
+        config(['ecommerce.sucursal_id' => null]);
+        $productos = collect($this->listado())->keyBy('codigo_barras');
+
+        $this->assertSame([], $productos['20_ACUE00224561269']['sucursales']);
     }
 
     /** @test */
