@@ -46,7 +46,7 @@ require ('header.php'); ?>
     <?php if (isset($_GET["mensaje"])){ ?>
         <div class="block block-rounded" id="add_success" style="background-color: #46c37b !important;color:white;">
             <div class="block-header">
-                <div class="col-xs-12 bg-success" id="nombre-devuelto"><?php echo base64_decode($_GET["mensaje"]); ?></div>
+                <div class="col-xs-12 bg-success" id="nombre-devuelto"><?php echo htmlspecialchars((string) base64_decode($_GET["mensaje"]), ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8"); ?></div>
             </div>
         </div>
     <?php } ?>
@@ -58,7 +58,7 @@ require ('header.php'); ?>
                 <div class="form-group">
                     <div class="col-xs-6">
                         <label for="bd-qsettings-name">Nombre</label>
-                        <input type="text" class="form-control" name="nombre" id="nombre" value="" placeholder="Nombre de la Sucursal" />
+                        <input type="text" class="form-control" name="nombre" id="nombre" value="" placeholder="Nombre de la Sucursal" required />
                     </div>
                     <div class="col-xs-6">
                         <label>Direcci&oacute;n</label>
@@ -66,8 +66,8 @@ require ('header.php'); ?>
                     </div>
                 </div><div class="form-group">
                     <div class="col-xs-6">
-                        <label for="bd-qsettings-name">Codigo Postal</label>
-                        <input type="text" class="form-control" name="codigo_postal" id="codigo_postal" value="" placeholder="" />
+                        <label for="codigo_postal">C&oacute;digo Postal <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="codigo_postal" id="codigo_postal" value="" placeholder="8500 o R8500ABC" required pattern="\s*(\d{4}|[A-Za-z]\d{4}[A-Za-z]{3})\s*" title="4 dígitos (ej. 8500) o CPA (ej. R8500ABC)" />
                     </div>
                     <div class="col-xs-6">
                         <label>Provincia</label>
