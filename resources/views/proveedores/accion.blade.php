@@ -195,11 +195,15 @@
                         </td>
                         <td>
                             <div class="sg-chips">
-                                @forelse ($susCategorias as $nombreCategoria)
+                                {{-- Muchos proveedores tienen decenas de categorías: se muestran 4 y el resto en el tooltip. --}}
+                                @forelse ($susCategorias->take(4) as $nombreCategoria)
                                     <span class="sg-chip">{{ $nombreCategoria }}</span>
                                 @empty
                                     <span class="sg-muted">—</span>
                                 @endforelse
+                                @if ($susCategorias->count() > 4)
+                                    <span class="sg-chip sg-chip--more" title="{{ $susCategorias->slice(4)->implode(', ') }}">+{{ $susCategorias->count() - 4 }}</span>
+                                @endif
                             </div>
                         </td>
                         <td>

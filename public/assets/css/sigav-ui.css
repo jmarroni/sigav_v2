@@ -663,6 +663,7 @@
     color:var(--sg-ink-2); background:var(--sg-surface-2); border:1px solid var(--sg-line);
     white-space:nowrap;
 }
+.sigav-app .sg-chip--more{ font-family:var(--sg-mono); color:var(--sg-muted); background:var(--sg-surface); border-style:dashed; cursor:help; }
 .sigav-app .sg-chip--code{
     font-family:var(--sg-mono); letter-spacing:.04em;
     color:var(--sg-accent-700); background:var(--sg-accent-soft); border-color:#cdeedf;
