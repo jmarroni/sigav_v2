@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Support\Utf8;
 use App\Models\Proveedor;
 use App\Models\Producto;
 use App\Models\Sucursales;
@@ -37,14 +38,14 @@ class ProveedorController extends Controller
     {
       // El aviso se muestra en la vista (escapado); no se pasa como $mensaje para que el layout no lo repita.
       $aviso = $request->mensaje ? (string) base64_decode($request->mensaje, true) : null;
-      $proveedores = Proveedor::with('imagenes')->orderBy('nombre')->get();
-      $categorias=Categoria::orderBy('nombre')->get();
+      $proveedores = Utf8::sanearModelos(Proveedor::with('imagenes')->orderBy('nombre')->get());
+      $categorias=Utf8::sanearModelos(Categoria::orderBy('nombre')->get());
       // Categorías de cada proveedor, agrupadas por proveedor_id para la grilla.
       $categoriasPorProveedor = Categoria::join("relacion_categoria_proveedor","relacion_categoria_proveedor.categoria_id", "=", "categorias.id")
       ->select("categorias.nombre", "relacion_categoria_proveedor.proveedor_id")
       ->orderBy("categorias.nombre")
-      ->get()
-      ->groupBy("proveedor_id");
+      ->get();
+      $categoriasPorProveedor = Utf8::sanearModelos($categoriasPorProveedor)->groupBy("proveedor_id");
       return view("proveedores.accion",compact("proveedores","aviso","categorias","categoriasPorProveedor"));
     }
 
@@ -246,7 +247,9 @@ class ProveedorController extends Controller
 
 public function getProveedor(Request $request, $id)
 {
-  return response()->json(Proveedor::with('imagenes')->find($id));
+  $proveedor = Proveedor::with('imagenes')->find($id);
+  // Celdas en latin1 real (datos de Mercado) rompen json_encode → 500 al tocar "Modificar".
+  return response()->json($proveedor ? Utf8::sanear($proveedor->toArray()) : null);
 }
 
 public function getCategoriasProveedor(Request $request, $id)

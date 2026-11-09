@@ -138,6 +138,27 @@ class CategoriaProveedorAbmTest extends TestCase
     }
 
     /** @test */
+    public function modificar_proveedor_con_celda_latin1_no_da_500()
+    {
+        // Mercado tiene celdas en latin1 real ("PE\xD1A"): json_encode fallaba con Malformed UTF-8.
+        DB::table('proveedor')->where('id', 1)->update(['nombre' => "PE\xD1A"]);
+
+        $this->logueado()->getJson('/proveedor.getProveedor/1')
+            ->assertOk()
+            ->assertJson(['id' => 1, 'nombre' => 'PEÑA']);
+    }
+
+    /** @test */
+    public function modificar_categoria_con_celda_latin1_no_da_500()
+    {
+        DB::table('categorias')->where('id', 1)->update(['nombre' => "CER\xC1MICA"]);
+
+        $this->logueado()->getJson('/categoria.getCategoria/1')
+            ->assertOk()
+            ->assertJson(['id' => 1, 'nombre' => 'CERÁMICA']);
+    }
+
+    /** @test */
     public function sin_sesion_la_apikey_vieja_no_permite_borrar()
     {
         $this->delete('/categoria/1?apiKey=a0a035dc5213448bb1a130c27f2494c5');

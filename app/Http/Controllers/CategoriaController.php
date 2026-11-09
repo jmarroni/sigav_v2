@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Support\Utf8;
 use App\Models\Proveedor;
 use App\Models\Producto;
 use App\Models\Sucursales;
@@ -28,7 +29,7 @@ class CategoriaController extends Controller
     {
         // El aviso se muestra en la vista (escapado); no se pasa como $mensaje para que el layout no lo repita.
         $aviso = $request->mensaje ? (string) base64_decode($request->mensaje, true) : null;
-        $categorias = Categoria::orderBy('nombre')->get();
+        $categorias = Utf8::sanearModelos(Categoria::orderBy('nombre')->get());
 
         return view("categorias.accion", compact("categorias", "aviso"));
     }
@@ -91,7 +92,9 @@ class CategoriaController extends Controller
 
 public function getCategoria(Request $request, $id)
 { 
-  return response()->json(Categoria::find($id));
+  $categoria = Categoria::find($id);
+  // Celdas en latin1 real (datos de Mercado) rompen json_encode → 500 al tocar "Modificar".
+  return response()->json($categoria ? Utf8::sanear($categoria->toArray()) : null);
 }
 
 public function checkProducts(Request $request, $id)

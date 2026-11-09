@@ -53,4 +53,16 @@ class Utf8Test extends TestCase
     {
         $this->assertNotFalse(json_encode(Utf8::sanear(['x' => "\xFF\xFE mezcla \xD1 fin"])));
     }
+
+    /** @test */
+    public function sanear_modelos_repara_atributos_sin_mutar_el_original()
+    {
+        $original = (new \App\Models\Categoria())->setRawAttributes(['id' => 3, 'nombre' => "PE\xD1A"], true);
+
+        $saneados = Utf8::sanearModelos(collect([$original]));
+
+        $this->assertSame('PEÑA', $saneados->first()->nombre);
+        $this->assertSame(3, $saneados->first()->id);
+        $this->assertSame("PE\xD1A", $original->nombre);
+    }
 }

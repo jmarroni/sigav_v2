@@ -41,4 +41,21 @@ class Utf8
 
         return $valor;
     }
+
+    /**
+     * Copia de la colección de modelos con sus atributos de texto reparados,
+     * para que Blade no muestre en blanco las celdas latin1 (htmlspecialchars
+     * descarta el UTF-8 inválido). Los modelos originales no se tocan.
+     *
+     * @param Collection $modelos Collection de Illuminate\Database\Eloquent\Model
+     * @return Collection
+     */
+    public static function sanearModelos(Collection $modelos): Collection
+    {
+        return $modelos->map(function ($modelo) {
+            $copia = clone $modelo;
+            $copia->setRawAttributes(static::sanear($modelo->getAttributes()), true);
+            return $copia;
+        });
+    }
 }
