@@ -1,118 +1,117 @@
-@extends('layout.layout');
-<style>
-    .ui-autocomplete-loading {
-        background: white url("/assets/img/favicons/ui-anim_basic_16x16.gif") right center no-repeat;
-    }
-</style>
+@extends('layout.layout')
 @section("body")
-<div class="content content-boxed">
-    <!-- Section -->
-    <div class="bg-image img-rounded overflow-hidden push" style="background-image: url('/assets/img/photos/photo25@2x.jpg');">
-        <div class="bg-black-op">
-            <div class="content">
-                <div class="block block-transparent block-themed text-center">
-                    <div class="block-content">
-                        <h1 class="h1 font-w700 text-white animated fadeInDown push-5" style="color:white">Categor&iacute;as</h1>
-                        <h2 class="h4 font-w400 text-white-op animated fadeInUp"></h2>
+@php
+    $habilitadas = $categorias->where('habilitada', 1)->count();
+@endphp
+<div class="content content-boxed sigav-app" id="abm-categorias">
+
+    <!-- Hero -->
+    <div class="sg-hero">
+        <p class="sg-hero__eyebrow">Proveedores</p>
+        <h1>Categorías</h1>
+        <p>Clasificación de productos y de la producción de cada proveedor. <b>{{ $habilitadas }}</b> habilitadas de <b>{{ count($categorias) }}</b>.</p>
+    </div>
+
+    @if (!empty($aviso))
+        <div class="sg-alert sg-alert--ok" id="add_success"><i class="fa fa-check-circle"></i>{{ $aviso }}</div>
+    @endif
+    @if ($errors->any())
+        <div class="sg-alert sg-alert--err" role="alert">
+            <i class="fa fa-exclamation-circle"></i>
+            <span>@foreach ($errors->all() as $error){{ $error }} @endforeach</span>
+        </div>
+    @endif
+
+    <!-- Formulario alta / modificación -->
+    <section class="sg-card" id="card-form">
+        <header class="sg-card__head">
+            <div class="sg-card__title"><span class="sg-dot"></span><h3 id="form-titulo">Nueva categoría</h3></div>
+            <p class="sg-card__hint">Los campos con <b>*</b> son obligatorios.</p>
+        </header>
+        <div class="sg-card__body">
+            <form id="form-categoria" action="/categoria.save" method="post" novalidate>
+                @csrf
+                <input type="hidden" name="id_categoria" id="id_categoria" value="{{ old('id_categoria') }}"/>
+                <div class="sg-grid sg-grid--3">
+                    <div class="sg-field sg-span-2">
+                        <label for="nombre">Nombre <span class="sg-req">*</span></label>
+                        <input type="text" class="form-control lettersNumbers" name="nombre" id="nombre" value="{{ old('nombre') }}" placeholder="Ej: Artesanía en lana" maxlength="100" autocomplete="off" />
+                    </div>
+                    <div class="sg-field">
+                        <label for="abreviatura">Abreviatura <span class="sg-req">*</span> <i>(se usa en los códigos)</i></label>
+                        <input type="text" class="form-control sg-mono-input lettersNumbers" name="abreviatura" id="abreviatura" value="{{ old('abreviatura') }}" placeholder="ALAN" maxlength="20" autocomplete="off" />
                     </div>
                 </div>
-            </div>
+                <div class="sg-form-actions">
+                    <span class="sg-note" id="form-nota"></span>
+                    <button type="button" class="sg-btn sg-btn--ghost sg-hidden" id="cancelar"><i class="fa fa-times"></i> Cancelar edición</button>
+                    <button type="submit" class="sg-btn sg-btn--primary" id="enviar"><i class="fa fa-check"></i> <span>Guardar categoría</span></button>
+                </div>
+            </form>
         </div>
-    </div>
-    <!-- END Section -->
+    </section>
 
-    <?php if (isset($_GET["mensaje"])){ ?>
-        <div class="block block-rounded" id="add_success" style="background-color: #46c37b !important;color:white;">
-            <div class="block-header">
-                <div class="col-xs-12 bg-success" id="nombre-devuelto"><?php echo base64_decode($_GET["mensaje"]); ?></div>
+    <!-- Grilla -->
+    <section class="sg-card">
+        <header class="sg-card__head">
+            <div class="sg-card__title">
+                <span class="sg-dot"></span><h3>Categorías cargadas</h3>
+                <span class="sg-count" id="contador">{{ count($categorias) }}</span>
             </div>
+            <div class="sg-search">
+                <i class="fa fa-search"></i>
+                <input type="search" class="form-control" id="buscar" placeholder="Buscar por nombre o abreviatura" aria-label="Buscar categoría" />
+            </div>
+        </header>
+        <div class="sg-card__body sg-table-wrap">
+            <table class="sg-table" id="tabla-categorias">
+                <thead>
+                    <tr>
+                        <th>Categoría</th>
+                        <th>Abreviatura</th>
+                        <th>Estado</th>
+                        <th class="sg-num">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @forelse($categorias as $categoria)
+                    <tr id="{{ $categoria->id }}" class="{{ $categoria->habilitada == 1 ? '' : 'is-off' }}"
+                        data-buscar="{{ mb_strtolower($categoria->nombre.' '.$categoria->abreviatura) }}">
+                        <td>
+                            <div class="sg-ident">
+                                <span class="sg-thumb" aria-hidden="true">{{ mb_strtoupper(mb_substr($categoria->nombre, 0, 1)) }}</span>
+                                <div>
+                                    <div class="sg-cell-title">{{ $categoria->nombre }}</div>
+                                    <div class="sg-cell-sub">Cargada por {{ $categoria->usuario ?: '—' }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="sg-chip sg-chip--code">{{ $categoria->abreviatura }}</span></td>
+                        <td>
+                            <button type="button" class="sg-pill {{ $categoria->habilitada == 1 ? 'sg-pill--on' : 'sg-pill--off' }}"
+                                    id="status_{{ $categoria->id }}" data-accion="estado" data-id="{{ $categoria->id }}"
+                                    title="Click para {{ $categoria->habilitada == 1 ? 'deshabilitar' : 'habilitar' }}">
+                                {{ $categoria->habilitada == 1 ? 'Habilitada' : 'Deshabilitada' }}
+                            </button>
+                        </td>
+                        <td>
+                            <div class="sg-row-actions">
+                                <button type="button" class="sg-icon-btn sg-icon-btn--edit" data-accion="editar" data-id="{{ $categoria->id }}" title="Modificar" aria-label="Modificar {{ $categoria->nombre }}"><i class="fa fa-pencil"></i></button>
+                                <button type="button" class="sg-icon-btn sg-icon-btn--del" data-accion="eliminar" data-id="{{ $categoria->id }}" data-nombre="{{ $categoria->nombre }}" title="Eliminar" aria-label="Eliminar {{ $categoria->nombre }}"><i class="fa fa-trash-o"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr class="sg-empty-row"><td colspan="4"><div class="sg-empty"><i class="fa fa-tags"></i>Todavía no hay categorías cargadas.</div></td></tr>
+                @endforelse
+                    <tr class="sg-hidden" id="sin-resultados"><td colspan="4"><div class="sg-empty"><i class="fa fa-search"></i>Ninguna categoría coincide con la búsqueda.</div></td></tr>
+                </tbody>
+            </table>
         </div>
-    <?php } ?>
-
-	<div class="block block-rounded">
-		<div class="block-content">
-			<form class="form-horizontal" id="form-categoria" action="/categoria.save" enctype="multipart/form-data" method="post" >
-				<input type="hidden" value="" name="id_categoria" id="id_categoria"/>
-				<input type="hidden" name="_token" value="{{ csrf_token() }}"/>
-				<div class="form-group">
-					<div class="col-xs-4">
-						<label for="bd-qsettings-name">Nombre (*)</label>
-						<input type="text" class="form-control lettersNumbers" name="nombre" id="nombre" value="" placeholder="Artesania Lana" />
-					</div>
-					<div class="col-xs-4">
-						<label>Abreviatura (*)</label>
-						<input type="text" class="form-control lettersNumbers" name="abreviatura" id="abreviatura" value="" placeholder="ALAN" />
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-xs-4">
-						<button class="btn btn-sm btn-minw btn-rounded btn-primary" id="enviar" style="width: 100%;margin-top: 7%;" type="submit">
-							<i class="fa fa-check push-5-r"></i>Guardar
-						</button>
-					</div>
-				</div>
-			</form>
-		</div>
-	</div>
-	<!-- Mensaje no se pudo eliminar categoría -->
-	<div id="erroreliminar" class="alert alert-danger text-center hidden" role="alert" style="position: fixed; bottom: 20px; width: 100%;">
-		<p style="font-weight: bold;">No se puede eliminar esta categoría <small style="font-weight: normal;">Existen productos y/o proveedores asociados a esta</small></p>
-	</div>
-	<!-- Products -->
-	<div class="block block-rounded">
-		<div class="block-header">
-			<h3 class="block-title">Categorizaci&oacute;n</h3>
-		</div>
-		<div class="block-content">
-			<div class="table-responsive">
-				<table class="table table-hover table-vcenter">
-					<tbody>
-						@if (count($categorias)>0)
-						@foreach($categorias as $categoria)
-						<tr id="<?php echo $categoria->id; ?>">
-							<td class="text-center">
-								<div style="width: 180px;">
-									<img class="img-responsive" src="/assets/img/photos/no-image-featured-image.png" alt="">
-								</div>
-							</td>
-							<td>
-								<h4>{{$categoria->nombre}}
-									@if ($categoria->habilitada == 1)
-									(<a id="status_{{$categoria->id}}" href="javascript:void();" onclick="cambiarStatus('<?php echo $categoria->id; ?>')">Deshabilitar</a>, <a href="javascript:void();" onclick="modificarCategoria('<?php echo $categoria->id; ?>')">Modificar</a>, <a href="javascript:void();" onclick="eliminarCategoria('<?php echo $categoria->id; ?>')">Eliminar</a>)</h4>
-									@else
-									(<a id="status_{{$categoria->id}}" href="javascript:void();" onclick="cambiarStatus('<?php echo $categoria->id; ?>')">Habilitar</a>, <a href="javascript:void();" onclick="modificarCategoria('<?php echo $categoria->id; ?>')">Modificar</a>, <a href="javascript:void();" onclick="eliminarCategoria('<?php echo $categoria->id; ?>')">Eliminar</a>)</h4>
-									@endif
-									<p class="remove-margin-b">Ingresado por {{$categoria->usuario}} </p>
-								</td>
-								<td>
-									<p class="remove-margin-b">Abreviatura: <span class="text-gray-dark">{{$categoria->abreviatura}} </span></p>
-								</td>
-									@if ($categoria->habilitada == 1)
-								<td class="text-center">
-									<span id="spanHabilitada_{{$categoria->id}}" class="h3 font-w700 text-success">Habilitado <?php echo ($categoria->habilitada == 1)?"Si":"No"; ?></span>
-								</td>
-								@else
-								<td class="text-center">
-									<span id="spanHabilitada_{{$categoria->id}}" class="h3 font-w700 text-success" style='color:red;'>Habilitado <?php echo ($categoria->habilitada == 1)?"Si":"No"; ?></span>
-								</td>
-								@endif
-							</tr>
-							@endforeach
-							@else
-							<tr>
-								<td>
-									<label  style="text-align: center;padding-bottom: 15px;font-weight: bold;width: 100%;">No hay categorías registradas</label>
-								</td>
-							</tr>
-							@endif
-						</tbody>
-					</table>
-				</div> <!-- table responsive -->
-			</div> <!-- content -->
-		</div> <!-- block rounded -->
-		<!-- END Categorias -->
-	</div> <!-- content-boxed -->
-	@endsection
-	@section("scripts")
-	<script src="/assets/js/categorias/categorias_accion.js?v=1.08"></script>  
-	@endsection
+    </section>
+</div>
+@endsection
+@section("scripts")
+<script src="/assets/js/abm_comun.js?v=1.00"></script>
+<script src="/assets/js/categorias/categorias_accion.js?v=1.09"></script>
+@endsection

@@ -605,3 +605,136 @@
 .sigav-app table.dataTable thead .sorting_asc,
 .sigav-app table.dataTable thead .sorting_desc{ cursor:pointer; }
 .sigav-app table.sg-table tbody tr:nth-child(even){ background:transparent; }
+
+/* ============================================================
+   4 · ABM (alta / baja / modificación) — categorías, proveedores
+   Layout de formulario + grilla con acciones por fila.
+   ============================================================ */
+
+/* Tarjeta del formulario cuando se está editando un registro */
+.sigav-app .sg-card.is-editing{ border-color:#bcd0f2; box-shadow:0 0 0 3px var(--sg-edit-soft), var(--sg-shadow); }
+.sigav-app .sg-card.is-editing .sg-dot{ background:var(--sg-edit); box-shadow:0 0 0 4px var(--sg-edit-soft); }
+
+.sigav-app .sg-form-actions{
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:10px;
+    margin-top:20px; padding-top:18px; border-top:1px dashed var(--sg-line);
+}
+.sigav-app .sg-form-actions .sg-note{ margin-right:auto; }
+.sigav-app .sg-hidden{ display:none !important; }
+.sigav-app .sg-span-2{ grid-column: span 2; }
+.sigav-app .sg-span-all{ grid-column: 1 / -1; }
+@media (max-width: 767px){ .sigav-app .sg-span-2{ grid-column: auto; } }
+
+/* Buscador de la grilla */
+.sigav-app .sg-search{ position:relative; min-width:220px; flex:0 1 280px; }
+.sigav-app .sg-search .fa{
+    position:absolute; left:12px; top:50%; transform:translateY(-50%);
+    color:var(--sg-muted); font-size:13px; pointer-events:none;
+}
+.sigav-app .sg-search .form-control{ padding-left:34px; min-height:36px; font-size:13.5px; }
+
+/* Celdas */
+.sigav-app table.sg-table tbody td{ vertical-align:middle; }
+.sigav-app .sg-cell-title{ font-weight:600; color:var(--sg-ink); font-size:14px; line-height:1.3; }
+.sigav-app .sg-cell-sub{ font-size:12px; color:var(--sg-muted); margin-top:2px; }
+.sigav-app .sg-cell-sub a{ color:var(--sg-ink-2); }
+.sigav-app .sg-cell-sub a:hover{ color:var(--sg-accent-700); }
+.sigav-app .sg-contact{ min-width:220px; display:flex; flex-direction:column; gap:3px; font-size:12.5px; color:var(--sg-ink-2); }
+.sigav-app .sg-contact .fa{ width:14px; color:var(--sg-muted); margin-right:6px; text-align:center; }
+.sigav-app .sg-contact a{ color:var(--sg-ink-2); word-break:break-all; }
+.sigav-app .sg-contact a:hover{ color:var(--sg-accent-700); }
+
+/* Miniatura cuadrada */
+.sigav-app .sg-thumb{
+    width:48px; height:48px; border-radius:10px; flex:none; overflow:hidden;
+    background:var(--sg-surface-3); border:1px solid var(--sg-line);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--sg-mono); font-weight:600; font-size:15px; color:var(--sg-accent-700);
+}
+.sigav-app .sg-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.sigav-app .sg-ident{ display:flex; align-items:center; gap:12px; min-width:0; }
+
+/* Chips (abreviaturas, categorías) */
+.sigav-app .sg-chips{ display:flex; flex-wrap:wrap; gap:5px; }
+.sigav-app .sg-chip{
+    display:inline-flex; align-items:center;
+    font-size:11.5px; font-weight:600; line-height:1.5;
+    padding:2px 9px; border-radius:999px;
+    color:var(--sg-ink-2); background:var(--sg-surface-2); border:1px solid var(--sg-line);
+    white-space:nowrap;
+}
+.sigav-app .sg-chip--code{
+    font-family:var(--sg-mono); letter-spacing:.04em;
+    color:var(--sg-accent-700); background:var(--sg-accent-soft); border-color:#cdeedf;
+}
+
+/* Estado (habilitada / deshabilitada) — botón que alterna */
+.sigav-app .sg-pill{
+    display:inline-flex; align-items:center; gap:7px;
+    font-family:var(--sg-sans); font-size:12px; font-weight:600;
+    padding:4px 11px 4px 9px; border-radius:999px; cursor:pointer;
+    border:1px solid transparent; background:none;
+    transition: background .15s ease, border-color .15s ease, transform .12s ease;
+}
+.sigav-app .sg-pill::before{ content:""; width:7px; height:7px; border-radius:50%; background:currentColor; }
+.sigav-app .sg-pill--on{ color:var(--sg-accent-700); background:var(--sg-accent-soft); border-color:#cdeedf; }
+.sigav-app .sg-pill--off{ color:var(--sg-muted); background:var(--sg-surface-2); border-color:var(--sg-line); }
+.sigav-app .sg-pill:hover{ transform:translateY(-1px); border-color:currentColor; }
+.sigav-app .sg-pill:focus-visible{ outline:none; box-shadow:var(--sg-ring); }
+.sigav-app .sg-pill[disabled]{ opacity:.55; cursor:wait; transform:none; }
+.sigav-app tr.is-off .sg-cell-title{ color:var(--sg-muted); }
+
+/* Botones de acción por fila */
+.sigav-app .sg-row-actions{ display:flex; justify-content:flex-end; gap:6px; white-space:nowrap; }
+.sigav-app .sg-icon-btn{
+    width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center;
+    border-radius:9px; border:1px solid var(--sg-line); background:var(--sg-surface);
+    color:var(--sg-ink-2); cursor:pointer; box-shadow:var(--sg-shadow-sm);
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .12s ease;
+}
+.sigav-app .sg-icon-btn .fa{ font-size:13px; }
+.sigav-app .sg-icon-btn:hover{ transform:translateY(-1px); }
+.sigav-app .sg-icon-btn:focus-visible{ outline:none; box-shadow:var(--sg-ring); }
+.sigav-app .sg-icon-btn--edit:hover{ color:var(--sg-edit); background:var(--sg-edit-soft); border-color:#c6d6f3; }
+.sigav-app .sg-icon-btn--del:hover{ color:var(--sg-danger); background:var(--sg-danger-soft); border-color:#f3cccc; }
+.sigav-app tr.is-selected{ background:var(--sg-edit-soft) !important; }
+.sigav-app tr.is-leaving{ opacity:0; transform:translateX(12px); transition: opacity .25s ease, transform .25s ease; }
+
+/* Estado vacío de la grilla */
+.sigav-app .sg-empty{ text-align:center; padding:34px 16px; color:var(--sg-muted); font-size:13.5px; }
+.sigav-app .sg-empty .fa{ display:block; font-size:22px; margin-bottom:8px; color:#c2cedb; }
+
+/* Carga de imágenes por slot */
+.sigav-app .sg-slot{
+    position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+    min-height:132px; padding:12px; text-align:center; cursor:pointer; overflow:hidden;
+    border:1.5px dashed #cdd8e2; border-radius:var(--sg-r-sm); background:var(--sg-surface-2);
+    color:var(--sg-muted); font-size:12.5px; font-weight:600;
+    transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+.sigav-app .sg-slot:hover{ border-color:var(--sg-accent); background:var(--sg-accent-soft); color:var(--sg-accent-700); }
+.sigav-app .sg-slot .fa{ font-size:18px; }
+.sigav-app .sg-slot input[type=file]{ position:absolute; inset:0; opacity:0; cursor:pointer; }
+.sigav-app .sg-slot__preview{ position:absolute; inset:0; pointer-events:none; }
+.sigav-app .sg-slot__preview img{ width:100%; height:100%; object-fit:cover; display:block; }
+.sigav-app .sg-slot.has-image{ border-style:solid; border-color:var(--sg-line); }
+.sigav-app .sg-slot.has-image .sg-slot__label{
+    position:relative; z-index:1; margin-top:auto; align-self:stretch;
+    background:rgba(22,33,46,.72); color:#fff; border-radius:7px; padding:4px 8px;
+}
+.sigav-app .sg-slot.has-image .fa{ display:none; }
+
+/* Selector múltiple de categorías como checkboxes */
+.sigav-app .sg-checks{ display:flex; flex-wrap:wrap; gap:8px; }
+.sigav-app .sg-check{
+    position:relative; display:inline-flex; align-items:center; gap:7px; cursor:pointer; user-select:none;
+    padding:7px 12px; border:1px solid var(--sg-line); border-radius:999px; background:var(--sg-surface);
+    font-size:12.5px; font-weight:600; color:var(--sg-ink-2); box-shadow:var(--sg-shadow-sm);
+    transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+.sigav-app .sg-check input{ position:absolute; opacity:0; width:0; height:0; }
+.sigav-app .sg-check:hover{ border-color:#cfdae3; }
+.sigav-app .sg-check:has(input:checked){ border-color:var(--sg-accent); background:var(--sg-accent-soft); color:var(--sg-accent-700); }
+.sigav-app .sg-check:has(input:checked)::before{ content:"\f00c"; font-family:FontAwesome; font-size:11px; }
+.sigav-app .sg-check:has(input:focus-visible){ box-shadow:var(--sg-ring); }
+.sigav-app .sg-check.is-off{ color:var(--sg-muted); font-style:italic; }

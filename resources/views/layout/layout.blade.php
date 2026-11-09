@@ -40,7 +40,7 @@ require (public_path().'/header.php');
     <?php if (isset($mensaje)){ ?>
         <div class="block block-rounded" id="add_success" style="background-color: #46c37b !important;color:white;">
             <div class="block-header">
-                <div class="col-xs-12 bg-success" style="background-color:#46c37b;" id="nombre-devuelto"><?php echo base64_decode($mensaje); ?></div>
+                <div class="col-xs-12 bg-success" style="background-color:#46c37b;" id="nombre-devuelto"><?php echo htmlspecialchars((string) base64_decode($mensaje), ENT_QUOTES, 'UTF-8'); ?></div>
             </div>
         </div>
     <?php } ?>

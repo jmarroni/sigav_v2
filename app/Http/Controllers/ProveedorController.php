@@ -35,21 +35,17 @@ class ProveedorController extends Controller
      */
     public function index(Request $request)
     {
-      $mensaje = $request->mensaje;
+      // El aviso se muestra en la vista (escapado); no se pasa como $mensaje para que el layout no lo repita.
+      $aviso = $request->mensaje ? (string) base64_decode($request->mensaje, true) : null;
       $proveedores = Proveedor::with('imagenes')->orderBy('nombre')->get();
-      $sucursales = Sucursales::all();
-      $sucursal = (isset($request->sucursal)?$request->sucursal:Sucursales::getSucursal());
-      $productos = Producto::with(['stock_' => 
-        function ($query) use ($sucursal)
-        {
-          $query->where("sucursal_id",$sucursal);
-        }])->get();
-      $total=count($productos);
       $categorias=Categoria::orderBy('nombre')->get();
-      $RCategoriasProveedor = Categoria::join("relacion_categoria_proveedor","relacion_categoria_proveedor.categoria_id", "=", "categorias.id")
-      ->select("categorias.nombre", "categorias.habilitada","categorias.id","relacion_categoria_proveedor.proveedor_id")
-      ->get();
-      return view("proveedores.accion",compact("productos","proveedores","mensaje","sucursal","sucursales","categorias","RCategoriasProveedor","total"));
+      // Categorías de cada proveedor, agrupadas por proveedor_id para la grilla.
+      $categoriasPorProveedor = Categoria::join("relacion_categoria_proveedor","relacion_categoria_proveedor.categoria_id", "=", "categorias.id")
+      ->select("categorias.nombre", "relacion_categoria_proveedor.proveedor_id")
+      ->orderBy("categorias.nombre")
+      ->get()
+      ->groupBy("proveedor_id");
+      return view("proveedores.accion",compact("proveedores","aviso","categorias","categoriasPorProveedor"));
     }
 
 
@@ -109,9 +105,11 @@ class ProveedorController extends Controller
           $proveedor->save();
 
         //Se recorren las categorías seleccionadas para ingresarlas en la tabla relacion_categoria_proveedor
-          if (isset($request->categoria))
+          // El formulario viejo mandaba una opción vacía con valor 0: no es una categoría real.
+          $categoriasElegidas = array_filter((array) $request->categoria, function ($id) { return (int) $id > 0; });
+          if (count($categoriasElegidas) > 0)
           {
-            foreach ($request->categoria as $categoria)
+            foreach ($categoriasElegidas as $categoria)
             {
              $relacionCategoria= new RelacionCategoriaProveedor();
              if ($accion==1)
@@ -227,14 +225,6 @@ class ProveedorController extends Controller
      */
     public function delete(Request $request,$id)
     {
-     if (!isset($_COOKIE["kiosco"])) {
-      if (!isset($_GET["apiKey"]) || $_GET["apiKey"] != "a0a035dc5213448bb1a130c27f2494c5")
-        header('Location: /');
-      else{
-        header('Access-Control-Allow-Origin: *');
-        header('Content-Type: application/json');
-      }
-    }
      //Elimina las relaciones de las categorías anidadas a ese proveedor
     RelacionCategoriaProveedor::where('proveedor_id', '=', $id)->delete();
     //Elimina las imágenes de la ficha (archivos y filas)

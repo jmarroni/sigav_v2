@@ -26,22 +26,23 @@ class CategoriaController extends Controller
      */
     public function index(Request $request)
     {
-        $mensaje = $request->mensaje;
-        $sucursal = (isset($request->sucursal)?$request->sucursal:Sucursales::getSucursal());
-        $productos = Producto::with(['stock_' => 
-            function ($query) use ($sucursal)
-            {
-                $query->where("sucursal_id",$sucursal);
-            }])->get();
-        $total=count($productos);
-        $categorias=Categoria::orderBy('nombre')->get();
+        // El aviso se muestra en la vista (escapado); no se pasa como $mensaje para que el layout no lo repita.
+        $aviso = $request->mensaje ? (string) base64_decode($request->mensaje, true) : null;
+        $categorias = Categoria::orderBy('nombre')->get();
 
-        return view("categorias.accion",compact("categorias","total","mensaje","productos"));
+        return view("categorias.accion", compact("categorias", "aviso"));
     }
 
 
     public function save(Request $request)
     {
+        $request->validate([
+            'nombre' => 'required|string|max:100',
+            'abreviatura' => 'required|string|max:20',
+        ], [
+            'nombre.required' => 'El nombre es obligatorio.',
+            'abreviatura.required' => 'La abreviatura es obligatoria.',
+        ]);
          $accion=0;
          $categoria_logs = new Categoria_log();
         if ($request->id_categoria != "")
@@ -78,14 +79,6 @@ class CategoriaController extends Controller
 
     public function delete(Request $request,$id)
     {
-       if (!isset($_COOKIE["kiosco"])) {
-        if (!isset($_GET["apiKey"]) || $_GET["apiKey"] != "a0a035dc5213448bb1a130c27f2494c5")
-            header('Location: /');
-        else{
-            header('Access-Control-Allow-Origin: *');
-            header('Content-Type: application/json');
-        }
-    }
     Categoria::destroy($id);
     $categoria_logs = new Categoria_log();
     $categoria_logs->usuario = $_COOKIE["kiosco"];
